@@ -1,0 +1,30 @@
+openapi: 3.1.0
+info:
+  title: Demo API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+paths:
+  /greeting:
+    get:
+      summary: Fetch greeting copy
+      operationId: getGreeting
+      tags:
+        - greeting
+      responses:
+        '200':
+          description: Greeting payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GreetingResponse'
+components:
+  schemas:
+    GreetingResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human friendly greeting
+      required:
+        - message

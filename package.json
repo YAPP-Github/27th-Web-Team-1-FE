@@ -1,0 +1,29 @@
+{
+  "name": "27th-web-team-1-fe",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css}\" --check",
+    "format:fix": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css}\" --write",
+    "storybook": "pnpm --filter web storybook",
+    "storybook:build": "pnpm --filter web storybook:build",
+    "orval": "orval --config orval.config.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.17.0",
+    "orval": "^7.1.0",
+    "prettier": "^3.4.2",
+    "turbo": "^2.1.1",
+    "typescript-eslint": "^8.18.2"
+  }
+}

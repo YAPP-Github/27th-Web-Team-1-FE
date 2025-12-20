@@ -1,0 +1,4 @@
+
+> @repo/api-client@0.1.0 lint /Users/ihongju/27th-Web-Team-1-FE/packages/api-client
+> eslint src --ext .ts
+

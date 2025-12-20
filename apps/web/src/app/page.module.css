@@ -1,0 +1,8 @@
+.page {
+  align-items: center;
+  background: radial-gradient(circle at top, #e0e7ff, #f4f4f5 30%);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}

@@ -1,0 +1,13 @@
+node_modules
+apps/*/node_modules
+apps/mobile/android
+apps/mobile/ios
+apps/mobile/ios/Pods
+apps/mobile/android/app/build
+.next
+.storybook
+storybook-static
+dist
+build
+out
+coverage

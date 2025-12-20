@@ -1,0 +1,4 @@
+
+> web@0.1.0 lint /Users/ihongju/27th-Web-Team-1-FE/apps/web
+> eslint . --ext .ts,.tsx,js,jsx
+

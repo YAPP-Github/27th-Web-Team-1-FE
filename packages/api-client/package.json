@@ -1,0 +1,22 @@
+{
+  "name": "@repo/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "eslint src --ext .ts",
+    "build": "tsc --emitDeclarationOnly"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "msw": "^2.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
