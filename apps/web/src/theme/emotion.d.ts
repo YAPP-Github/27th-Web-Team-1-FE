@@ -9,6 +9,7 @@ declare module '@emotion/react' {
       primary: string;
       text: string;
       muted: string;
+      red: string;
     };
   }
 }

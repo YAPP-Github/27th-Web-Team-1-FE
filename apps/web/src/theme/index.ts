@@ -8,5 +8,6 @@ export const theme: Theme = {
     primary: '#2563eb',
     text: '#0f172a',
     muted: '#52525b',
+    red: '#dc2626',
   },
 };

@@ -50,6 +50,11 @@ const Button = styled.button(({ theme }) => ({
   },
 }));
 
+const TestText = styled.p`
+  color: ${({ theme }) => theme.colors.red};
+`;
+
+
 export function ExampleCard() {
   const { data, isPending, error, refetch } = useGetGreeting();
 
@@ -59,6 +64,7 @@ export function ExampleCard() {
 
   return (
     <Card aria-live="polite">
+      <TestText>Test Emotion Theming</TestText>
       <Heading>Emotion + TanStack Query</Heading>
       <Body>{description}</Body>
       <Button
