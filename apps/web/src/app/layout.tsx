@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: 'Turbo monorepo with Next.js, React Native, and shared tooling.',
 };
 
+const enableMocking = process.env.NEXT_PUBLIC_ENABLE_MOCK === 'true';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders enableMocking={enableMocking}>{children}</AppProviders>
       </body>
     </html>
   );

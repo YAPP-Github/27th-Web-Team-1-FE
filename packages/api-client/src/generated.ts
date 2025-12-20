@@ -4,121 +4,113 @@
  * Demo API
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useQuery
-} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type {
   QueryFunction,
   QueryKey,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
 } from '@tanstack/react-query';
 
-import {
-  faker
-} from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
-import {
-  HttpResponse,
-  delay,
-  http
-} from 'msw';
-import type {
-  RequestHandlerOptions
-} from 'msw';
+import { HttpResponse, delay, http } from 'msw';
+import type { RequestHandlerOptions } from 'msw';
 
-import type {
-  GreetingResponse
-} from './model';
+import type { GreetingResponse } from './model';
 
 import { customFetcher } from './fetcher';
 type AwaitedInput<T> = PromiseLike<T> | T;
 
-      type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
-
-
-
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
 /**
  * @summary Fetch greeting copy
  */
-export const getGreeting = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<GreetingResponse>(
-      {url: `/greeting`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-
+export const getGreeting = (signal?: AbortSignal) => {
+  return customFetcher<GreetingResponse>({ url: `/greeting`, method: 'GET', signal });
+};
 
 export const getGetGreetingQueryKey = () => {
-    return [
-    `/greeting`
-    ] as const;
-    }
+  return [`/greeting`] as const;
+};
 
-    
-export const getGetGreetingQueryOptions = <TData = Awaited<ReturnType<typeof getGreeting>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGreeting>>, TError, TData>, }
-) => {
+export const getGetGreetingQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGreeting>>,
+  TError = unknown,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getGreeting>>, TError, TData>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetGreetingQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetGreetingQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGreeting>>> = ({ signal }) =>
+    getGreeting(signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGreeting>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGreeting>>> = ({ signal }) => getGreeting(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGreeting>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetGreetingQueryResult = NonNullable<Awaited<ReturnType<typeof getGreeting>>>
-export type GetGreetingQueryError = unknown
-
+export type GetGreetingQueryResult = NonNullable<Awaited<ReturnType<typeof getGreeting>>>;
+export type GetGreetingQueryError = unknown;
 
 /**
  * @summary Fetch greeting copy
  */
 
-export function useGetGreeting<TData = Awaited<ReturnType<typeof getGreeting>>, TError = unknown>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGreeting>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetGreeting<
+  TData = Awaited<ReturnType<typeof getGreeting>>,
+  TError = unknown,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getGreeting>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetGreetingQueryOptions(options);
 
-  const queryOptions = getGetGreetingQueryOptions(options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
 
+export const getGetGreetingResponseMock = (
+  overrideResponse: Partial<GreetingResponse> = {},
+): GreetingResponse => ({
+  message: 'test' + faker.string.alpha({ length: { min: 10, max: 20 } }),
+  ...overrideResponse,
+});
 
-export const getGetGreetingResponseMock = (overrideResponse: Partial< GreetingResponse > = {}): GreetingResponse => ({message: faker.string.alpha({length: {min: 10, max: 20}}), ...overrideResponse})
+export const getGetGreetingMockHandler = (
+  overrideResponse?:
+    | GreetingResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<GreetingResponse> | GreetingResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/greeting',
+    async (info) => {
+      await delay(1000);
 
-
-export const getGetGreetingMockHandler = (overrideResponse?: GreetingResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<GreetingResponse> | GreetingResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/greeting', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetGreetingResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-export const getDemoAPIMock = () => [
-  getGetGreetingMockHandler()
-]
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetGreetingResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+export const getDemoAPIMock = () => [getGetGreetingMockHandler()];

@@ -6,12 +6,18 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { theme } from '@/theme';
+import { MSWProvider } from '@/mocks/MSWProvider';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
+  enableMocking?: boolean;
 }>;
 
-export function AppProviders({ children, showDevtools = true }: AppProvidersProps) {
+export function AppProviders({
+  children,
+  showDevtools = true,
+  enableMocking = false,
+}: AppProvidersProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -27,7 +33,7 @@ export function AppProviders({ children, showDevtools = true }: AppProvidersProp
 
   const cache = useMemo(() => createCache({ key: 'web', prepend: true }), []);
 
-  return (
+  const content = (
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
@@ -37,4 +43,10 @@ export function AppProviders({ children, showDevtools = true }: AppProvidersProp
       </ThemeProvider>
     </CacheProvider>
   );
+
+  if (enableMocking) {
+    return <MSWProvider>{content}</MSWProvider>;
+  }
+
+  return content;
 }
