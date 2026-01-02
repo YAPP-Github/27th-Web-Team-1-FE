@@ -1,4 +1,5 @@
-import type { StorybookConfig } from '@storybook/nextjs';
+import type { StorybookConfig } from '@storybook/react-vite';
+import tsconfigPaths from "vite-tsconfig-paths";
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
@@ -9,6 +10,18 @@ const config: StorybookConfig = {
   },
   docs: {
     autodocs: 'tag',
+  },
+  core: {
+    builder: "@storybook/builder-vite",
+  },
+  async viteFinal(config) {
+    config.plugins = config.plugins ?? [];
+    config.plugins.push(tsconfigPaths());
+    config.define = {
+      ...config.define,
+      "process.env": {},
+    };
+    return config;
   },
 };
 
