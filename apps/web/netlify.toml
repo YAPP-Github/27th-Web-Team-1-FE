@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  PNPM_VERSION = "9"
