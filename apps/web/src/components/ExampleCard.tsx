@@ -60,7 +60,7 @@ export function ExampleCard() {
 
   const description = error
     ? 'We could not load the greeting. Please try again.'
-    : data?.message ?? 'Fetching the latest greeting...';
+    : data?.message ?? 'dev deploy : Fetching the latest greeting...';
 
   return (
     <Card aria-live="polite">
