@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # GitHub API로 PR diff 다운로드 (merge-base 문제 없음)
+      # PR diff 다운로드
       - name: Download PR diff
         run: |
           curl -L \
@@ -25,26 +25,42 @@ jobs:
             ${{ github.event.pull_request.url }} \
             > pr.diff
 
-      # Gemini로 코드 리뷰 생성
-      - name: Run Gemini review
-        uses: google-github-actions/run-gemini-cli@v0
-        with:
-          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
-          settings: |
-            {
-              "model": "gemini-1.5-pro",
-              "prompt": "You are a senior frontend engineer.\n\nReview the pull request strictly according to the provided config and style guide.\n\nRules:\n- Group feedback by file\n- Use the following format:\n  ### <file path>\n  - [Blocker|Suggestion|Nitpick]: message\n- Do not comment on files without meaningful issues\n- Blocker means: issues that can cause runtime errors, broken user flows, data inconsistency, or serious performance problems\n- Be concise, actionable, and avoid repeating lint-level issues\n",
-              "files": [
-                ".gemini/config.yaml",
-                ".gemini/styleguide.md",
-                "pr.diff"
-              ]
-            }
-        env:
-          GEMINI_OUTPUT_FILE: review.md
+      # Gemini CLI 설치
+      - name: Install Gemini CLI
+        run: |
+          npm install -g @google/generative-ai-cli
 
-      # Gemini 리뷰 결과를 PR 코멘트로 등록
-      - name: Post Gemini review as PR comment
+      # Gemini로 리뷰 생성
+      - name: Run Gemini review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          gemini << 'EOF' > review.md
+          You are a senior frontend engineer.
+
+          Review the following pull request strictly according to the provided config and style guide.
+
+          Rules:
+          - Group feedback by file
+          - Use the format:
+            ### <file path>
+            - [Blocker|Suggestion|Nitpick]: message
+          - Do not comment on files without meaningful issues
+          - Blocker means issues that can cause runtime errors, broken user flows, data inconsistency, or serious performance problems
+          - Be concise and actionable
+
+          --- CONFIG ---
+          $(cat .gemini/config.yaml)
+
+          --- STYLE GUIDE ---
+          $(cat .gemini/styleguide.md)
+
+          --- DIFF ---
+          $(cat pr.diff)
+          EOF
+
+      # PR 코멘트 등록
+      - name: Post Gemini review to PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
