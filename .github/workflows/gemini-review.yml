@@ -26,19 +26,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: |
-            node_modules
-            .pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: Install dependencies
         run: |
-          pnpm add -D @google/generative-ai js-yaml
+          pnpm add -Dw @google/generative-ai js-yaml
 
       - name: Get git diff for PR
         run: |
