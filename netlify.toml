@@ -9,18 +9,18 @@
 
 [[redirects]]
   from = "/api/swagger/*"
-  to = "https://develop.lokit.co.kr/api/swagger/:splat"
+  to = "https://develop-api.lokit.co.kr/api/swagger/:splat"
   status = 302
   force = true
 
 [[redirects]]
   from = "/api/swagger"
-  to = "https://develop.lokit.co.kr/api/swagger"
+  to = "https://develop-api.lokit.co.kr/api/swagger"
   status = 302
   force = true
 
 [[redirects]]
   from = "/api/*"
-  to = "https://develop.lokit.co.kr/api/:splat"
+  to = "https://develop-api.lokit.co.kr/api/:splat"
   status = 200
   force = true
