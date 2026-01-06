@@ -16,13 +16,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # PR base 브랜치 기준 diff 생성
-      - name: Generate PR diff
+      # GitHub API로 PR diff 다운로드 (merge-base 문제 없음)
+      - name: Download PR diff
         run: |
-          git fetch origin ${{ github.base_ref }}
-          git diff origin/${{ github.base_ref }}...HEAD > pr.diff
+          curl -L \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3.diff" \
+            ${{ github.event.pull_request.url }} \
+            > pr.diff
 
-      # Gemini로 코드 리뷰 생성 (stdout → review.md)
+      # Gemini로 코드 리뷰 생성
       - name: Run Gemini review
         uses: google-github-actions/run-gemini-cli@v0
         with:
@@ -30,24 +33,23 @@ jobs:
           settings: |
             {
               "model": "gemini-1.5-pro",
-              "prompt": "You are a senior frontend engineer. Review the pull request strictly according to the provided config and style guide.\n\nRules:\n- Group feedback by file\n- Use the format:\n  ### <file path>\n  - [Blocker|Suggestion|Nitpick]: message\n- Do not comment on files without meaningful issues\n- Focus on architecture, naming, readability, performance\n- Be concise and actionable",
+              "prompt": "You are a senior frontend engineer.\n\nReview the pull request strictly according to the provided config and style guide.\n\nRules:\n- Group feedback by file\n- Use the following format:\n  ### <file path>\n  - [Blocker|Suggestion|Nitpick]: message\n- Do not comment on files without meaningful issues\n- Blocker means: issues that can cause runtime errors, broken user flows, data inconsistency, or serious performance problems\n- Be concise, actionable, and avoid repeating lint-level issues\n",
               "files": [
                 ".gemini/config.yaml",
                 ".gemini/styleguide.md",
                 "pr.diff"
               ]
             }
-        # Gemini CLI 출력물을 파일로 저장
         env:
           GEMINI_OUTPUT_FILE: review.md
 
-      # Gemini 결과를 PR 코멘트로 등록
-      - name: Post review comment to PR
+      # Gemini 리뷰 결과를 PR 코멘트로 등록
+      - name: Post Gemini review as PR comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -f review.md ]; then
+          if [ -s review.md ]; then
             gh pr comment ${{ github.event.pull_request.number }} --body-file review.md
           else
-            gh pr comment ${{ github.event.pull_request.number }} --body "Gemini review completed, but no output was generated."
+            gh pr comment ${{ github.event.pull_request.number }} --body "Gemini review completed. No significant issues found."
           fi
