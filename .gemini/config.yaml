@@ -5,7 +5,7 @@ styleguide: .gemini/styleguide.md
 
 code_review:
   comment_severity_threshold: MEDIUM   # MEDIUM 이상만 코멘트
-  max_review_comments: 10              # PR당 최대 코멘트 수
+  max_review_comments: 8              # PR당 최대 코멘트 수
   focus:
     - architecture
     - naming
