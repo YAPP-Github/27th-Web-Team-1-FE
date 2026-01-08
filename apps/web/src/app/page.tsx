@@ -5,7 +5,6 @@ export default function Home() {
   return (
     <section className={styles.page}>
       <ExampleCard />
-      <span>test</span>
     </section>
   );
 }
