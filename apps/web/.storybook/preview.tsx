@@ -5,6 +5,7 @@ import { ThemeProvider } from '@emotion/react';
 import GlobalStyles from "../src/theme/globalStyles";
 import { theme } from '../src/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './fonts.css';
 
 initialize({ onUnhandledRequest: 'bypass' });
 
