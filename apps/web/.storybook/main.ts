@@ -17,6 +17,10 @@ const config: StorybookConfig = {
   async viteFinal(config) {
     config.plugins = config.plugins ?? [];
     config.plugins.push(tsconfigPaths());
+    config.esbuild = {
+      ...(config.esbuild ?? {}),
+      jsx: 'automatic',
+    };
     config.define = {
       ...config.define,
       "process.env": {},

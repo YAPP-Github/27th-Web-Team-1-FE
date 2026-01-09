@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
 import { AppProviders } from '../src/app/providers';
 import '../src/app/globals.css';
+import React from 'react';
 
 initialize({ onUnhandledRequest: 'bypass' });
 
