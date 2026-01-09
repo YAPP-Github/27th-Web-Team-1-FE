@@ -1,4 +1,5 @@
 import '@emotion/react';
+import { typography } from './typography';
 
 declare module '@emotion/react' {
   export interface Theme {
@@ -11,5 +12,6 @@ declare module '@emotion/react' {
       muted: string;
       red: string;
     };
+    typography: typeof typography;
   }
 }
