@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { theme } from '@/theme';
 import { MSWProvider } from '@/mocks/MSWProvider';
+import GlobalStyles from '@/theme/globalStyles';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
@@ -36,6 +37,7 @@ export function AppProviders({
   const content = (
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
+        <GlobalStyles />
         <QueryClientProvider client={queryClient}>
           {children}
           {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
