@@ -1,5 +1,3 @@
-# 🔀 Pull Request Template
-
 ## 🛠 1. 작업 내용
 
 -
