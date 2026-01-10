@@ -15,16 +15,12 @@ const Card = styled.section(({ theme }) => ({
 
 const Heading = styled.h1(({ theme }) => ({
   color: theme.colors.text,
-  fontSize: '1.85rem',
-  fontWeight: 600,
-  marginBottom: '0.5rem',
+  ...theme.typography.heading24Bold,
 }));
 
 const Body = styled.p(({ theme }) => ({
   color: theme.colors.muted,
-  fontSize: '1.05rem',
-  lineHeight: 1.6,
-  marginBottom: '1.5rem',
+  ...theme.typography.body18Regular,
 }));
 
 const Button = styled.button(({ theme }) => ({
