@@ -2,7 +2,7 @@ import { css, Theme } from '@emotion/react';
 
 export const globalStyles = (theme: Theme) => css`
   body {
-    background-color: ${theme.colors.background};
+    background-color: ${theme.colors.gray[0]};
     color: ${theme.colors.text};
     font-family: var(--font-pretendard),
       -apple-system,
