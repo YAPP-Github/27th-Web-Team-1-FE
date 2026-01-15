@@ -1,11 +1,20 @@
 export const colors = {
-    primary: {
-      100: '#D5FFFD',
-      400: '#6EEAE4', // default
-      500: '#38CFC8', // hover
-      600: '#2BB3AD', // active
-      700: '#1F7E7A', // dimmed
-    },
+  primary: {
+    /** Primary color – lightest */
+    100: '#D5FFFD',
+
+    /** Primary color – default */
+    400: '#6EEAE4',
+
+    /** Primary color – hover */
+    500: '#38CFC8',
+
+    /** Primary color – active */
+    600: '#2BB3AD',
+
+    /** Primary color – dimmed */
+    700: '#1F7E7A',
+  },
   
     gradient: {
       mint: 'linear-gradient(180deg, #D5FFFD 0%, #6EEAE4 100%)',
@@ -21,17 +30,40 @@ export const colors = {
     },
 
     gray: {
+      /** White */
       0: '#FFFFFF',
+  
+      /** Gray – light */
       100: '#EBEBEB',
-      200: '#D3D3D3', // text-primary
-      300: '#B2B2B4', // text-secondary
-      400: '#8D8C8F', // icon
+  
+      /** Gray – text primary */
+      200: '#D3D3D3',
+  
+      /** Gray – text secondary */
+      300: '#B2B2B4',
+  
+      /** Gray – icon */
+      400: '#8D8C8F',
+  
+      /** Gray – mid */
       500: '#78787D',
+  
+      /** Gray – dark */
       600: '#525156',
+  
+      /** Gray – darker */
       700: '#403F44',
-      800: '#36353A', // bg-hover
-      900: '#302F32', // bg-secondary
-      1000: '#242426', // bg
+  
+      /** Gray – background hover */
+      800: '#36353A',
+  
+      /** Gray – background secondary */
+      900: '#302F32',
+  
+      /** Gray – background base */
+      1000: '#242426',
+  
+      /** Gray – background with 80% opacity */
       a80: 'rgba(36,36,38,0.8)',
     },
 
