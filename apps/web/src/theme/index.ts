@@ -1,3 +1,4 @@
+import { typography } from './typography';
 import type { Theme } from '@emotion/react';
 
 export const theme: Theme = {
@@ -10,4 +11,5 @@ export const theme: Theme = {
     muted: '#52525b',
     red: '#dc2626',
   },
+  typography,
 };
