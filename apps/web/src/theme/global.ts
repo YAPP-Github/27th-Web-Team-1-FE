@@ -24,4 +24,16 @@ export const globalStyles = (theme: Theme) => css`
       color-scheme: dark;
     }
   }
+
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    &:disabled {
+      cursor: default;
+    }
+  }
 `;
