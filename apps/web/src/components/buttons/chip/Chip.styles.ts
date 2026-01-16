@@ -32,6 +32,7 @@ export const Wrapper = styled.div<{
   size: ChipSize;
 }>`
   display: flex;
+  width: fit-content;
   flex-direction: row;
   align-items: center;
   ${({ variant, theme }) => variantStyles[variant](theme)}
