@@ -1,6 +1,6 @@
 import * as S from './CircleButton.styles';
 
-interface CircleButtonProps {
+interface CircleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** 버튼 아이콘 or 이미지 */
   children: React.ReactNode;
   /** 클릭 이벤트 */
