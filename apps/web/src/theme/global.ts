@@ -4,7 +4,8 @@ export const globalStyles = (theme: Theme) => css`
   body {
     background-color: ${theme.colors.gray[0]};
     color: ${theme.colors.text};
-    font-family: var(--font-pretendard),
+    font-family:
+      var(--font-pretendard),
       -apple-system,
       BlinkMacSystemFont,
       system-ui,

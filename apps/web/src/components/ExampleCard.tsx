@@ -1,20 +1,14 @@
 'use client';
 
 import { useGetGreeting } from '@repo/api-client';
-import {
-  Card,
-  Heading,
-  Body,
-  Button,
-  TestText,
-} from './ExampleCard.styles';
+import { Card, Heading, Body, Button, TestText } from './ExampleCard.styles';
 
 export function ExampleCard() {
   const { data, isPending, error, refetch } = useGetGreeting();
 
   const description = error
     ? 'We could not load the greeting. Please try again.'
-    : data?.message ?? 'dev deploy : Fetching the latest greeting...';
+    : (data?.message ?? 'dev deploy : Fetching the latest greeting...');
 
   return (
     <Card aria-live="polite">

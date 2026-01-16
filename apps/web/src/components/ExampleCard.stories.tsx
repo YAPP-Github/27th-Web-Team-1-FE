@@ -18,7 +18,9 @@ type Story = StoryObj<typeof ExampleCard>;
 export const Default: Story = {
   parameters: {
     msw: {
-      handlers: [getGetGreetingMockHandler({ message: 'Storybook greeting from Orval.' })],
+      handlers: [
+        getGetGreetingMockHandler({ message: 'Storybook greeting from Orval.' }),
+      ],
     },
   },
 };
@@ -27,7 +29,9 @@ export const ErrorState: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get('/api/greeting', () => HttpResponse.json({ message: 'error' }, { status: 500 })),
+        http.get('/api/greeting', () =>
+          HttpResponse.json({ message: 'error' }, { status: 500 }),
+        ),
       ],
     },
   },
