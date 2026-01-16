@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.15.3",
+    "@storybook/addon-docs": "^9.1.10",
     "@storybook/nextjs": "^9.1.17",
     "@storybook/nextjs-vite": "^9",
     "@testing-library/jest-dom": "^6.6.3",

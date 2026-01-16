@@ -7,6 +7,7 @@ const config: StorybookConfig = {
     name: '@storybook/nextjs',
     options: {},
   },
+  addons: ['@storybook/addon-docs'],
   staticDirs: ['../public', '../src/assets'],
 };
 
