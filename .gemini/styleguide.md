@@ -46,7 +46,7 @@ async function onLikeClick() {
 function App() {
   return (
     <AuthGuard>
-      {" "}
+      {' '}
       {/* Wrapper handles auth check */}
       <LoginStartPage />
     </AuthGuard>
@@ -57,13 +57,13 @@ function App() {
 function AuthGuard({ children }) {
   const status = useCheckLoginStatus();
   useEffect(() => {
-    if (status === "LOGGED_IN") {
-      location.href = "/home";
+    if (status === 'LOGGED_IN') {
+      location.href = '/home';
     }
   }, [status]);
 
   // Render children only if not logged in, otherwise render null (or loading)
-  return status !== "LOGGED_IN" ? children : null;
+  return status !== 'LOGGED_IN' ? children : null;
 }
 
 // LoginStartPage is now simpler, focused only on login UI/logic
@@ -125,7 +125,7 @@ components.
 
 ```tsx
 function SubmitButton() {
-  const isViewer = useRole() === "viewer";
+  const isViewer = useRole() === 'viewer';
 
   // Delegate rendering to specialized components
   return isViewer ? <ViewerSubmitButton /> : <AdminSubmitButton />;
@@ -162,10 +162,10 @@ readability.
 
 ```typescript
 const status = (() => {
-  if (ACondition && BCondition) return "BOTH";
-  if (ACondition) return "A";
-  if (BCondition) return "B";
-  return "NONE";
+  if (ACondition && BCondition) return 'BOTH';
+  if (ACondition) return 'A';
+  if (BCondition) return 'B';
+  return 'NONE';
 })();
 ```
 
@@ -187,14 +187,14 @@ function Page() {
 
   // Logic is directly visible here
   switch (user.role) {
-    case "admin":
+    case 'admin':
       return (
         <div>
           <Button disabled={false}>Invite</Button>
           <Button disabled={false}>View</Button>
         </div>
       );
-    case "viewer":
+    case 'viewer':
       return (
         <div>
           <Button disabled={true}>Invite</Button> {/* Example for viewer */}
@@ -247,12 +247,12 @@ function Page() {
 const matchedProducts = products.filter((product) => {
   // Check if product belongs to the target category
   const isSameCategory = product.categories.some(
-    (category) => category.id === targetCategory.id
+    (category) => category.id === targetCategory.id,
   );
 
   // Check if any product price falls within the desired range
   const isPriceInRange = product.prices.some(
-    (price) => price >= minPrice && price <= maxPrice
+    (price) => price >= minPrice && price <= maxPrice,
   );
 
   // The overall condition is now much clearer
@@ -280,18 +280,18 @@ Ensuring code behaves as expected based on its name, parameters, and context.
 
 ```typescript
 // Always return the Query object
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 // Assuming fetchUser returns Promise<UserType>
 function useUser(): UseQueryResult<UserType, Error> {
-  const query = useQuery({ queryKey: ["user"], queryFn: fetchUser });
+  const query = useQuery({ queryKey: ['user'], queryFn: fetchUser });
   return query;
 }
 
 // Assuming fetchServerTime returns Promise<Date>
 function useServerTime(): UseQueryResult<Date, Error> {
   const query = useQuery({
-    queryKey: ["serverTime"],
+    queryKey: ['serverTime'],
     queryFn: fetchServerTime,
   });
   return query;
@@ -306,17 +306,16 @@ function useServerTime(): UseQueryResult<Date, Error> {
 type ValidationResult = { ok: true } | { ok: false; reason: string };
 
 function checkIsNameValid(name: string): ValidationResult {
-  if (name.length === 0) return { ok: false, reason: "Name cannot be empty." };
+  if (name.length === 0) return { ok: false, reason: 'Name cannot be empty.' };
   if (name.length >= 20)
-    return { ok: false, reason: "Name cannot be longer than 20 characters." };
+    return { ok: false, reason: 'Name cannot be longer than 20 characters.' };
   return { ok: true };
 }
 
 function checkIsAgeValid(age: number): ValidationResult {
-  if (!Number.isInteger(age))
-    return { ok: false, reason: "Age must be an integer." };
-  if (age < 18) return { ok: false, reason: "Age must be 18 or older." };
-  if (age > 99) return { ok: false, reason: "Age must be 99 or younger." };
+  if (!Number.isInteger(age)) return { ok: false, reason: 'Age must be an integer.' };
+  if (age < 18) return { ok: false, reason: 'Age must be 18 or older.' };
+  if (age > 99) return { ok: false, reason: 'Age must be 99 or younger.' };
   return { ok: true };
 }
 
@@ -342,14 +341,14 @@ implied by their signature (SRP).
 ```typescript
 // Function *only* fetches balance
 async function fetchBalance(): Promise<number> {
-  const balance = await http.get<number>("...");
+  const balance = await http.get<number>('...');
   return balance;
 }
 
 // Caller explicitly performs logging where needed
 async function handleUpdateClick() {
   const balance = await fetchBalance(); // Fetch
-  logging.log("balance_fetched"); // Log (explicit action)
+  logging.log('balance_fetched'); // Log (explicit action)
   await syncBalance(balance); // Another action
 }
 ```
@@ -369,7 +368,7 @@ ambiguity.
 
 ```typescript
 // In httpService.ts - Clearer module name
-import { http as httpLibrary } from "@some-library/http";
+import { http as httpLibrary } from '@some-library/http';
 
 export const httpService = {
   // Unique module name
@@ -383,10 +382,10 @@ export const httpService = {
 };
 
 // In fetchUser.ts - Usage clearly indicates auth
-import { httpService } from "./httpService";
+import { httpService } from './httpService';
 export async function fetchUser() {
   // Name 'getWithAuth' makes the behavior explicit
-  return await httpService.getWithAuth("...");
+  return await httpService.getWithAuth('...');
 }
 ```
 
@@ -408,7 +407,7 @@ purpose.
 
 ```tsx
 // Each field uses its own `validate` function
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 export function Form() {
   const {
@@ -420,16 +419,15 @@ export function Form() {
   });
 
   const onSubmit = handleSubmit((formData) => {
-    console.log("Form submitted:", formData);
+    console.log('Form submitted:', formData);
   });
 
   return (
     <form onSubmit={onSubmit}>
       <div>
         <input
-          {...register("name", {
-            validate: (value) =>
-              value.trim() === "" ? "Please enter your name." : true, // Example validation
+          {...register('name', {
+            validate: (value) => (value.trim() === '' ? 'Please enter your name.' : true), // Example validation
           })}
           placeholder="Name"
         />
@@ -437,11 +435,11 @@ export function Form() {
       </div>
       <div>
         <input
-          {...register("email", {
+          {...register('email', {
             validate: (value) =>
               /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)
                 ? true
-                : "Invalid email address.", // Example validation
+                : 'Invalid email address.', // Example validation
           })}
           placeholder="Email"
         />
@@ -457,13 +455,13 @@ export function Form() {
 
 ```tsx
 // A single schema defines validation for the whole form
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const schema = z.object({
-  name: z.string().min(1, "Please enter your name."),
-  email: z.string().min(1, "Please enter your email.").email("Invalid email."),
+  name: z.string().min(1, 'Please enter your name.'),
+  email: z.string().min(1, 'Please enter your email.').email('Invalid email.'),
 });
 
 export function Form() {
@@ -473,21 +471,21 @@ export function Form() {
     handleSubmit,
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", email: "" },
+    defaultValues: { name: '', email: '' },
   });
 
   const onSubmit = handleSubmit((formData) => {
-    console.log("Form submitted:", formData);
+    console.log('Form submitted:', formData);
   });
 
   return (
     <form onSubmit={onSubmit}>
       <div>
-        <input {...register("name")} placeholder="Name" />
+        <input {...register('name')} placeholder="Name" />
         {errors.name && <p>{errors.name.message}</p>}
       </div>
       <div>
-        <input {...register("email")} placeholder="Email" />
+        <input {...register('email')} placeholder="Email" />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
       <button type="submit">Submit</button>
@@ -610,18 +608,18 @@ hooks/contexts.
 
 ```typescript
 // Hook specifically for cardId query param
-import { useQueryParam, NumberParam } from "use-query-params";
-import { useCallback } from "react";
+import { useQueryParam, NumberParam } from 'use-query-params';
+import { useCallback } from 'react';
 
 export function useCardIdQueryParam() {
   // Assuming 'query' provides the raw param value
-  const [cardIdParam, setCardIdParam] = useQueryParam("cardId", NumberParam);
+  const [cardIdParam, setCardIdParam] = useQueryParam('cardId', NumberParam);
 
   const setCardId = useCallback(
     (newCardId: number | undefined) => {
-      setCardIdParam(newCardId, "replaceIn"); // Or 'push' depending on desired history behavior
+      setCardIdParam(newCardId, 'replaceIn'); // Or 'push' depending on desired history behavior
     },
-    [setCardIdParam]
+    [setCardIdParam],
   );
 
   // Provide a stable return tuple
@@ -648,12 +646,12 @@ decoupling them from date range state, etc.
 #### Recommended Pattern:
 
 ```tsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 // Assume Modal, Input, Button, ItemEditList components exist
 
 function ItemEditModal({ open, items, recommendedItems, onConfirm, onClose }) {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
 
   // Render children directly within Modal, passing props only where needed
   return (
@@ -661,9 +659,9 @@ function ItemEditModal({ open, items, recommendedItems, onConfirm, onClose }) {
       {/* Input and Button rendered directly */}
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1rem",
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '1rem',
         }}
       >
         <Input

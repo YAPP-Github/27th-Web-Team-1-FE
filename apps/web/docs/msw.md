@@ -78,9 +78,7 @@ import { http, HttpResponse } from 'msw';
 describe('MyComponent', () => {
   beforeEach(() => {
     server.use(
-      http.get('*/greeting', () =>
-        HttpResponse.json({ message: 'Test message' })
-      ),
+      http.get('*/greeting', () => HttpResponse.json({ message: 'Test message' })),
     );
   });
 
@@ -109,16 +107,17 @@ apps/web/
 
 ## 환경변수
 
-| 변수명 | 설명 | 기본값 |
-|--------|------|--------|
-| `NEXT_PUBLIC_ENABLE_MOCK` | 브라우저 모킹 활성화 | `false` |
-| `NEXT_PUBLIC_API_BASE_URL` | API Base URL | `` |
+| 변수명                     | 설명                 | 기본값  |
+| -------------------------- | -------------------- | ------- |
+| `NEXT_PUBLIC_ENABLE_MOCK`  | 브라우저 모킹 활성화 | `false` |
+| `NEXT_PUBLIC_API_BASE_URL` | API Base URL         | ``      |
 
 ## 주의사항
 
 1. **프로덕션 빌드**: `NEXT_PUBLIC_ENABLE_MOCK`가 `true`여도 `NODE_ENV=production`이면 MSW가 활성화되지 않습니다.
 
 2. **Service Worker 재생성**: MSW 버전 업데이트 시 재생성이 필요합니다:
+
    ```bash
    pnpm msw init public --save
    ```
