@@ -18,7 +18,7 @@ export const colors = {
 
   gradient: {
     mint: 'linear-gradient(180deg, #D5FFFD 0%, #6EEAE4 100%)',
-    mintHover: 'linear-gradient(180deg, #AACBCA 0%, #59BBB6 100%);',
+    mintHover: 'linear-gradient(180deg, #AACBCA 0%, #59BBB6 100%)',
     mint2: 'linear-gradient(270deg, #6EEAE4 0%, #D5FFFD 100%)',
 
     black1: 'linear-gradient(180deg, rgba(25,25,26,0.85) 30%, rgba(25,25,26,0) 100%)',
