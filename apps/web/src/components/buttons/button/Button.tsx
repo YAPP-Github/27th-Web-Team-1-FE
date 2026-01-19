@@ -22,9 +22,16 @@ const Button = ({
   size = 'medium',
   disabled = false,
   variant = 'primary',
+  ...rest
 }: ButtonProps) => {
   return (
-    <S.Button size={size} variant={variant} onClick={onClick} disabled={disabled}>
+    <S.Button
+      size={size}
+      variant={variant}
+      onClick={onClick}
+      disabled={disabled}
+      {...rest}
+    >
       {text}
     </S.Button>
   );

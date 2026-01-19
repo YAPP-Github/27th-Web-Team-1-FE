@@ -17,9 +17,16 @@ const TextButton = ({
   onClick,
   variant = 'default',
   disabled = false,
+  ...rest
 }: TextButtonProps) => {
   return (
-    <S.Wrapper type="button" onClick={onClick} variant={variant} disabled={disabled}>
+    <S.Wrapper
+      type="button"
+      onClick={onClick}
+      variant={variant}
+      disabled={disabled}
+      {...rest}
+    >
       {text}
     </S.Wrapper>
   );

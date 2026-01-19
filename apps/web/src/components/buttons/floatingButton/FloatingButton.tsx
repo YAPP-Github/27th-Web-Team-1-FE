@@ -9,9 +9,9 @@ interface FloatingButtonProps {
   icon?: React.ReactNode;
 }
 
-const FloatingButton = ({ text, icon, onClick }: FloatingButtonProps) => {
+const FloatingButton = ({ text, icon, onClick, ...rest }: FloatingButtonProps) => {
   return (
-    <S.Wrapper onClick={onClick}>
+    <S.Wrapper onClick={onClick} {...rest}>
       {icon}
       <S.TextContainer>{text}</S.TextContainer>
     </S.Wrapper>

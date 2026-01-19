@@ -7,9 +7,9 @@ interface CircleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement
   onClick: () => void;
 }
 
-const CircleButton = ({ children, onClick }: CircleButtonProps) => {
+const CircleButton = ({ children, onClick, ...rest }: CircleButtonProps) => {
   return (
-    <S.Wrapper type="button" onClick={onClick}>
+    <S.Wrapper type="button" onClick={onClick} {...rest}>
       {children}
     </S.Wrapper>
   );
