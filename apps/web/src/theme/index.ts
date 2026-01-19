@@ -1,3 +1,4 @@
+import { zIndex } from './zIndex';
 import { effects } from './effects';
 import { colors } from './colors';
 import { typography } from './typography';
@@ -7,4 +8,5 @@ export const theme: Theme = {
   typography,
   colors,
   effects,
+  zIndex,
 };
