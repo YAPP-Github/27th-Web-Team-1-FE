@@ -9,7 +9,7 @@ export const Wrapper = styled.button`
   padding: 10px 16px;
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
   background: ${({ theme }) => theme.colors.blueWhite.bg5};
-  ${({ theme }) => theme.effects.backdropBlur[25]};
+  backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[25]};
   border-radius: 99px;
 `;
 
