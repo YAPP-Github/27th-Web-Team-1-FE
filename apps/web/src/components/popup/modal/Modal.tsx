@@ -2,6 +2,7 @@ import PopupRoot from '../PopupRoot';
 import PopupLayer from '../PopupLayer';
 import Backdrop from '../BackDrop';
 import * as S from './Modal.styles';
+import { ReactElement } from 'react';
 
 interface ModalProps {
   /** 모달 열림 상태 */
@@ -15,7 +16,12 @@ interface ModalContentProps {
   children: React.ReactNode;
 }
 
-const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+type ModalComponent = ((props: ModalProps) => ReactElement | null) & {
+  Content: (props: ModalContentProps) => ReactElement;
+  Footer: (props: { children: React.ReactNode }) => ReactElement;
+};
+
+const Modal: ModalComponent = ({ isOpen, onClose, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return (

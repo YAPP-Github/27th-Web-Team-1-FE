@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import PopupRoot from '../PopupRoot';
 import PopupLayer from '../PopupLayer';
 import Backdrop from '../BackDrop';
@@ -16,7 +16,12 @@ interface OverlayContentProps {
   children: React.ReactNode;
 }
 
-const Overlay = ({ isOpen, onClose, children }: OverlayProps) => {
+type OverlayComponent = ((props: OverlayProps) => ReactElement | null) & {
+  Content: (props: OverlayContentProps) => ReactElement;
+  Footer: (props: { children: React.ReactNode }) => ReactElement;
+};
+
+const Overlay: OverlayComponent = ({ isOpen, onClose, children }: OverlayProps) => {
   if (!isOpen) return null;
 
   return (
