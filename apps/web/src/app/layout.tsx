@@ -12,7 +12,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={pretendard.variable}>
         <AppProviders enableMocking={enableMocking}>{children}</AppProviders>
-        <div id="modal-root"/>
+        <div id="modal-root" />
       </body>
     </html>
   );
