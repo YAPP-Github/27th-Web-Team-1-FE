@@ -4,7 +4,7 @@ export const Root = styled.div`
   position: fixed;
   inset: 0;
 
-  z-index: ${({ theme }) => theme.zIndex.overlay};
+  z-index: ${({ theme }) => theme.zIndex.popupRoot};
 
   isolation: isolate;
   pointer-events: none;
