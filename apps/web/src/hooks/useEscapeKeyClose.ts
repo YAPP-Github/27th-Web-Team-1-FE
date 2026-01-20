@@ -19,10 +19,10 @@ const useEscapeKeyClose = ({
       if (e.key === 'Escape') onClose();
     };
 
-    addEventListener('keyup', handleKeyDown);
+    addEventListener('keydown', handleKeyDown);
 
     return () => {
-      removeEventListener('keyup', handleKeyDown);
+      removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, closeOnEscape, onClose]);
 };
