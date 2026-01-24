@@ -1,3 +1,3 @@
 export const layout = {
-  width: '430px',
+  maxWidth: '430px',
 } as const;
