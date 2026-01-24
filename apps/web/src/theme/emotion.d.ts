@@ -3,6 +3,7 @@ import { typography } from './typography';
 import { colors } from './colors';
 import { effects } from './effects';
 import { zIndex } from './zIndex';
+import { layout } from './layout';
 
 declare module '@emotion/react' {
   export interface Theme {
@@ -10,5 +11,6 @@ declare module '@emotion/react' {
     typography: typeof typography;
     effects: typeof effects;
     zIndex: typeof zIndex;
+    layout: typeof layout;
   }
 }
