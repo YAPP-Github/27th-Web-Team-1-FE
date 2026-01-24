@@ -1,6 +1,7 @@
 import { AppProviders } from './providers';
 import { pretendard } from '@/theme/font';
-import { Container } from './layout.styles';
+import EmotionRegistry from './emotion-registry';
+import LayoutClient from '@/components/layout/Layout.client';
 
 const enableMocking = process.env.NEXT_PUBLIC_ENABLE_MOCK === 'true';
 
@@ -13,7 +14,9 @@ export default function RootLayout({
     <html lang="ko">
       <body className={pretendard.variable}>
         <AppProviders enableMocking={enableMocking}>
-          <Container>{children}</Container>
+          <EmotionRegistry>
+            <LayoutClient>{children}</LayoutClient>
+          </EmotionRegistry>
         </AppProviders>
         <div id="modal-root" />
       </body>
