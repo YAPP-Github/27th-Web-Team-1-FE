@@ -3,7 +3,7 @@ export const ROUTES = {
   PHOTO: {
     ADD: '/photo/add',
     NOTE: {
-      ADD: '/photo/note/add',
+      ADD: '/photo/add/note',
     },
   },
 } as const;

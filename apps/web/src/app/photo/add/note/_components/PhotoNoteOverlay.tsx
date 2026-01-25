@@ -12,7 +12,7 @@
  * - transformOrigin을 셀 중심으로 설정하여 자연스러운 확대/축소 효과
  *
  * 사용처:
- * - @modal/(..)note/add/page.tsx에서 인터셉트 모달로 사용
+ * - @modal/(.)note/page.tsx에서 인터셉트 모달로 사용
  * - AnimatePresence로 감싸서 exit 애니메이션 활성화 필요
  */
 'use client';
@@ -22,10 +22,10 @@ import { motion } from 'framer-motion';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
-import { usePhotoContext } from '../../_contexts/PhotoContext';
-import { useReverseGeocode } from '../../note/add/_hooks/useReverseGeocode';
-import { usePhotoUpload } from '../../note/add/_hooks/usePhotoUpload';
-import * as S from '../../note/add/page.styles';
+import { usePhotoContext } from '../../../_contexts/PhotoContext';
+import { useReverseGeocode } from '../_hooks/useReverseGeocode';
+import { usePhotoUpload } from '../_hooks/usePhotoUpload';
+import * as S from './PhotoNoteOverlay.styles';
 
 import CloseIcon from '@/assets/images/close.svg';
 import SuccessIcon from '@/assets/images/success.svg';

@@ -12,7 +12,7 @@
  *
  * 동작 방식:
  * 1. /photo/add 접속 → children만 렌더링 (modal은 default.tsx = null)
- * 2. /photo/note/add로 이동 → children + modal 동시 렌더링 (인터셉트됨)
+ * 2. /photo/add/note로 이동 → children + modal 동시 렌더링 (인터셉트됨)
  *
  * @see https://nextjs.org/docs/app/building-your-application/routing/parallel-routes
  */

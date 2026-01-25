@@ -11,7 +11,7 @@
  *
  * 언제 사용되나?
  * - /photo/add 직접 접속 시 (오버레이 없음)
- * - /photo/note/add에서 뒤로가기로 돌아왔을 때
+ * - /photo/add/note에서 뒤로가기로 돌아왔을 때
  */
 export default function Default() {
   return null;
