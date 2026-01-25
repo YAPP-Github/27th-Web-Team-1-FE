@@ -19,7 +19,7 @@ export const Container = styled.div`
   width: 100%;
 `;
 
-export const TextareaWrapper = styled.div<{ isError: boolean }>`
+export const TextareaWrapper = styled.label<{ isError: boolean }>`
   display: flex;
   flex-direction: column;
   min-height: ${SIZES.MIN_HEIGHT}px;
@@ -30,6 +30,7 @@ export const TextareaWrapper = styled.div<{ isError: boolean }>`
       isError ? theme.colors.status.red[200] : theme.colors.blueWhite.border10};
   border-radius: ${SIZES.BORDER_RADIUS}px;
   box-sizing: border-box;
+  cursor: text;
 
   &:focus-within {
     border-color: ${({ theme, isError }) =>
@@ -65,8 +66,15 @@ export const TextareaFooter = styled.div`
 
 export const CharCount = styled.span`
   ${({ theme }) => theme.typography.body16Regular}
-  color: ${({ theme }) => theme.colors.gray[100]};
   flex-shrink: 0;
+`;
+
+export const CurrentCount = styled.span`
+  color: ${({ theme }) => theme.colors.gray[100]};
+`;
+
+export const MaxCount = styled.span`
+  color: ${({ theme }) => theme.colors.gray[400]};
 `;
 
 export const ErrorMessage = styled.span`

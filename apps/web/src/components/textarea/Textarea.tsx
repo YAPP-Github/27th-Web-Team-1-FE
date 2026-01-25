@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useId } from 'react';
 import * as S from './Textarea.styles';
 
 const DEFAULT_MAX_LENGTH = 1000;
@@ -22,8 +22,11 @@ const Textarea = ({
   onChange,
   max = DEFAULT_MAX_LENGTH,
   errorMessage,
+  id,
   ...rest
 }: TextareaProps) => {
+  const generatedId = useId();
+  const textareaId = id || generatedId;
   const isError = !!errorMessage;
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -34,11 +37,12 @@ const Textarea = ({
 
   return (
     <S.Container>
-      <S.TextareaWrapper isError={isError}>
-        <S.StyledTextarea {...rest} value={value} onChange={handleChange} />
+      <S.TextareaWrapper htmlFor={textareaId} isError={isError}>
+        <S.StyledTextarea {...rest} id={textareaId} value={value} onChange={handleChange} />
         <S.TextareaFooter>
           <S.CharCount>
-            {value.length}/{max}
+            <S.CurrentCount>{value.length}</S.CurrentCount>
+            <S.MaxCount> / {max}</S.MaxCount>
           </S.CharCount>
         </S.TextareaFooter>
       </S.TextareaWrapper>
