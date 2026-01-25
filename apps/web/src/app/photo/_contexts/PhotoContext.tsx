@@ -10,6 +10,12 @@ export interface PhotoRect {
   height: number;
 }
 
+/**
+ * TODO: 기능이 복잡해지면 PhotoAnimationContext로 분리 고려
+ * - selectedPhotoRect, setSelectedPhotoRect는 UI 애니메이션 전용 상태
+ * - 현재는 데이터 상태(photos, selectedPhoto)와 UI 상태가 혼재됨
+ * - 불필요한 리렌더링 방지를 위해 데이터/UI 상태 분리 권장
+ */
 interface PhotoContextValue {
   /** 불러온 사진 목록 */
   photos: SelectedPhoto[];
@@ -19,9 +25,9 @@ interface PhotoContextValue {
   selectedPhoto: SelectedPhoto | null;
   /** 사진 선택 */
   setSelectedPhoto: (photo: SelectedPhoto | null) => void;
-  /** 선택한 사진의 위치 정보 (애니메이션용) */
+  /** 선택한 사진의 위치 정보 (애니메이션용) - UI 상태 */
   selectedPhotoRect: PhotoRect | null;
-  /** 선택한 사진 위치 설정 */
+  /** 선택한 사진 위치 설정 - UI 상태 */
   setSelectedPhotoRect: (rect: PhotoRect | null) => void;
 }
 
