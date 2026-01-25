@@ -27,10 +27,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
+import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import PhotoNoteOverlay from '../../note/_components/PhotoNoteOverlay';
-
-/** 닫기 애니메이션 시간 (ms) - PhotoNoteOverlay와 동기화 필요 */
-const ANIMATION_DURATION = 350;
 
 export default function PhotoNoteModal() {
   const router = useRouter();
@@ -42,7 +40,7 @@ export default function PhotoNoteModal() {
     // 2. 애니메이션 완료 후 이전 페이지로 이동
     setTimeout(() => {
       router.back();
-    }, ANIMATION_DURATION);
+    }, PHOTO_NOTE_OVERLAY_ANIMATION_DURATION);
   };
 
   return (

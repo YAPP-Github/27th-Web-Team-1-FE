@@ -23,6 +23,7 @@ import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
+import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import { usePhotoUpload } from '../_hooks/usePhotoUpload';
 import * as S from './PhotoNoteOverlay.styles';
@@ -33,9 +34,6 @@ import WarningIcon from '@/assets/images/warning.svg';
 import AlbumIcon from '@/assets/images/album.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
-
-/** 애니메이션 지속 시간 (ms) - 모달 페이지의 ANIMATION_DURATION과 동기화 필요 */
-const ANIMATION_DURATION = 350;
 
 // TODO: 사용자 컨텍스트에서 가져오도록 수정
 const TEMP_USER_ID = 1;
@@ -159,7 +157,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
       exit={{ scale, opacity: 0 }}
       transition={{
         type: 'tween',
-        duration: ANIMATION_DURATION / 1000,
+        duration: PHOTO_NOTE_OVERLAY_ANIMATION_DURATION / 1000,
         ease: [0.32, 0.72, 0, 1], // 커스텀 이징 (부드러운 감속)
       }}
       style={{
