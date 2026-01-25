@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import * as S from './PhotoGridItem.styles';
 
-interface PhotoGridItemProps {
+export interface PhotoGridItemProps {
   /** 이미지 alt 텍스트 */
   alt?: string;
   /** 이미지 src URL */
@@ -9,7 +9,7 @@ interface PhotoGridItemProps {
   /** ISO 8601 형식의 날짜 문자열 (있으면 배지 표시) */
   date?: string;
   /** 클릭 이벤트 */
-  onClick: () => void;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 const PhotoGridItem = ({ alt = '', src, date, onClick }: PhotoGridItemProps) => {

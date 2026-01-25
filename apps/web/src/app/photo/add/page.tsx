@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import PlusIcon from '@/assets/images/plus.svg';
 import DefaultHeader from '@/components/header/default/DefaultHeader';
@@ -14,7 +14,7 @@ import * as S from './page.styles';
 
 export default function PhotoAddPage() {
   const router = useRouter();
-  const { photos, addPhotos, setSelectedPhoto } = usePhotoContext();
+  const { photos, addPhotos, setSelectedPhoto, setSelectedPhotoRect } = usePhotoContext();
   const { isLoading, selectPhotosFromFile } = usePhotoSelect({
     onPhotosSelected: addPhotos,
   });
@@ -24,11 +24,20 @@ export default function PhotoAddPage() {
   }, [router]);
 
   const handleSelectPhoto = useCallback(
-    (photo: SelectedPhoto) => {
+    (photo: SelectedPhoto, event: MouseEvent<HTMLButtonElement>) => {
+      const target = event.currentTarget;
+      const rect = target.getBoundingClientRect();
+
+      setSelectedPhotoRect({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
       setSelectedPhoto(photo);
       router.push(ROUTES.PHOTO.NOTE.ADD);
     },
-    [router, setSelectedPhoto],
+    [router, setSelectedPhoto, setSelectedPhotoRect],
   );
 
   const handleAddPhotos = useCallback(async () => {
@@ -57,7 +66,7 @@ export default function PhotoAddPage() {
               key={photo.id}
               src={photo.uri}
               alt={photo.filename}
-              onClick={() => handleSelectPhoto(photo)}
+              onClick={(event) => handleSelectPhoto(photo, event)}
             />
           ))}
         </PhotoGridContainer>

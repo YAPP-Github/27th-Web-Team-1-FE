@@ -21,6 +21,7 @@
     "@repo/api-client": "workspace:*",
     "@tanstack/react-query": "^5.64.0",
     "@tanstack/react-query-devtools": "^5.64.0",
+    "framer-motion": "^12.29.0",
     "next": "15.4.10",
     "react": "18.2.0",
     "react-dom": "18.2.0"

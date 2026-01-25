@@ -6,6 +6,9 @@ export const Container = styled.div`
   width: 100%;
   height: 100vh;
   background-color: ${({ theme }) => theme.colors.gray[1000]};
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
 `;
 
 export const PhotoSection = styled.div`
