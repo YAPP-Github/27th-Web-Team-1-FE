@@ -21,11 +21,13 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
+import MemoModal from './MemoModal';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
 import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import { usePhotoUpload } from '../_hooks/usePhotoUpload';
+import useMemoModal from '../_hooks/useMemoModal';
 import * as S from './PhotoNoteOverlay.styles';
 
 import CloseIcon from '@/assets/images/close.svg';
@@ -45,6 +47,15 @@ interface PhotoNoteOverlayProps {
 export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const router = useRouter();
   const { selectedPhoto, selectedPhotoRect } = usePhotoContext();
+  const {
+    memo,
+    tempMemo,
+    setTempMemo,
+    isOpen: isMemoModalOpen,
+    openModal: handleAddMemo,
+    closeModal: handleMemoModalClose,
+    submitMemo: handleMemoSubmit,
+  } = useMemoModal();
 
   const { data: addressData, isLoading: isAddressLoading } = useReverseGeocode({
     latitude: selectedPhoto?.location?.latitude,
@@ -83,11 +94,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const handleEditLocation = () => {
     // TODO: 위치 수정 모달 구현
     console.log('Open location edit modal');
-  };
-
-  const handleAddMemo = () => {
-    // TODO: 메모 추가 모달 구현
-    console.log('Open memo modal');
   };
 
   const handleAlbumSelect = () => {
@@ -223,7 +229,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
           {/* 메모, 앨범 오버레이 (사진에 오버레이) */}
           <S.MemoAlbumOverlay>
             <S.MemoButton type="button" onClick={handleAddMemo}>
-              메모 추가...
+              {memo || '메모 추가...'}
             </S.MemoButton>
 
             <S.AlbumButtonWrapper>
@@ -255,6 +261,14 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
           </S.ActionButtons>
         </S.BottomContainer>
       </S.Container>
+
+      <MemoModal
+        isOpen={isMemoModalOpen}
+        tempMemo={tempMemo}
+        onChangeTempMemo={setTempMemo}
+        onClose={handleMemoModalClose}
+        onSubmit={handleMemoSubmit}
+      />
     </motion.div>
   );
 }

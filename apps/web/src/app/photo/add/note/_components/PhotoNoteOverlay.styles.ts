@@ -126,6 +126,7 @@ export const MemoButton = styled.button`
   padding: 0;
   cursor: pointer;
   text-align: left;
+  white-space: pre-wrap;
 
   &:active {
     opacity: 0.8;
