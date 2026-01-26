@@ -22,12 +22,14 @@ import { motion } from 'framer-motion';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import MemoModal from './MemoModal';
+import AlbumSelectOverlay from './AlbumSelectOverlay';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
 import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import { usePhotoUpload } from '../_hooks/usePhotoUpload';
 import useMemoModal from '../_hooks/useMemoModal';
+import useAlbumModal from '../_hooks/useAlbumModal';
 import * as S from './PhotoNoteOverlay.styles';
 
 import CloseIcon from '@/assets/images/close.svg';
@@ -57,6 +59,20 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     submitMemo: handleMemoSubmit,
   } = useMemoModal();
 
+  const {
+    selectedAlbum,
+    tempSelectedAlbumId,
+    setTempSelectedAlbumId,
+    searchQuery,
+    setSearchQuery,
+    albums,
+    isLoading: isAlbumsLoading,
+    isOpen: isAlbumModalOpen,
+    openModal: handleAlbumSelect,
+    closeModal: handleAlbumModalClose,
+    submitAlbum: handleAlbumSubmit,
+  } = useAlbumModal();
+
   const { data: addressData, isLoading: isAddressLoading } = useReverseGeocode({
     latitude: selectedPhoto?.location?.latitude,
     longitude: selectedPhoto?.location?.longitude,
@@ -70,8 +86,8 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     uploadPhoto(
       {
         photo: selectedPhoto,
-        description: undefined,
-        albumId: undefined,
+        description: memo || undefined,
+        albumId: selectedAlbum?.id,
         userId: TEMP_USER_ID,
       },
       {
@@ -96,10 +112,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     console.log('Open location edit modal');
   };
 
-  const handleAlbumSelect = () => {
-    // TODO: 앨범 선택 오버레이 구현
-    console.log('Open album selector');
-  };
 
   const handleMapPreview = () => {
     // TODO: 지도뷰 미리보기 구현
@@ -237,7 +249,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
                 <S.AlbumIcon>
                   <AlbumIcon width={22} height={22} />
                 </S.AlbumIcon>
-                <S.AlbumText>앨범 선택...</S.AlbumText>
+                <S.AlbumText>{selectedAlbum?.title || '앨범 선택...'}</S.AlbumText>
               </S.AlbumButton>
             </S.AlbumButtonWrapper>
           </S.MemoAlbumOverlay>
@@ -268,6 +280,18 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         onChangeTempMemo={setTempMemo}
         onClose={handleMemoModalClose}
         onSubmit={handleMemoSubmit}
+      />
+
+      <AlbumSelectOverlay
+        isOpen={isAlbumModalOpen}
+        albums={albums}
+        isLoading={isAlbumsLoading}
+        selectedAlbumId={tempSelectedAlbumId}
+        searchQuery={searchQuery}
+        onChangeSearchQuery={setSearchQuery}
+        onSelectAlbum={setTempSelectedAlbumId}
+        onClose={handleAlbumModalClose}
+        onSubmit={handleAlbumSubmit}
       />
     </motion.div>
   );
