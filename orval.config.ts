@@ -1,8 +1,8 @@
 import { defineConfig } from 'orval';
 
 export default defineConfig({
-  demoApi: {
-    input: './apis/openapi.yaml',
+  lokitApi: {
+    input: 'https://develop-api.lokit.co.kr/api/docs/api',
     output: {
       target: './packages/api-client/src/generated.ts',
       schemas: './packages/api-client/src/model',

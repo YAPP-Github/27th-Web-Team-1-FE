@@ -15,6 +15,7 @@ export const LeftSection = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 60px;
 `;
 
 export const CenterSection = styled.div`
@@ -27,6 +28,8 @@ export const CenterSection = styled.div`
 export const RightSection = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  min-width: 60px;
 `;
 
 export const Title = styled.h1`

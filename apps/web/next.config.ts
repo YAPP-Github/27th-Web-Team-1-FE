@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://develop-api.lokit.co.kr';
+
 const nextConfig: NextConfig = {
   turbopack: {
     rules: {
@@ -17,6 +19,14 @@ const nextConfig: NextConfig = {
     });
 
     return config;
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${API_BASE_URL}/:path*`,
+      },
+    ];
   },
 };
 

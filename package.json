@@ -16,7 +16,7 @@
     "format:fix": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css}\" --write",
     "storybook": "pnpm --filter web storybook",
     "storybook:build": "pnpm --filter web storybook:build",
-    "orval": "orval --config orval.config.ts"
+    "generate:api": "orval --config orval.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
