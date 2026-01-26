@@ -6,6 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LoginRequest {
-  email?: string;
-}
+export type GetLocationInfoParams = {
+/**
+ * 경도
+ */
+lng: number;
+/**
+ * 위도
+ */
+lat: number;
+};

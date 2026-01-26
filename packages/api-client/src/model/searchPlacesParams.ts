@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LoginRequest {
-  email?: string;
-}
+export type SearchPlacesParams = {
+/**
+ * 검색 키워드
+ */
+query: string;
+};

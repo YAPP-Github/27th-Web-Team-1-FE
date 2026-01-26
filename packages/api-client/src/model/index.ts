@@ -6,9 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './albumMapInfoResponse';
 export * from './albumRequest';
 export * from './albumWithPhotosResponse';
 export * from './apiResponseErrorDetail';
+export * from './boundingBoxResponse';
 export * from './clusterPhotoResponse';
 export * from './clusterPhotosPageResponse';
 export * from './clusterResponse';
@@ -19,6 +21,7 @@ export * from './createWorkspaceRequest';
 export * from './errorDetail';
 export * from './errorDetailErrors';
 export * from './getClusterPhotosParams';
+export * from './getLocationInfoParams';
 export * from './getPhotos1Params';
 export * from './getPhotosParams';
 export * from './getPresignedUrlParams';
@@ -28,15 +31,20 @@ export * from './idResponse';
 export * from './joinByInviteCodeParams';
 export * from './joinWorkspaceRequest';
 export * from './jwtTokenResponse';
+export * from './locationInfoResponse';
 export * from './locationResponse';
 export * from './loginRequest';
 export * from './mapPhotoResponse';
 export * from './mapPhotosResponse';
+export * from './photoDetailResponse';
 export * from './photoListResponse';
 export * from './photoResponse';
+export * from './placeResponse';
+export * from './placeSearchResponse';
 export * from './presignedUrl';
 export * from './presignedUrlRequest';
 export * from './refreshTokenRequest';
+export * from './searchPlacesParams';
 export * from './selectableAlbum';
 export * from './selectableAlbumResponse';
 export * from './updateAlbumTitleRequest';

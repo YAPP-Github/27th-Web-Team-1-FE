@@ -18,6 +18,6 @@ export interface ClusterPhotoResponse {
   longitude?: number;
   /** 위도 */
   latitude?: number;
-  /** 생성일시 */
-  createdAt?: string;
+  /** 촬영일 (yyyy.MM.dd 형식) */
+  date?: string;
 }

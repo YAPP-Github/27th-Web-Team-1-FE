@@ -27,6 +27,7 @@ import type {
   CreatePhotoRequest,
   CreateWorkspaceRequest,
   GetClusterPhotosParams,
+  GetLocationInfoParams,
   GetPhotos1Params,
   GetPhotosParams,
   GetPresignedUrlParams,
@@ -36,6 +37,7 @@ import type {
   LoginRequest,
   PresignedUrlRequest,
   RefreshTokenRequest,
+  SearchPlacesParams,
   UpdateAlbumTitleRequest
 } from './model';
 
@@ -53,11 +55,15 @@ import type {
 } from 'msw';
 
 import type {
+  AlbumMapInfoResponse,
   ClusterPhotosPageResponse,
   IdResponse,
   JwtTokenResponse,
+  LocationInfoResponse,
   MapPhotosResponse,
+  PhotoDetailResponse,
   PhotoListResponse,
+  PlaceSearchResponse,
   PresignedUrl,
   SelectableAlbumResponse
 } from './model';
@@ -480,7 +486,7 @@ export const useRefresh = <TError = ApiResponseErrorDetail | void,
     }
     
 /**
- * 이메일과 이름으로 신규 사용자를 등록하고 JWT 토큰을 발급합니다.
+ * 이메일과 이름으로 신규 사용자를 등록하고 개발환경 임시 인증용 헤더에 사용할 회원 ID를 발급합니다.
  * @summary 회원가입
  */
 export const login = (
@@ -489,7 +495,7 @@ export const login = (
 ) => {
       
       
-      return customFetcher<JwtTokenResponse>(
+      return customFetcher<IdResponse>(
       {url: `/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: loginRequest, signal
@@ -742,6 +748,158 @@ export const useUpdateTitle = <TError = ApiResponseErrorDetail | IdResponse,
     
 /**
  * 
+            사진 ID를 기반으로 사진 상세 정보를 조회합니다.
+
+            - 촬영일, 앨범명, 등록자명, 주소, 설명 포함
+            - 주소는 좌표 기반 역지오코딩으로 조회
+        
+ * @summary 사진 상세 조회
+ */
+export const getPhotoDetail = (
+    photoId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<PhotoDetailResponse>(
+      {url: `/photos/${photoId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetPhotoDetailQueryKey = (photoId?: number,) => {
+    return [
+    `/photos/${photoId}`
+    ] as const;
+    }
+
+    
+export const getGetPhotoDetailQueryOptions = <TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(photoId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({ signal }) => getPhotoDetail(photoId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(photoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPhotoDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotoDetail>>>
+export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 사진 상세 조회
+ */
+
+export function useGetPhotoDetail<TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(
+ photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPhotoDetailQueryOptions(photoId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 
+            키워드로 장소를 검색합니다.
+
+            - Kakao 키워드 검색 API를 사용하여 장소 정보 조회
+            - 최대 15개의 검색 결과 반환
+            - 장소명, 주소, 좌표, 카테고리 정보 포함
+        
+ * @summary 장소 검색
+ */
+export const searchPlaces = (
+    params: SearchPlacesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<PlaceSearchResponse>(
+      {url: `/map/places/search`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getSearchPlacesQueryKey = (params?: SearchPlacesParams,) => {
+    return [
+    `/map/places/search`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSearchPlacesQueryOptions = <TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail | void>(params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSearchPlacesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPlaces>>> = ({ signal }) => searchPlaces(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type SearchPlacesQueryResult = NonNullable<Awaited<ReturnType<typeof searchPlaces>>>
+export type SearchPlacesQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 장소 검색
+ */
+
+export function useSearchPlaces<TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail | void>(
+ params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getSearchPlacesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 
             줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
 
             - **줌 레벨 < 15**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
@@ -808,6 +966,83 @@ export function useGetPhotos1<TData = Awaited<ReturnType<typeof getPhotos1>>, TE
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetPhotos1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 
+            좌표를 기반으로 해당 위치의 주소 정보를 조회합니다.
+
+            - Kakao 역지오코딩 API를 사용하여 좌표 → 주소 변환
+            - 도로명 주소 우선, 없으면 지번 주소 반환
+            - 건물명이 있으면 placeName에 포함
+        
+ * @summary 위치 정보 조회
+ */
+export const getLocationInfo = (
+    params: GetLocationInfoParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<LocationInfoResponse>(
+      {url: `/map/location`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetLocationInfoQueryKey = (params?: GetLocationInfoParams,) => {
+    return [
+    `/map/location`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getGetLocationInfoQueryOptions = <TData = Awaited<ReturnType<typeof getLocationInfo>>, TError = ApiResponseErrorDetail | void>(params: GetLocationInfoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLocationInfoQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLocationInfo>>> = ({ signal }) => getLocationInfo(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLocationInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getLocationInfo>>>
+export type GetLocationInfoQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 위치 정보 조회
+ */
+
+export function useGetLocationInfo<TData = Awaited<ReturnType<typeof getLocationInfo>>, TError = ApiResponseErrorDetail | void>(
+ params: GetLocationInfoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLocationInfoQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -903,6 +1138,81 @@ export function useGetClusterPhotos<TData = Awaited<ReturnType<typeof getCluster
 
 
 /**
+ * 
+            앨범 ID를 기반으로 해당 앨범 사진들의 중심 좌표와 바운딩 박스를 조회합니다.
+
+            - 앨범에 사진이 없는 경우 centerLongitude, centerLatitude, boundingBox가 null
+            - 앨범 선택 시 지도를 해당 위치로 이동하는 데 사용
+        
+ * @summary 앨범 지도 정보 조회
+ */
+export const getAlbumMapInfo = (
+    albumId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<AlbumMapInfoResponse>(
+      {url: `/map/albums/${albumId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetAlbumMapInfoQueryKey = (albumId?: number,) => {
+    return [
+    `/map/albums/${albumId}`
+    ] as const;
+    }
+
+    
+export const getGetAlbumMapInfoQueryOptions = <TData = Awaited<ReturnType<typeof getAlbumMapInfo>>, TError = ApiResponseErrorDetail | void>(albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAlbumMapInfoQueryKey(albumId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAlbumMapInfo>>> = ({ signal }) => getAlbumMapInfo(albumId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(albumId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAlbumMapInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getAlbumMapInfo>>>
+export type GetAlbumMapInfoQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 앨범 지도 정보 조회
+ */
+
+export function useGetAlbumMapInfo<TData = Awaited<ReturnType<typeof getAlbumMapInfo>>, TError = ApiResponseErrorDetail | void>(
+ albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAlbumMapInfoQueryOptions(albumId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
  * 사용자가 선택할 수 있는 앨범 목록을 조회합니다.
  * @summary 선택 가능한 앨범 조회
  */
@@ -982,15 +1292,23 @@ export const getGetPresignedUrlResponseMock = (overrideResponse: Partial< Presig
 
 export const getRefreshResponseMock = (overrideResponse: Partial< JwtTokenResponse > = {}): JwtTokenResponse => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
-export const getLoginResponseMock = (overrideResponse: Partial< JwtTokenResponse > = {}): JwtTokenResponse => ({accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+export const getLoginResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
 
 export const getCreate2ResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
 
 export const getUpdateTitleResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
 
-export const getGetPhotos1ResponseMock = (overrideResponse: Partial< MapPhotosResponse > = {}): MapPhotosResponse => ({clusters: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({clusterId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), count: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])})), undefined]), photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])})), undefined]), ...overrideResponse})
+export const getGetPhotoDetailResponseMock = (overrideResponse: Partial< PhotoDetailResponse > = {}): PhotoDetailResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), albumName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
-export const getGetClusterPhotosResponseMock = (overrideResponse: Partial< ClusterPhotosPageResponse > = {}): ClusterPhotosPageResponse => ({photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), createdAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined])})), undefined]), page: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), size: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalElements: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalPages: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), last: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
+export const getSearchPlacesResponseMock = (overrideResponse: Partial< PlaceSearchResponse > = {}): PlaceSearchResponse => ({places: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadAddress: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), category: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
+
+export const getGetPhotos1ResponseMock = (overrideResponse: Partial< MapPhotosResponse > = {}): MapPhotosResponse => ({clusters: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({clusterId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), count: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])})), undefined]), photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), date: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
+
+export const getGetLocationInfoResponseMock = (overrideResponse: Partial< LocationInfoResponse > = {}): LocationInfoResponse => ({address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), regionName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+
+export const getGetClusterPhotosResponseMock = (overrideResponse: Partial< ClusterPhotosPageResponse > = {}): ClusterPhotosPageResponse => ({photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), date: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), page: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), size: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalElements: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalPages: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), last: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
+
+export const getGetAlbumMapInfoResponseMock = (overrideResponse: Partial< AlbumMapInfoResponse > = {}): AlbumMapInfoResponse => ({albumId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), centerLongitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), centerLatitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), boundingBox: faker.helpers.arrayElement([{west: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), south: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), east: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), north: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), ...overrideResponse})
 
 export const getGetSelectableAlbumsResponseMock = (overrideResponse: Partial< SelectableAlbumResponse > = {}): SelectableAlbumResponse => ({albums: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), title: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
 
@@ -1067,7 +1385,7 @@ export const getRefreshMockHandler = (overrideResponse?: JwtTokenResponse | ((in
   }, options)
 }
 
-export const getLoginMockHandler = (overrideResponse?: JwtTokenResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<JwtTokenResponse> | JwtTokenResponse), options?: RequestHandlerOptions) => {
+export const getLoginMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
   return http.post('*/auth/login', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined
@@ -1113,6 +1431,30 @@ export const getUpdateTitleMockHandler = (overrideResponse?: IdResponse | ((info
   }, options)
 }
 
+export const getGetPhotoDetailMockHandler = (overrideResponse?: PhotoDetailResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PhotoDetailResponse> | PhotoDetailResponse), options?: RequestHandlerOptions) => {
+  return http.get('*/photos/:photoId', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetPhotoDetailResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
+export const getSearchPlacesMockHandler = (overrideResponse?: PlaceSearchResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PlaceSearchResponse> | PlaceSearchResponse), options?: RequestHandlerOptions) => {
+  return http.get('*/map/places/search', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getSearchPlacesResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
 export const getGetPhotos1MockHandler = (overrideResponse?: MapPhotosResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MapPhotosResponse> | MapPhotosResponse), options?: RequestHandlerOptions) => {
   return http.get('*/map/photos', async (info) => {await delay(1000);
   
@@ -1125,12 +1467,36 @@ export const getGetPhotos1MockHandler = (overrideResponse?: MapPhotosResponse | 
   }, options)
 }
 
+export const getGetLocationInfoMockHandler = (overrideResponse?: LocationInfoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<LocationInfoResponse> | LocationInfoResponse), options?: RequestHandlerOptions) => {
+  return http.get('*/map/location', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetLocationInfoResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
 export const getGetClusterPhotosMockHandler = (overrideResponse?: ClusterPhotosPageResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ClusterPhotosPageResponse> | ClusterPhotosPageResponse), options?: RequestHandlerOptions) => {
   return http.get('*/map/clusters/:clusterId/photos', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getGetClusterPhotosResponseMock()),
+      { status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
+export const getGetAlbumMapInfoMockHandler = (overrideResponse?: AlbumMapInfoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AlbumMapInfoResponse> | AlbumMapInfoResponse), options?: RequestHandlerOptions) => {
+  return http.get('*/map/albums/:albumId', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getGetAlbumMapInfoResponseMock()),
       { status: 200,
         headers: { 'Content-Type': 'application/json' }
       })
@@ -1159,7 +1525,11 @@ export const getLokitAPIMock = () => [
   getCreate2MockHandler(),
   getDeleteMockHandler(),
   getUpdateTitleMockHandler(),
+  getGetPhotoDetailMockHandler(),
+  getSearchPlacesMockHandler(),
   getGetPhotos1MockHandler(),
+  getGetLocationInfoMockHandler(),
   getGetClusterPhotosMockHandler(),
+  getGetAlbumMapInfoMockHandler(),
   getGetSelectableAlbumsMockHandler()
 ]

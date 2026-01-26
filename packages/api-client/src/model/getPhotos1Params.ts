@@ -15,4 +15,8 @@ zoom: number;
  * 바운딩 박스 (west,south,east,north 형식의 경도/위도)
  */
 bbox: string;
+/**
+ * 앨범 ID (선택). 지정 시 해당 앨범의 사진만 조회
+ */
+albumId?: number;
 };
