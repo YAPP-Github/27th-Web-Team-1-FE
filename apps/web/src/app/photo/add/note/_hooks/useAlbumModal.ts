@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useGetSelectableAlbums } from '@repo/api-client';
 
 // TODO: 사용자 컨텍스트에서 가져오도록 수정
@@ -19,21 +19,25 @@ const useAlbumModal = () => {
 
   const { data, isLoading } = useGetSelectableAlbums({ userId: TEMP_USER_ID });
 
-  const filteredAlbums = (data?.albums ?? [])
-    .filter((album): album is typeof album & { id: number; title: string } =>
-      album.id !== undefined && album.title !== undefined
-    )
-    .filter((album) =>
-      searchQuery
-        ? album.title.toLowerCase().includes(searchQuery.toLowerCase())
-        : true
-    )
-    .map((album) => ({
-      id: String(album.id),
-      title: album.title,
-      thumbnail: album.thumbnailUrl ?? '',
-      photoCount: album.photoCount ?? 0,
-    }));
+  const filteredAlbums = useMemo(
+    () =>
+      (data?.albums ?? [])
+        .filter((album): album is typeof album & { id: number; title: string } =>
+          album.id !== undefined && album.title !== undefined
+        )
+        .filter((album) =>
+          searchQuery
+            ? album.title.toLowerCase().includes(searchQuery.toLowerCase())
+            : true
+        )
+        .map((album) => ({
+          id: String(album.id),
+          title: album.title,
+          thumbnail: album.thumbnailUrl ?? '',
+          photoCount: album.photoCount ?? 0,
+        })),
+    [data?.albums, searchQuery]
+  );
 
   const openModal = () => {
     setTempSelectedAlbumId(selectedAlbum?.id ? String(selectedAlbum.id) : null);
