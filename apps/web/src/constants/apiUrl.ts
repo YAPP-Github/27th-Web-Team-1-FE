@@ -1,4 +1,7 @@
 export const API_URL = {
+  ALBUMS: {
+    SELECTABLE: '/albums/selectable',
+  },
   LOCATION: {
     ADDRESS: '/location/address',
   },
