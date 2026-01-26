@@ -16,6 +16,8 @@ interface InputProps
   max?: number;
   /** 에러 메시지 (값이 있으면 에러 상태로 표시) */
   errorMessage?: string;
+  /** 글자 수 표시 여부 */
+  showCharCount?: boolean;
 }
 
 const Input = ({
@@ -24,6 +26,7 @@ const Input = ({
   onChange,
   max = DEFAULT_MAX_LENGTH,
   errorMessage,
+  showCharCount = true,
   ...rest
 }: InputProps) => {
   const isError = !!errorMessage;
@@ -48,9 +51,11 @@ const Input = ({
           value={value}
           onChange={handleChange}
         />
-        <S.CharCount>
-          {value.length}/{max}
-        </S.CharCount>
+        {showCharCount && (
+          <S.CharCount>
+            {value.length}/{max}
+          </S.CharCount>
+        )}
         {value.length > 0 && (
           <S.ResetButton onClick={handleReset} type="button">
             <S.ResetIcon />
