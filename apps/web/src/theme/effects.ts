@@ -2,6 +2,7 @@ export const effects = {
   backdropBlur: {
     5: 'blur(5px)',
     25: 'blur(25px)',
+    40: 'blur(40px)',
   },
 
   glass: {
