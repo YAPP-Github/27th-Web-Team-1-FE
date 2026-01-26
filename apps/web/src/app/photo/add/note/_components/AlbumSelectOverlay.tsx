@@ -5,14 +5,8 @@ import TextButton from '@/components/buttons/textButton/TextButton';
 import Input from '@/components/input/Input';
 import { INPUT_TYPE } from '@/components/input/Input.constants';
 import AlbumListContainer from '@/components/album-list-container/AlbumListContainer';
+import { Album } from '@/types/album.type';
 import * as S from './AlbumSelectOverlay.styles';
-
-interface Album {
-  id: string;
-  title: string;
-  thumbnail: string;
-  photoCount: number;
-}
 
 interface AlbumSelectOverlayProps {
   isOpen: boolean;

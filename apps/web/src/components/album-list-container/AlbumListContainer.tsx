@@ -1,12 +1,6 @@
+import { Album } from '@/types/album.type';
 import AlbumRow from '../album-row/AlbumRow';
 import * as S from './AlbumListContainer.styles';
-
-interface Album {
-  id: string;
-  title: string;
-  thumbnail: string;
-  photoCount: number;
-}
 
 interface AlbumListContainerProps {
   /** 앨범 목록 */
