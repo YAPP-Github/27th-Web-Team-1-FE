@@ -23,6 +23,7 @@ import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import MemoModal from './MemoModal';
 import AlbumSelectOverlay from './AlbumSelectOverlay';
+import LocationSelectOverlay from './LocationSelectOverlay';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
 import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
@@ -30,6 +31,7 @@ import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import { usePhotoUpload } from '../_hooks/usePhotoUpload';
 import useMemoModal from '../_hooks/useMemoModal';
 import useAlbumModal from '../_hooks/useAlbumModal';
+import useLocationModal from '../_hooks/useLocationModal';
 import * as S from './PhotoNoteOverlay.styles';
 
 import CloseIcon from '@/assets/images/close.svg';
@@ -73,6 +75,20 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     submitAlbum: handleAlbumSubmit,
   } = useAlbumModal();
 
+  const {
+    selectedLocation,
+    tempSelectedLocationId,
+    setTempSelectedLocationId,
+    searchQuery: locationSearchQuery,
+    setSearchQuery: setLocationSearchQuery,
+    locations,
+    isLoading: isLocationsLoading,
+    isOpen: isLocationModalOpen,
+    openModal: handleAddLocation,
+    closeModal: handleLocationModalClose,
+    submitLocation: handleLocationSubmit,
+  } = useLocationModal();
+
   const { data: addressData, isLoading: isAddressLoading } = useReverseGeocode({
     latitude: selectedPhoto?.location?.latitude,
     longitude: selectedPhoto?.location?.longitude,
@@ -102,17 +118,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     );
   };
 
-  const handleAddLocation = () => {
-    // TODO: 위치 추가 모달 구현
-    console.log('Open location modal');
-  };
-
-  const handleEditLocation = () => {
-    // TODO: 위치 수정 모달 구현
-    console.log('Open location edit modal');
-  };
-
-
   const handleMapPreview = () => {
     // TODO: 지도뷰 미리보기 구현
     console.log('Open map preview');
@@ -122,8 +127,13 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     return null;
   }
 
-  const hasLocation = !!selectedPhoto.location;
-  const locationText = addressData?.placeName || addressData?.address;
+  const hasPhotoLocation = !!selectedPhoto.location;
+  const hasSelectedLocation = !!selectedLocation;
+  const hasLocation = hasPhotoLocation || hasSelectedLocation;
+
+  const locationText = selectedLocation
+    ? selectedLocation.placeName || selectedLocation.roadAddress || selectedLocation.address
+    : addressData?.placeName || addressData?.address;
 
   /**
    * scale 애니메이션을 위한 초기값과 transform-origin 계산
@@ -218,8 +228,12 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
                     <S.TooltipIcon>
                       <SuccessIcon width={22} height={22} />
                     </S.TooltipIcon>
-                    <S.TooltipText>위치가 자동으로 저장되었어요.</S.TooltipText>
-                    <S.TooltipButton type="button" onClick={handleEditLocation}>
+                    <S.TooltipText>
+                      {hasSelectedLocation
+                        ? '위치가 저장되었어요.'
+                        : '위치가 자동으로 저장되었어요.'}
+                    </S.TooltipText>
+                    <S.TooltipButton type="button" onClick={handleAddLocation}>
                       위치 수정
                     </S.TooltipButton>
                   </>
@@ -292,6 +306,18 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         onSelectAlbum={setTempSelectedAlbumId}
         onClose={handleAlbumModalClose}
         onSubmit={handleAlbumSubmit}
+      />
+
+      <LocationSelectOverlay
+        isOpen={isLocationModalOpen}
+        locations={locations}
+        isLoading={isLocationsLoading}
+        selectedLocationId={tempSelectedLocationId}
+        searchQuery={locationSearchQuery}
+        onChangeSearchQuery={setLocationSearchQuery}
+        onSelectLocation={setTempSelectedLocationId}
+        onClose={handleLocationModalClose}
+        onSubmit={handleLocationSubmit}
       />
     </motion.div>
   );
