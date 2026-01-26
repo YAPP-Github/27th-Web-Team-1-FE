@@ -43,17 +43,21 @@ const AlbumSelectOverlay = ({
             showCharCount={false}
           />
           <S.AlbumListWrapper>
-          {isLoading ? (
-            <S.LoadingText>로딩 중...</S.LoadingText>
-          ) : albums.length === 0 ? (
-            <S.EmptyText>앨범이 없습니다</S.EmptyText>
-          ) : (
-            <AlbumListContainer
-              albums={albums}
-              selectedAlbumId={selectedAlbumId}
-              onSelectAlbum={onSelectAlbum}
-            />
-          )}
+            {(() => {
+              if (isLoading) {
+                return <S.LoadingText>로딩 중...</S.LoadingText>;
+              }
+              if (albums.length === 0) {
+                return <S.EmptyText>앨범이 없습니다</S.EmptyText>;
+              }
+              return (
+                <AlbumListContainer
+                  albums={albums}
+                  selectedAlbumId={selectedAlbumId}
+                  onSelectAlbum={onSelectAlbum}
+                />
+              );
+            })()}
           </S.AlbumListWrapper>
         </S.SearchAlbumWrapper>
         <Overlay.Footer>
