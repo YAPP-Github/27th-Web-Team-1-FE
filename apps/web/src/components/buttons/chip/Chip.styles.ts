@@ -42,6 +42,13 @@ export const Wrapper = styled.div<{
   padding: 6px 10px;
 `;
 
+export const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
+`;
+
 export const LocationIcon = styled(LocationSvg)`
   width: 14px;
   height: 14px;
