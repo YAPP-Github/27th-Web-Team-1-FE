@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { MenuPlacement } from './MenuButton';
 
 export const Container = styled.div`
   position: relative;
@@ -23,17 +24,21 @@ export const Backdrop = styled.div`
   z-index: 100;
 `;
 
-export const MenuPanel = styled.div`
+export const MenuPanel = styled.div<{ placement: MenuPlacement }>`
   position: absolute;
-  top: 52px;
+  ${({ placement }) => (placement === 'bottom' ? 'top: 52px;' : 'bottom: 52px;')}
   right: 0;
   z-index: 101;
 
   min-width: 160px;
   padding: 8px;
 
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
   background: ${({ theme }) => theme.colors.blueWhite.bg8};
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
-  backdrop-filter: ${({ theme }) => theme.effects.backdropBlur};
+  backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[25]};
   border-radius: 16px;
 `;
