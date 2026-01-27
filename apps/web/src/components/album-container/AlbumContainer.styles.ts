@@ -29,7 +29,7 @@ const gridTypeStyles = {
 export const Container = styled.div<{ type: AlbumContainerType }>`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${({ type }) => (type === ALBUM_CONTAINER_TYPE.SMALL ? '4px' : '8px')};
   cursor: pointer;
   ${({ type }) => containerTypeStyles[type]()}
 `;
