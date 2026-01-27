@@ -54,8 +54,7 @@ export const ActionColumn = styled.div<ActionColumnProps>`
 `;
 
 export const Content = styled.div`
-  padding: 20px;
+  padding: 0px 20px;
   flex: 1;
-  overflow-y: auto;
-  text-align: center;
+  overflow: hidden;
 `;

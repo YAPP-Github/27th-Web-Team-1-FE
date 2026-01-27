@@ -1,25 +1,32 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import CheckIcon from '@/assets/images/check.svg';
-import CancelIcon from '@/assets/images/cancel.svg';
+import React, { useState, useRef } from 'react';
+import AddIcon from '@/assets/images/add.svg';
+import CrossHairIcon from '@/assets/images/crossHair.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import * as S from './BottomSheet.styles';
+import MenuButton from '../buttons/menuButton/MenuButton';
+import TextButton from '../buttons/textButton/TextButton';
+import { SheetContext } from './_context/SheetContext';
+import { useBottomSheetController } from './_hooks/useBottomSheetController';
+import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
 
-const BottomSheet = () => {
-  const [height, setHeight] = useState(160);
+interface BottomSheetProps {
+  context: SheetContext;
+  onChangeContext: (context: SheetContext) => void;
+}
+
+const BottomSheet = ({ context, onChangeContext }: BottomSheetProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(800);
 
-  const MIN_HEIGHT = 160;
-  const MID_HEIGHT = 394;
-
-  useEffect(() => {
-    setMaxHeight(window.innerHeight);
-    const handleResize = () => setMaxHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const {
+    height,
+    setHeight,
+    clampHeight,
+    snapHeightOnly,
+    deriveContextFromHeight,
+    MID_HEIGHT,
+  } = useBottomSheetController(context);
 
   const startY = useRef(0);
   const startHeight = useRef(0);
@@ -38,36 +45,50 @@ const BottomSheet = () => {
     e.stopPropagation();
 
     const deltaY = startY.current - e.clientY;
-    const newHeight = startHeight.current + deltaY;
-
-    if (newHeight >= 0 && newHeight <= maxHeight) {
-      setHeight(newHeight);
-    }
+    const nextHeight = clampHeight(startHeight.current + deltaY);
+    setHeight(nextHeight);
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
-    e.stopPropagation();
+  const handlePointerUp = () => {
     setIsDragging(false);
 
-    const points = [MIN_HEIGHT, MID_HEIGHT, maxHeight];
-    const closest = points.reduce((prev, curr) => {
-      return Math.abs(curr - height) < Math.abs(prev - height) ? curr : prev;
-    });
+    if (context.type === 'albumDetail') {
+      snapHeightOnly(height);
+      return;
+    }
 
-    setHeight(closest);
+    if (height > MID_HEIGHT && context.type === 'albumList') {
+      snapHeightOnly(height);
+      return;
+    }
+
+    onChangeContext(deriveContextFromHeight(height));
   };
 
   return (
     <>
       <S.ActionColumn $sheetHeight={height}>
-        <CircleButton aria-label="확인" onClick={() => {}}>
-          <CheckIcon width={16} height={16} />
-        </CircleButton>
+        <MenuButton
+          triggerIcon={(isOpen) => (
+            <AddIcon
+              style={{
+                transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s ease',
+              }}
+            />
+          )}
+          placement="top"
+        >
+          <TextButton text="사진 추가" onClick={() => {}} />
+          <TextButton text="사진 추가" onClick={() => {}} />
+          <TextButton text="앨범 추가" onClick={() => {}} />
+        </MenuButton>
+
         <CircleButton aria-label="취소" onClick={() => {}}>
-          <CancelIcon width={14} height={14} />
+          <CrossHairIcon />
         </CircleButton>
       </S.ActionColumn>
+
       <S.SheetWrapper
         $height={height}
         $isDragging={isDragging}
@@ -82,10 +103,9 @@ const BottomSheet = () => {
         >
           <div className="handle" />
         </S.HandleBar>
+
         <S.Content>
-          {height <= MIN_HEIGHT && <p>Small 모드: 요약 정보</p>}
-          {height > MIN_HEIGHT && height <= MID_HEIGHT && <p>Mid 모드: 상세 리스트</p>}
-          {height > MID_HEIGHT && <p>Large 모드: 전체 화면 컨텐츠</p>}
+          <BottomSheetContent context={context} />
         </S.Content>
       </S.SheetWrapper>
     </>
