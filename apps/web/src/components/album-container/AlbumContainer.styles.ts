@@ -44,12 +44,12 @@ export const PhotoGrid = styled.div<{ type: AlbumContainerType }>`
   ${({ type }) => gridTypeStyles[type]()}
 `;
 
-export const PhotoWrapper = styled.div`
+export const PhotoWrapper = styled.div<{ type: AlbumContainerType }>`
   position: relative;
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: ${({ type }) => (type === ALBUM_CONTAINER_TYPE.SMALL ? '4px' : '10px')};
 `;
 
 export const Photo = styled.img`
