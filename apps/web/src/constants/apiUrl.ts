@@ -10,6 +10,7 @@ export const API_URL = {
   },
   PHOTOS: {
     BASE: '/photos',
+    DETAIL: (photoId: number | string) => `/photos/${photoId}`,
     PRESIGNED_URL: '/photos/presigned-url',
   },
 } as const;
