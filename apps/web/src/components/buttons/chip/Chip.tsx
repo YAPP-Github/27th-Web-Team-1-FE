@@ -13,6 +13,8 @@ interface ChipProps {
   showIcon?: boolean;
   /** 커스텀 좌측 아이콘 */
   icon?: ReactNode;
+  /** 클릭 이벤트 */
+  onClick?: () => void;
   /** 제거 버튼 표시 여부 */
   onCancel?: () => void;
 }
@@ -23,10 +25,11 @@ const Chip = ({
   size,
   showIcon = false,
   icon,
+  onClick,
   onCancel,
 }: ChipProps) => {
   return (
-    <S.Wrapper size={size} variant={variant}>
+    <S.Wrapper size={size} variant={variant} onClick={onClick} $clickable={!!onClick}>
       {icon ? <S.IconWrapper>{icon}</S.IconWrapper> : showIcon && <S.LocationIcon />}
       {text}
       {onCancel && (
