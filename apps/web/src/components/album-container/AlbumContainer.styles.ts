@@ -7,7 +7,7 @@ const containerTypeStyles = {
     width: 56px;
   `,
   medium: () => css`
-    width: 146px;
+    width: 100%;
   `,
 };
 
@@ -19,8 +19,9 @@ const gridTypeStyles = {
     padding: 4.94px;
   `,
   medium: () => css`
-    width: 146px;
-    height: 146px;
+    max-width: 180px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     gap: 7.3px;
     padding: 7.3px;
   `,
