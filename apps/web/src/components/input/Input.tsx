@@ -45,9 +45,11 @@ const Input = ({
       <S.InputWrapper isError={isError}>
         {type === INPUT_TYPE.SEARCH && <S.SearchIcon />}
         <S.StyledInput {...rest} type="text" value={value} onChange={handleChange} />
-        <S.CharCount>
-          {value.length}/{max}
-        </S.CharCount>
+        {type !== INPUT_TYPE.SEARCH && (
+          <S.CharCount>
+            {value.length}/{max}
+          </S.CharCount>
+        )}
         {value.length > 0 && (
           <S.ResetButton onClick={handleReset} type="button">
             <S.ResetIcon />
