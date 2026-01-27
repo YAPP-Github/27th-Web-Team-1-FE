@@ -4,7 +4,6 @@ import LocationIcon from '@/assets/images/location.svg';
 import MenuIcon from '@/assets/images/menu.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import { BUTTON_SIZE, ICON_SIZE } from '../base/Header.constants';
-import * as BaseS from '../base/Header.styles';
 import HeaderBase from '../base/HeaderBase';
 import * as S from './MenuHeader.styles';
 
@@ -69,7 +68,7 @@ const MenuHeaderMain = ({
                   <LocationIcon width={16} height={16} />
                 </S.LocationIconWrapper>
               )}
-              {title && <BaseS.Title>{title}</BaseS.Title>}
+              {title && <S.Title>{title}</S.Title>}
             </S.CenterWrapper>
           }
           right={
