@@ -4,6 +4,21 @@ export const MenuHeaderWrapper = styled.div`
   position: relative;
 `;
 
+export const CenterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+export const LocationIconWrapper = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[200]};
+`;
+
 export const MenuDropdown = styled.div`
   position: absolute;
   top: 56px;

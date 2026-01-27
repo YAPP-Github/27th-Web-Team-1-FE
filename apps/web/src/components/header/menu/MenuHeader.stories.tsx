@@ -33,3 +33,11 @@ export const WithMenu: Story = {
     </MenuHeader>
   ),
 };
+
+export const WithLocation: Story = {
+  args: {
+    title: '앨범 이름',
+    onClickBack: () => console.log('뒤로가기'),
+    showLocation: true,
+  },
+};

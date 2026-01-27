@@ -1,4 +1,5 @@
 import ExploreIcon from '@/assets/images/explore.svg';
+import LocationIcon from '@/assets/images/location.svg';
 import ProfileIcon from '@/assets/images/profile.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import {
@@ -52,7 +53,9 @@ const ExploreHeader = ({
       }
       center={
         <S.LocationWrapper>
-          <S.LocationIcon />
+          <S.LocationIconWrapper>
+            <LocationIcon width={16} height={16} />
+          </S.LocationIconWrapper>
           <S.LocationText>{title}</S.LocationText>
         </S.LocationWrapper>
       }
