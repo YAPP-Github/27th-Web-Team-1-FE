@@ -35,16 +35,14 @@ const AlbumContainer = ({
       const photo = displayPhotos[i];
       const isLastPhoto = i === MAX_GRID_PHOTOS - 1;
       const showOverlay = isLastPhoto && hasMorePhotos;
-  
+
       return (
         <S.PhotoWrapper key={photo?.photoId ?? `empty-${i}`} type={type}>
           {photo ? (
             <>
               <S.Photo src={photo.src} alt={`photo-${photo.photoId}`} />
               {showOverlay && (
-                <S.MoreOverlay type={type}>
-                  +{remainingCount}
-                </S.MoreOverlay>
+                <S.MoreOverlay type={type}>+{remainingCount}</S.MoreOverlay>
               )}
             </>
           ) : (
@@ -53,7 +51,6 @@ const AlbumContainer = ({
         </S.PhotoWrapper>
       );
     });
-  
 
   return (
     <S.Container type={type} onClick={onClick}>
