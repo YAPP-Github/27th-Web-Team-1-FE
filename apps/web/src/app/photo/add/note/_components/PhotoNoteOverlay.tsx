@@ -112,7 +112,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     console.log('Open location edit modal');
   };
 
-
   const handleMapPreview = () => {
     // TODO: 지도뷰 미리보기 구현
     console.log('Open map preview');
