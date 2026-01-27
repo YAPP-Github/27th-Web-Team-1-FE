@@ -1,9 +1,6 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import {
-  ALBUM_CONTAINER_TYPE,
-  AlbumContainerType,
-} from './AlbumContainer.constants';
+import { ALBUM_CONTAINER_TYPE, AlbumContainerType } from './AlbumContainer.constants';
 
 const containerTypeStyles = {
   small: () => css`
@@ -109,4 +106,3 @@ export const PhotoCount = styled.span`
   ${({ theme }) => theme.typography.body14Semibold}
   color: ${({ theme }) => theme.colors.gray[400]};
 `;
-

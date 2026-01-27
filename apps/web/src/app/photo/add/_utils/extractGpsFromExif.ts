@@ -85,7 +85,7 @@ const findGpsIfdPointer = (
   dataView: DataView,
   tiffOffset: number,
   ifdOffset: number,
-  littleEndian: boolean
+  littleEndian: boolean,
 ): number | null => {
   const entries = dataView.getUint16(tiffOffset + ifdOffset, littleEndian);
 
@@ -106,7 +106,7 @@ const parseGpsIfd = (
   dataView: DataView,
   tiffOffset: number,
   gpsIfdOffset: number,
-  littleEndian: boolean
+  littleEndian: boolean,
 ): GpsCoordinates | null => {
   const entries = dataView.getUint16(tiffOffset + gpsIfdOffset, littleEndian);
 
@@ -154,7 +154,7 @@ const parseGpsIfd = (
 const parseGpsCoordinate = (
   dataView: DataView,
   offset: number,
-  littleEndian: boolean
+  littleEndian: boolean,
 ): number => {
   // GPS 좌표는 도/분/초 형식의 RATIONAL 3개로 저장됨
   const degrees = readRational(dataView, offset, littleEndian);
@@ -164,7 +164,11 @@ const parseGpsCoordinate = (
   return degrees + minutes / 60 + seconds / 3600;
 };
 
-const readRational = (dataView: DataView, offset: number, littleEndian: boolean): number => {
+const readRational = (
+  dataView: DataView,
+  offset: number,
+  littleEndian: boolean,
+): number => {
   const numerator = dataView.getUint32(offset, littleEndian);
   const denominator = dataView.getUint32(offset + 4, littleEndian);
 

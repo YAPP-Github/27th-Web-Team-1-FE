@@ -11,7 +11,10 @@ import { extractGpsFromExif } from './extractGpsFromExif';
  */
 export const fileToSelectedPhoto = async (file: File): Promise<SelectedPhoto | null> => {
   try {
-    const [dataUrl, gps] = await Promise.all([readFileAsDataUrl(file), extractGpsFromExif(file)]);
+    const [dataUrl, gps] = await Promise.all([
+      readFileAsDataUrl(file),
+      extractGpsFromExif(file),
+    ]);
 
     if (!dataUrl) {
       return null;
@@ -46,7 +49,7 @@ const readFileAsDataUrl = (file: File): Promise<string | null> => {
 };
 
 const getImageDimensions = (
-  dataUrl: string
+  dataUrl: string,
 ): Promise<{ width: number; height: number } | null> => {
   return new Promise((resolve) => {
     const img = new Image();

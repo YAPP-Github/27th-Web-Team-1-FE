@@ -7,5 +7,5 @@
  */
 
 export type GetPresignedUrlParams = {
-userId: number;
+  userId: number;
 };

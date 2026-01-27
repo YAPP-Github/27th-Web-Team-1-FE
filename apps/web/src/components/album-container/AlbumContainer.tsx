@@ -50,7 +50,7 @@ const AlbumContainer = ({
           ) : (
             <S.EmptyPhoto />
           )}
-        </S.PhotoWrapper>
+        </S.PhotoWrapper>,
       );
     }
 

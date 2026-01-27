@@ -39,8 +39,8 @@ export default function MapView({ locationState, pins }: MapViewProps) {
           positionOptions={{ enableHighAccuracy: true }}
           trackUserLocation={true}
           showUserLocation={true}
-          position='bottom-right'
-          style={{display: 'none'}}
+          position="bottom-right"
+          style={{ display: 'none' }}
         />
         {pins.map((pin) => (
           <Marker
@@ -50,8 +50,8 @@ export default function MapView({ locationState, pins }: MapViewProps) {
             anchor="bottom"
           >
             <ImagePin
-              imageUrl={pin.imageUrl} 
-              imageCount={pin.imageCount} 
+              imageUrl={pin.imageUrl}
+              imageCount={pin.imageCount}
               onClick={() => console.log(`${pin.id} 클릭됨`)}
             />
           </Marker>

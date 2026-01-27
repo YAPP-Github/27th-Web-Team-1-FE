@@ -1,12 +1,12 @@
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 interface SheetWrapperProps {
   $height: number;
   $isDragging: boolean;
 }
 
 export const SheetWrapper = styled.div<SheetWrapperProps>`
-width: 100%;
-/* max-width: ${({ theme }) => theme.layout.maxWidth}; */
+  width: 100%;
+  /* max-width: ${({ theme }) => theme.layout.maxWidth}; */
   position: absolute;
   bottom: 0;
   background-color: ${({ theme }) => theme.colors.blueWhite.bg8};

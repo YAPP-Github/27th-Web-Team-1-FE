@@ -7,5 +7,5 @@
  */
 
 export type JoinByInviteCodeParams = {
-userId: number;
+  userId: number;
 };

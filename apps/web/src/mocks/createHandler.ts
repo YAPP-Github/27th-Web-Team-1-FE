@@ -13,7 +13,7 @@ type ResponseKey<T> = T extends MockApiResponse<infer K, unknown> ? K : never;
 export const createHandler = <T extends MockApiResponse<string, JsonBodyType>>(
   config: T,
   responseKey: ResponseKey<T>,
-  validator?: (request: Request) => string | null
+  validator?: (request: Request) => string | null,
 ) => {
   const responseItem = config.response[responseKey];
 

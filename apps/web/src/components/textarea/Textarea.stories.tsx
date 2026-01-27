@@ -11,7 +11,9 @@ const meta: Meta<typeof Textarea> = {
   },
   render: function Render(args) {
     const [, updateArgs] = useArgs();
-    return <Textarea {...args} onChange={(newValue) => updateArgs({ value: newValue })} />;
+    return (
+      <Textarea {...args} onChange={(newValue) => updateArgs({ value: newValue })} />
+    );
   },
 };
 

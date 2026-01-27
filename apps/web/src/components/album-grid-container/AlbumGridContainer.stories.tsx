@@ -30,11 +30,7 @@ const mockPhotos = [
 export const Default: Story = {
   render: () => (
     <AlbumGridContainer>
-      <AlbumContainer
-        title="우리의 추억"
-        photoList={mockPhotos}
-        photoCount={6}
-      />
+      <AlbumContainer title="우리의 추억" photoList={mockPhotos} photoCount={6} />
       <AlbumContainer
         title="여름 휴가"
         photoList={mockPhotos.slice(0, 4)}
@@ -45,11 +41,7 @@ export const Default: Story = {
         photoList={mockPhotos.slice(0, 2)}
         photoCount={2}
       />
-      <AlbumContainer
-        title="봄 소풍"
-        photoList={mockPhotos}
-        photoCount={10}
-      />
+      <AlbumContainer title="봄 소풍" photoList={mockPhotos} photoCount={10} />
     </AlbumGridContainer>
   ),
 };

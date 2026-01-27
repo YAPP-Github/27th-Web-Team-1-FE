@@ -7,5 +7,5 @@
  */
 
 export type GetPhotosParams = {
-albumId: number;
+  albumId: number;
 };

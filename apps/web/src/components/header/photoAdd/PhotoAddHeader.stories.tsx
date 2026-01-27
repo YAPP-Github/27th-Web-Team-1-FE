@@ -39,20 +39,12 @@ export const WithLocation: Story = {
 
 export const WithoutLocation: Story = {
   render: () => (
-    <PhotoAddHeader
-      left={CloseButtonElement}
-      hasLocation={false}
-      isLoading={false}
-    />
+    <PhotoAddHeader left={CloseButtonElement} hasLocation={false} isLoading={false} />
   ),
 };
 
 export const Loading: Story = {
   render: () => (
-    <PhotoAddHeader
-      left={CloseButtonElement}
-      hasLocation={true}
-      isLoading={true}
-    />
+    <PhotoAddHeader left={CloseButtonElement} hasLocation={true} isLoading={true} />
   ),
 };

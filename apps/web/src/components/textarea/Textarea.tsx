@@ -5,8 +5,10 @@ import * as S from './Textarea.styles';
 
 const DEFAULT_MAX_LENGTH = 1000;
 
-interface TextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
+interface TextareaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'onChange'
+> {
   /** textarea 값 */
   value: string;
   /** onChange 핸들러 */

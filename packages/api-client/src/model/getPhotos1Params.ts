@@ -7,12 +7,12 @@
  */
 
 export type GetPhotos1Params = {
-/**
- * 줌 레벨 (0-20). 15 미만이면 클러스터링, 15 이상이면 개별 사진 반환
- */
-zoom: number;
-/**
- * 바운딩 박스 (west,south,east,north 형식의 경도/위도)
- */
-bbox: string;
+  /**
+   * 줌 레벨 (0-20). 15 미만이면 클러스터링, 15 이상이면 개별 사진 반환
+   */
+  zoom: number;
+  /**
+   * 바운딩 박스 (west,south,east,north 형식의 경도/위도)
+   */
+  bbox: string;
 };

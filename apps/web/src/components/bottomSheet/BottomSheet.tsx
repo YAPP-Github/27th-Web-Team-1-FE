@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import CheckIcon from '@/assets/images/check.svg';
 import CancelIcon from '@/assets/images/cancel.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
-import * as S from "./BottomSheet.styles";
+import * as S from './BottomSheet.styles';
 
 const BottomSheet = () => {
   const [height, setHeight] = useState(160);
@@ -27,7 +27,7 @@ const BottomSheet = () => {
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.stopPropagation();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-    
+
     startY.current = e.clientY;
     startHeight.current = height;
     setIsDragging(true);
@@ -39,7 +39,7 @@ const BottomSheet = () => {
 
     const deltaY = startY.current - e.clientY;
     const newHeight = startHeight.current + deltaY;
-    
+
     if (newHeight >= 0 && newHeight <= maxHeight) {
       setHeight(newHeight);
     }
@@ -49,7 +49,7 @@ const BottomSheet = () => {
     if (!isDragging) return;
     e.stopPropagation();
     setIsDragging(false);
-    
+
     const points = [MIN_HEIGHT, MID_HEIGHT, maxHeight];
     const closest = points.reduce((prev, curr) => {
       return Math.abs(curr - height) < Math.abs(prev - height) ? curr : prev;
@@ -68,13 +68,13 @@ const BottomSheet = () => {
           <CancelIcon width={14} height={14} />
         </CircleButton>
       </S.ActionColumn>
-      <S.SheetWrapper 
-        $height={height} 
+      <S.SheetWrapper
+        $height={height}
         $isDragging={isDragging}
         style={{ height: `${height}px` }}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <S.HandleBar 
+        <S.HandleBar
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
