@@ -68,7 +68,7 @@ const LocationSelectOverlay = ({
                       </S.LocationInfo>
                       {selectedLocationId === getLocationId(location) && (
                         <S.CheckIcon>
-                          <CheckIcon width={22} height={22} />
+                          <CheckIcon width={16} height={16} />
                         </S.CheckIcon>
                       )}
                     </S.LocationItem>

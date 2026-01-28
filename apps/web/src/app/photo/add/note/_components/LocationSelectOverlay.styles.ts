@@ -44,12 +44,16 @@ export const LocationInfo = styled.div`
 `;
 
 export const CheckIcon = styled.div`
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  svg path {
+    fill: ${({ theme }) => theme.colors.gray[100]};
+  }
 `;
 
 export const LocationTitle = styled.span`
