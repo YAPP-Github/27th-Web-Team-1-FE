@@ -76,13 +76,15 @@ export default function PhotoEditOverlay({
   } = useLocationModal();
 
   const handleSave = () => {
+    const latitude = selectedLocation?.latitude;
+    const longitude = selectedLocation?.longitude;
+    const hasValidLocation = latitude != null && longitude != null;
+
     onSave({
       photoId,
       memo: memo || undefined,
       albumId: selectedAlbum?.id,
-      location: selectedLocation
-        ? { latitude: selectedLocation.latitude!, longitude: selectedLocation.longitude! }
-        : undefined,
+      location: hasValidLocation ? { latitude, longitude } : undefined,
     });
   };
 
