@@ -18,4 +18,6 @@ export interface MapPhotoResponse {
   longitude?: number;
   /** 위도 */
   latitude?: number;
+  /** 촬영일 (yyyy.MM.dd 형식) */
+  date?: string;
 }

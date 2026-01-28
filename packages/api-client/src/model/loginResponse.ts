@@ -6,6 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetPhotosParams = {
-albumId: number;
-};
+export interface LoginResponse {
+  userId?: number;
+  workspaceId?: number;
+  albumId?: number;
+}
