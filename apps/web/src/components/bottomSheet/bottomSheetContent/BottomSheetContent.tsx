@@ -1,22 +1,36 @@
+import AlbumDetail from '../\balbumDetail/AlbumDetail';
 import { SheetContext } from '../_context/SheetContext';
 import AlbumGrid from '../albumGrid/AlbumGrid';
 import AlbumRow from '../albumRow/AlbumRow';
-import { mockAlbums } from '../mockAlbums';
+import type { Album, AlbumDetailData } from '@/types/album.type';
 
 interface BottomSheetContentProps {
   context: SheetContext;
+  albums: Album[];
+  albumDetailById: Record<number, AlbumDetailData>;
+  onSelectAlbum: (albumId: number) => void;
 }
 
-const BottomSheetContent = ({ context }: BottomSheetContentProps) => {
+const BottomSheetContent = ({
+  context,
+  albums,
+  albumDetailById,
+  onSelectAlbum,
+}: BottomSheetContentProps) => {
   switch (context.type) {
     case 'home':
-      return <AlbumRow albums={mockAlbums} />;
+      return <AlbumRow albums={albums} onSelectAlbum={onSelectAlbum} />;
 
     case 'albumList':
-      return <AlbumGrid />;
+      return <AlbumGrid albums={albums} onSelectAlbum={onSelectAlbum} />;
 
     case 'albumDetail':
-      return <p>앨범 상세</p>;
+      return (
+        <AlbumDetail album={albumDetailById[context.albumId]} />
+      );
+
+    default:
+      return null;
   }
 };
 

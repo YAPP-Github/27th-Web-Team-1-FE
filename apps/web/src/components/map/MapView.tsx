@@ -4,16 +4,21 @@ import { useRef, useCallback } from 'react';
 import { Map, GeolocateControl, Marker } from 'react-map-gl/mapbox';
 import type { GeolocateControl as GeolocateControlInstance } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { LocationState } from '@/types/map.type';
+import { LocationState, MapPin } from '@/types/map.type';
 import * as S from './MapView.styels';
 import ImagePin from '../image/ImagePin';
 
 interface MapViewProps {
   locationState: LocationState;
-  pins: any[];
+  pins: MapPin[];
+  selectedAlbumId: number | null;
 }
 
-export default function MapView({ locationState, pins }: MapViewProps) {
+export default function MapView({
+  locationState,
+  pins,
+  selectedAlbumId = null,
+}: MapViewProps) {
   const geolocateControlRef = useRef<GeolocateControlInstance>(null);
 
   const onMapLoad = useCallback(() => {
@@ -21,6 +26,11 @@ export default function MapView({ locationState, pins }: MapViewProps) {
       geolocateControlRef.current.trigger();
     }
   }, []);
+
+  const visiblePins =
+    selectedAlbumId === null
+      ? pins
+      : pins.filter((pin) => pin.albumId === selectedAlbumId);
 
   return (
     <S.Wrapper>
@@ -42,7 +52,7 @@ export default function MapView({ locationState, pins }: MapViewProps) {
           position="bottom-right"
           style={{ display: 'none' }}
         />
-        {pins.map((pin) => (
+        {visiblePins.map((pin) => (
           <Marker
             key={pin.id}
             latitude={pin.latitude}

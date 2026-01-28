@@ -5,9 +5,10 @@ import { useRef } from 'react';
 
 interface AlbumRowProps {
   albums: Album[];
+  onSelectAlbum: (albumId: number) => void;
 }
 
-const AlbumRow = ({ albums }: AlbumRowProps) => {
+const AlbumRow = ({ albums, onSelectAlbum }: AlbumRowProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -40,13 +41,14 @@ const AlbumRow = ({ albums }: AlbumRowProps) => {
       onMouseUp={onMouseUp}
       onMouseLeave={onMouseUp}
     >
-      {albums.map((album, index) => (
+      {albums.map((album) => (
         <AlbumContainer
-          key={index}
+          key={album.id}
           title={album.title}
           type="small"
           photoList={album.photoList}
-          photoCount={album.photoList.length}
+          photoCount={album.photoCount}
+          onClick={() => onSelectAlbum(album.id)}
         />
       ))}
     </S.Wrapper>

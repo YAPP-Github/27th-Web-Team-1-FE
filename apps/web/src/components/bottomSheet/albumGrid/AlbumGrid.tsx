@@ -1,17 +1,26 @@
 import Input from '@/components/input/Input';
 import * as S from './AlbumGrid.styles';
-import { useState } from 'react';
-import { mockAlbums } from '../mockAlbums';
+import { useMemo, useState } from 'react';
 import AlbumContainer from '@/components/album-container/AlbumContainer';
 import AlbumGridContainer from '@/components/album-grid-container/AlbumGridContainer';
+import type { Album } from '@/types/album.type';
 
-interface AlbumGridProps {}
+interface AlbumGridProps {
+  albums: Album[];
+  onSelectAlbum: (albumId: number) => void;
+}
 
-const AlbumGrid = () => {
+const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
   const [searchValue, setSearchValue] = useState('');
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
+  };
+
+  const filteredAlbums = () => {
+    const keyword = searchValue.trim();
+    if (!keyword) return albums;
+    return albums.filter((album) => album.title.includes(keyword));
   };
 
   return (
@@ -26,13 +35,14 @@ const AlbumGrid = () => {
       </S.InputSection>
       <S.GridSection>
         <AlbumGridContainer>
-          {mockAlbums.map((album, index) => (
+          {filteredAlbums.map((album) => (
             <AlbumContainer
-              key={index}
+              key={album.id}
               title={album.title}
               type="medium"
               photoList={album.photoList}
-              photoCount={album.photoList.length}
+              photoCount={album.photoCount}
+              onClick={() => onSelectAlbum(album.id)}
             />
           ))}
         </AlbumGridContainer>

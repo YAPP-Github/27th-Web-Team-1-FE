@@ -2,7 +2,9 @@ import { Album } from '@/types/album.type';
 
 export const mockAlbums: Album[] = [
   {
+    id: 1,
     title: '여행',
+    photoCount: 3,
     photoList: [
       {
         photoId: '1',
@@ -19,7 +21,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 2,
     title: '일상',
+    photoCount: 6,
     photoList: [
       {
         photoId: '4',
@@ -48,7 +52,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 3,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',
@@ -61,7 +67,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 4,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',
@@ -74,7 +82,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 5,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',
@@ -87,7 +97,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 6,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',
@@ -100,7 +112,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 7,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',
@@ -113,7 +127,9 @@ export const mockAlbums: Album[] = [
     ],
   },
   {
+    id: 8,
     title: '일상',
+    photoCount: 2,
     photoList: [
       {
         photoId: '4',

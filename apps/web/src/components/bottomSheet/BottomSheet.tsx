@@ -10,13 +10,23 @@ import TextButton from '../buttons/textButton/TextButton';
 import { SheetContext } from './_context/SheetContext';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
+import type { Album, AlbumDetailData } from '@/types/album.type';
 
 interface BottomSheetProps {
   context: SheetContext;
+  albums: Album[];
+  albumDetailById: Record<number, AlbumDetailData>;
   onChangeContext: (context: SheetContext) => void;
+  onSelectAlbum: (albumId: number) => void;
 }
 
-const BottomSheet = ({ context, onChangeContext }: BottomSheetProps) => {
+const BottomSheet = ({
+  context,
+  albums,
+  albumDetailById,
+  onChangeContext,
+  onSelectAlbum,
+}: BottomSheetProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const {
@@ -105,7 +115,12 @@ const BottomSheet = ({ context, onChangeContext }: BottomSheetProps) => {
         </S.HandleBar>
 
         <S.Content>
-          <BottomSheetContent context={context} />
+          <BottomSheetContent
+            context={context}
+            albums={albums}
+            albumDetailById={albumDetailById}
+            onSelectAlbum={onSelectAlbum}
+          />
         </S.Content>
       </S.SheetWrapper>
     </>

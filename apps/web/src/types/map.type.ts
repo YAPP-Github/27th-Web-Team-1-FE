@@ -3,3 +3,12 @@ export interface LocationState {
   longitude: number;
   zoom: number;
 }
+
+export interface MapPin {
+  id: number;
+  albumId: number;
+  latitude: number;
+  longitude: number;
+  imageUrl: string;
+  imageCount: number;
+}
