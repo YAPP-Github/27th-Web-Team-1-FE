@@ -46,7 +46,7 @@ export const HeaderWrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 30;
 `;
 
 export const BottomOverlay = styled.div`

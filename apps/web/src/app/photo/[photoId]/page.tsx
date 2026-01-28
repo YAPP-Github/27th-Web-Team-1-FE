@@ -73,8 +73,8 @@ export default function PhotoViewPage() {
               showLocation={!!photoDetail.address}
             >
               <MenuHeader.Menu>
-                <MenuHeader.Item>다운로드</MenuHeader.Item>
-                <MenuHeader.Item color="#FF4D5F">삭제</MenuHeader.Item>
+                <MenuHeader.Item>기록 수정하기</MenuHeader.Item>
+                <MenuHeader.Item color="#FF4D5F">사진 삭제하기</MenuHeader.Item>
               </MenuHeader.Menu>
             </MenuHeader>
           </S.HeaderWrapper>
