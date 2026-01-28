@@ -84,7 +84,7 @@ export default function PhotoViewPage() {
                 <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
                   기록 수정하기
                 </MenuHeader.Item>
-                <MenuHeader.Item color="#FF4D5F">사진 삭제하기</MenuHeader.Item>
+                <MenuHeader.Item variant="danger">사진 삭제하기</MenuHeader.Item>
               </MenuHeader.Menu>
             </MenuHeader>
           </S.HeaderWrapper>

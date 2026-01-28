@@ -103,11 +103,11 @@ export interface MenuItemProps {
   children: ReactNode;
   /** 클릭 이벤트 */
   onClick?: () => void;
-  /** 텍스트 색상 */
-  color?: string;
+  /** 텍스트 색상 variant */
+  variant?: 'default' | 'danger';
 }
 
-const MenuItem = ({ children, onClick, color }: MenuItemProps) => {
+const MenuItem = ({ children, onClick, variant = 'default' }: MenuItemProps) => {
   const { close } = useMenuContext();
 
   const handleClick = () => {
@@ -116,7 +116,7 @@ const MenuItem = ({ children, onClick, color }: MenuItemProps) => {
   };
 
   return (
-    <S.MenuItem onClick={handleClick} color={color}>
+    <S.MenuItem onClick={handleClick} variant={variant}>
       {children}
     </S.MenuItem>
   );

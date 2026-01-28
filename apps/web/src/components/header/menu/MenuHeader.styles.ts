@@ -43,7 +43,7 @@ export const MenuDropdown = styled.div`
   z-index: 100;
 `;
 
-export const MenuItem = styled.button<{ color?: string }>`
+export const MenuItem = styled.button<{ variant?: 'default' | 'danger' }>`
   ${({ theme }) => theme.typography.body16Semibold}
   display: flex;
   align-items: center;
@@ -51,7 +51,8 @@ export const MenuItem = styled.button<{ color?: string }>`
   padding: 12px 16px;
   background: transparent;
   border: none;
-  color: ${({ theme, color }) => color || theme.colors.gray[200]};
+  color: ${({ theme, variant }) =>
+    variant === 'danger' ? theme.colors.status.red[200] : theme.colors.gray[200]};
   cursor: pointer;
 
   &:hover {

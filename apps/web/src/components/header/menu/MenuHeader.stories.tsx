@@ -26,7 +26,7 @@ export const WithMenu: Story = {
     <MenuHeader title="앨범 이름" onClickBack={() => console.log('뒤로가기')}>
       <MenuHeader.Menu>
         <MenuHeader.Item onClick={() => console.log('편집')}>편집</MenuHeader.Item>
-        <MenuHeader.Item onClick={() => console.log('삭제')} color="#ff4444">
+        <MenuHeader.Item onClick={() => console.log('삭제')} variant="danger">
           삭제
         </MenuHeader.Item>
       </MenuHeader.Menu>
