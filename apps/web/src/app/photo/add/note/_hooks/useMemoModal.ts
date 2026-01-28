@@ -1,18 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 const useMemoModal = (initialMemo: string = '') => {
   const [memo, setMemo] = useState(initialMemo);
   const [tempMemo, setTempMemo] = useState(initialMemo);
   const [isOpen, setIsOpen] = useState(false);
-  const isInitialized = useRef(false);
 
-  // 초기값이 비동기로 로드되는 경우 동기화
+  // initialMemo가 변경될 때마다 상태 재설정
   useEffect(() => {
-    if (!isInitialized.current && initialMemo) {
-      setMemo(initialMemo);
-      setTempMemo(initialMemo);
-      isInitialized.current = true;
-    }
+    setMemo(initialMemo);
+    setTempMemo(initialMemo);
   }, [initialMemo]);
 
   const openModal = () => {
