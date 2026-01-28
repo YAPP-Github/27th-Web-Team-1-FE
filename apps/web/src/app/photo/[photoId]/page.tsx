@@ -1,12 +1,14 @@
 'use client';
 
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 import AlbumIcon from '@/assets/images/album.svg';
 import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
-import { useLongPress, usePhotoData, usePhotoSlider } from './_hooks';
+import PhotoEditOverlay from './_components/PhotoEditOverlay';
+import { useLongPress, usePhotoData, usePhotoEdit, usePhotoSlider } from './_hooks';
 import * as S from './page.styles';
 
 export default function PhotoViewPage() {
@@ -35,7 +37,13 @@ export default function PhotoViewPage() {
 
   const { isOverlayVisible, longPressHandlers } = useLongPress();
 
-  const displayPhotoUrl = currentPhoto?.url || photoDetail?.url;
+  const { isEditing, editingPhotoId, openEditOverlay, closeEditOverlay, saveEdit } =
+    usePhotoEdit();
+
+  // 현재 표시할 사진 결정 (currentPhoto 우선, 없으면 photoDetail)
+  const displayPhoto = currentPhoto ?? photoDetail;
+  const displayPhotoUrl = displayPhoto?.url;
+  const displayPhotoId = displayPhoto?.id ?? photoId;
 
   const handleBack = () => {
     router.back();
@@ -73,7 +81,9 @@ export default function PhotoViewPage() {
               showLocation={!!photoDetail.address}
             >
               <MenuHeader.Menu>
-                <MenuHeader.Item>기록 수정하기</MenuHeader.Item>
+                <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
+                  기록 수정하기
+                </MenuHeader.Item>
                 <MenuHeader.Item color="#FF4D5F">사진 삭제하기</MenuHeader.Item>
               </MenuHeader.Menu>
             </MenuHeader>
@@ -83,7 +93,9 @@ export default function PhotoViewPage() {
             <S.ContainerA>
               <S.UploaderInfo>
                 <S.ProfileImage />
-                <S.UploaderName>{photoDetail.uploaderName || '알 수 없음'}</S.UploaderName>
+                <S.UploaderName>
+                  {photoDetail.uploaderName || '알 수 없음'}
+                </S.UploaderName>
               </S.UploaderInfo>
               {photoDetail.description && <S.Memo>{photoDetail.description}</S.Memo>}
             </S.ContainerA>
@@ -128,6 +140,16 @@ export default function PhotoViewPage() {
           </S.BottomOverlay>
         </>
       )}
+
+      <AnimatePresence>
+        {isEditing && editingPhotoId && (
+          <PhotoEditOverlay
+            photoId={editingPhotoId}
+            onClose={closeEditOverlay}
+            onSave={saveEdit}
+          />
+        )}
+      </AnimatePresence>
     </S.Container>
   );
 }

@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const useMemoModal = () => {
-  const [memo, setMemo] = useState('');
-  const [tempMemo, setTempMemo] = useState('');
+const useMemoModal = (initialMemo: string = '') => {
+  const [memo, setMemo] = useState(initialMemo);
+  const [tempMemo, setTempMemo] = useState(initialMemo);
   const [isOpen, setIsOpen] = useState(false);
+  const isInitialized = useRef(false);
+
+  // 초기값이 비동기로 로드되는 경우 동기화
+  useEffect(() => {
+    if (!isInitialized.current && initialMemo) {
+      setMemo(initialMemo);
+      setTempMemo(initialMemo);
+      isInitialized.current = true;
+    }
+  }, [initialMemo]);
 
   const openModal = () => {
     setTempMemo(memo);
@@ -23,6 +33,7 @@ const useMemoModal = () => {
     memo,
     tempMemo,
     setTempMemo,
+    setMemo,
     isOpen,
     openModal,
     closeModal,
