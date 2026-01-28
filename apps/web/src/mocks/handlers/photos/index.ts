@@ -1,12 +1,18 @@
 import { createHandler } from '@/mocks/createHandler';
 import { mockCreatePhoto } from './createPhoto/mockCreatePhoto';
 import { mockGetPhotoDetail } from './getPhotoDetail/mockGetPhotoDetail';
+import { 사진_상세_목록, 사진_상세_조회_성공 } from './getPhotoDetail/mockData';
 import { mockGetPhotos } from './getPhotos/mockGetPhotos';
 import { mockGetPresignedUrl } from './getPresignedUrl/mockGetPresignedUrl';
 import { s3UploadHandler } from './getPresignedUrl/mockS3Upload';
 
 export const photosHandlers = [
-  createHandler(mockGetPhotoDetail, '사진_상세_조회_성공'),
+  createHandler(mockGetPhotoDetail, '사진_상세_조회_성공', {
+    dataResolver: (params) => {
+      const photoId = Number(params.photoId);
+      return 사진_상세_목록[photoId] || { ...사진_상세_조회_성공, id: photoId };
+    },
+  }),
   createHandler(mockGetPhotos, '사진_목록_조회_성공'),
   createHandler(mockGetPresignedUrl, 'presigned_url_발급_성공'),
   s3UploadHandler,
