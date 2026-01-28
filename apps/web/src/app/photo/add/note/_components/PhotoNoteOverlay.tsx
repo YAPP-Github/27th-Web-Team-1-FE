@@ -132,7 +132,9 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const hasLocation = hasPhotoLocation || hasSelectedLocation;
 
   const locationText = selectedLocation
-    ? selectedLocation.placeName || selectedLocation.roadAddress || selectedLocation.address
+    ? selectedLocation.placeName ||
+      selectedLocation.roadAddress ||
+      selectedLocation.address
     : addressData?.placeName || addressData?.address;
 
   /**
