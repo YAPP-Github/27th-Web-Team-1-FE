@@ -119,10 +119,10 @@ export default function PhotoEditOverlay({
       selectedLocation.address
     : photoDetail.address;
 
-  const isModified =
-    memo !== (photoDetail.description || '') ||
-    selectedAlbum !== null ||
-    selectedLocation !== null;
+  const isMemoModified = memo !== (photoDetail.description || '');
+  const isAlbumModified = selectedAlbum !== null;
+  const isLocationModified = selectedLocation !== null;
+  const isModified = isMemoModified || isAlbumModified || isLocationModified;
 
   const getTooltipText = () => {
     if (isModified) {
