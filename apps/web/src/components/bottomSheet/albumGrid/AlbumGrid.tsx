@@ -17,11 +17,11 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
     setSearchValue(value);
   };
 
-  const filteredAlbums = () => {
+  const filteredAlbums = useMemo(() => {
     const keyword = searchValue.trim();
     if (!keyword) return albums;
     return albums.filter((album) => album.title.includes(keyword));
-  };
+  }, [albums, searchValue]);
 
   return (
     <S.Wrapper>
