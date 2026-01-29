@@ -18,6 +18,8 @@ interface InputProps extends Omit<
   max?: number;
   /** 에러 메시지 (값이 있으면 에러 상태로 표시) */
   errorMessage?: string;
+  /** 글자 수 표시 여부 */
+  showCharCount?: boolean;
 }
 
 const Input = ({
@@ -26,6 +28,7 @@ const Input = ({
   onChange,
   max = DEFAULT_MAX_LENGTH,
   errorMessage,
+  showCharCount = true,
   ...rest
 }: InputProps) => {
   const isError = !!errorMessage;
@@ -44,8 +47,13 @@ const Input = ({
     <S.Container>
       <S.InputWrapper isError={isError}>
         {type === INPUT_TYPE.SEARCH && <S.SearchIcon />}
-        <S.StyledInput {...rest} type="text" value={value} onChange={handleChange} />
-        {type !== INPUT_TYPE.SEARCH && (
+        <S.StyledInput
+          {...rest}
+          type="text"
+          value={value}
+          onChange={handleChange}
+        />
+        {showCharCount && (
           <S.CharCount>
             {value.length}/{max}
           </S.CharCount>

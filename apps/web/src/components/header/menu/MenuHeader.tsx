@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import ChevronLeftIcon from '@/assets/images/chevronLeft.svg';
+import LocationIcon from '@/assets/images/location.svg';
 import MenuIcon from '@/assets/images/menu.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import { BUTTON_SIZE, ICON_SIZE } from '../base/Header.constants';
-import * as BaseS from '../base/Header.styles';
 import HeaderBase from '../base/HeaderBase';
 import * as S from './MenuHeader.styles';
 
@@ -29,9 +29,16 @@ export interface MenuHeaderProps {
   onClickBack: () => void;
   /** 자식 컴포넌트 (MenuHeader.Menu) */
   children?: ReactNode;
+  /** 위치 아이콘 표시 여부 */
+  showLocation?: boolean;
 }
 
-const MenuHeaderMain = ({ title, onClickBack, children }: MenuHeaderProps) => {
+const MenuHeaderMain = ({
+  title,
+  onClickBack,
+  children,
+  showLocation,
+}: MenuHeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClickMenu = () => {
@@ -54,7 +61,16 @@ const MenuHeaderMain = ({ title, onClickBack, children }: MenuHeaderProps) => {
               <ChevronLeftIcon width={ICON_SIZE} height={ICON_SIZE} />
             </CircleButton>
           }
-          center={<BaseS.Title>{title}</BaseS.Title>}
+          center={
+            <S.CenterWrapper>
+              {showLocation && (
+                <S.LocationIconWrapper>
+                  <LocationIcon width={16} height={16} />
+                </S.LocationIconWrapper>
+              )}
+              {title && <S.Title>{title}</S.Title>}
+            </S.CenterWrapper>
+          }
           right={
             <CircleButton
               onClick={handleClickMenu}
@@ -87,11 +103,11 @@ export interface MenuItemProps {
   children: ReactNode;
   /** 클릭 이벤트 */
   onClick?: () => void;
-  /** 텍스트 색상 */
-  color?: string;
+  /** 텍스트 색상 variant */
+  variant?: 'default' | 'danger';
 }
 
-const MenuItem = ({ children, onClick, color }: MenuItemProps) => {
+const MenuItem = ({ children, onClick, variant = 'default' }: MenuItemProps) => {
   const { close } = useMenuContext();
 
   const handleClick = () => {
@@ -100,7 +116,7 @@ const MenuItem = ({ children, onClick, color }: MenuItemProps) => {
   };
 
   return (
-    <S.MenuItem onClick={handleClick} color={color}>
+    <S.MenuItem onClick={handleClick} variant={variant}>
       {children}
     </S.MenuItem>
   );

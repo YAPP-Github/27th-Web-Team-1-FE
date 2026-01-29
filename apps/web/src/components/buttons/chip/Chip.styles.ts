@@ -30,6 +30,7 @@ const sizeStyles = {
 export const Wrapper = styled.div<{
   variant: ChipVariant;
   size: ChipSize;
+  $clickable?: boolean;
 }>`
   display: flex;
   width: fit-content;
@@ -37,9 +38,17 @@ export const Wrapper = styled.div<{
   align-items: center;
   ${({ variant, theme }) => variantStyles[variant](theme)}
   ${({ size, theme }) => sizeStyles[size](theme)}
-    border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
+  border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
   border-radius: 8px;
   padding: 6px 10px;
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
+`;
+
+export const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
 `;
 
 export const LocationIcon = styled(LocationSvg)`

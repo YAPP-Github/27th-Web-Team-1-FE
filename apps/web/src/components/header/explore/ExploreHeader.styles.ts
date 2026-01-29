@@ -1,4 +1,3 @@
-import LocationSvg from '@/assets/images/location.svg';
 import styled from '@emotion/styled';
 
 export const LocationWrapper = styled.div`
@@ -7,10 +6,13 @@ export const LocationWrapper = styled.div`
   gap: 6px;
 `;
 
-export const LocationIcon = styled(LocationSvg)`
+export const LocationIconWrapper = styled.div`
   width: 16px;
   height: 16px;
-  fill: ${({ theme }) => theme.colors.gray[200]};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[200]};
 `;
 
 export const LocationText = styled.span`

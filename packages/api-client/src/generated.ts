@@ -28,6 +28,7 @@ import type {
   CreateWorkspaceRequest,
   GetClusterPhotosParams,
   GetLocationInfoParams,
+  GetLocationInfoParams,
   GetPhotos1Params,
   GetPhotosParams,
   GetPresignedUrlParams,
@@ -63,7 +64,9 @@ import type {
   LoginResponse,
   MapPhotosResponse,
   PhotoDetailResponse,
+  PhotoDetailResponse,
   PhotoListResponse,
+  PlaceSearchResponse,
   PlaceSearchResponse,
   PresignedUrl,
   SelectableAlbumResponse
@@ -899,6 +902,159 @@ export function useSearchPlaces<TData = Awaited<ReturnType<typeof searchPlaces>>
 
 
 
+    
+/**
+ * 
+            사진 ID를 기반으로 사진 상세 정보를 조회합니다.
+
+            - 촬영일, 앨범명, 등록자명, 주소, 설명 포함
+            - 주소는 좌표 기반 역지오코딩으로 조회
+        
+ * @summary 사진 상세 조회
+ */
+export const getPhotoDetail = (
+    photoId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<PhotoDetailResponse>(
+      {url: `/photos/${photoId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetPhotoDetailQueryKey = (photoId?: number,) => {
+    return [
+    `/photos/${photoId}`
+    ] as const;
+    }
+
+    
+export const getGetPhotoDetailQueryOptions = <TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(photoId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({ signal }) => getPhotoDetail(photoId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(photoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPhotoDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotoDetail>>>
+export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 사진 상세 조회
+ */
+
+export function useGetPhotoDetail<TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(
+ photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPhotoDetailQueryOptions(photoId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+/**
+ * 
+            키워드로 장소를 검색합니다.
+
+            - Kakao 키워드 검색 API를 사용하여 장소 정보 조회
+            - 최대 15개의 검색 결과 반환
+            - 장소명, 주소, 좌표, 카테고리 정보 포함
+        
+ * @summary 장소 검색
+ */
+export const searchPlaces = (
+    params: SearchPlacesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<PlaceSearchResponse>(
+      {url: `/map/places/search`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getSearchPlacesQueryKey = (params?: SearchPlacesParams,) => {
+    return [
+    `/map/places/search`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getSearchPlacesQueryOptions = <TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail | void>(params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSearchPlacesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPlaces>>> = ({ signal }) => searchPlaces(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type SearchPlacesQueryResult = NonNullable<Awaited<ReturnType<typeof searchPlaces>>>
+export type SearchPlacesQueryError = ApiResponseErrorDetail | void
+
+
+/**
+ * @summary 장소 검색
+ */
+
+export function useSearchPlaces<TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail | void>(
+ params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getSearchPlacesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
 /**
  * 
             줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
@@ -1299,6 +1455,13 @@ export const getCreate2ResponseMock = (overrideResponse: Partial< IdResponse > =
 
 export const getUpdateTitleResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
 
+export const getGetPhotoDetailResponseMock = (overrideResponse: Partial< PhotoDetailResponse > = {}): PhotoDetailResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), albumName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
+
+export const getSearchPlacesResponseMock = (overrideResponse: Partial< PlaceSearchResponse > = {}): PlaceSearchResponse => ({places: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadAddress: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), category: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
+
+export const getGetPhotos1ResponseMock = (overrideResponse: Partial< MapPhotosResponse > = {}): MapPhotosResponse => ({clusters: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({clusterId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), count: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])})), undefined]), photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), date: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
+
+export const getGetLocationInfoResponseMock = (overrideResponse: Partial< LocationInfoResponse > = {}): LocationInfoResponse => ({address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), regionName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 export const getGetPhotoDetailResponseMock = (overrideResponse: Partial< PhotoDetailResponse > = {}): PhotoDetailResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), albumName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 export const getSearchPlacesResponseMock = (overrideResponse: Partial< PlaceSearchResponse > = {}): PlaceSearchResponse => ({places: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadAddress: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), category: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
