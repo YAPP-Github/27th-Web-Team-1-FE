@@ -10,6 +10,14 @@ export interface Album {
   photoCount: number;
 }
 
+//TODO: SelectableAlbum 타입 임시 수정
+export interface SelectableAlbum {
+  id: string;
+  title: string;
+  thumbnail: string;
+  photoCount: number;
+}
+
 export interface AlbumDetailPhoto {
   id: number;
   url: string;

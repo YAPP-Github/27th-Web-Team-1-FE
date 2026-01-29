@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useGetSelectableAlbums } from '@repo/api-client';
+import type { SelectableAlbum } from '@/types/album.type';
 
 // TODO: 사용자 컨텍스트에서 가져오도록 수정
 const TEMP_USER_ID = 1;
@@ -19,7 +20,7 @@ const useAlbumModal = () => {
 
   const { data, isLoading } = useGetSelectableAlbums({ userId: TEMP_USER_ID });
 
-  const filteredAlbums = useMemo(
+  const filteredAlbums: SelectableAlbum[] = useMemo(
     () =>
       (data?.albums ?? [])
         .filter(
