@@ -75,7 +75,7 @@ const AlbumSelectOverlay = ({
             text="앨범 선택"
             variant="primary"
             onClick={onSubmit}
-            disabled={isSearchResultEmpty}
+            disabled={!selectedAlbumId}
             style={{ flex: 1 }}
           />
         </Overlay.Footer>
