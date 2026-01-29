@@ -150,3 +150,5 @@ export const photoListMockData: PhotoListResponse = {
     },
   ],
 };
+
+export const 사진_목록_조회_성공 = photoListMockData;

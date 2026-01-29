@@ -22,3 +22,5 @@ export const selectableAlbumsMockData: SelectableAlbumResponse = {
     },
   ],
 };
+
+export const 선택_가능_앨범_조회_성공 = selectableAlbumsMockData;
