@@ -5,12 +5,12 @@ import TextButton from '@/components/buttons/textButton/TextButton';
 import Input from '@/components/input/Input';
 import { INPUT_TYPE } from '@/components/input/Input.constants';
 import AlbumListContainer from '@/components/album-list-container/AlbumListContainer';
-import { Album } from '@/types/album.type';
+import { SelectableAlbum } from '@/types/album.type';
 import * as S from './AlbumSelectOverlay.styles';
 
 interface AlbumSelectOverlayProps {
   isOpen: boolean;
-  albums: Album[];
+  albums: SelectableAlbum[];
   isLoading: boolean;
   selectedAlbumId: string | null;
   searchQuery: string;

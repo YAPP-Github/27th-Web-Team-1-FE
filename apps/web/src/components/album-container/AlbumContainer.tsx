@@ -30,16 +30,14 @@ const AlbumContainer = ({
   const remainingCount = photoCount - MAX_GRID_PHOTOS;
   const hasMorePhotos = remainingCount > 0;
 
-  const renderPhotoGrid = () => {
-    const gridItems = [];
-
-    for (let i = 0; i < MAX_GRID_PHOTOS; i++) {
+  const renderPhotoGrid = () =>
+    Array.from({ length: MAX_GRID_PHOTOS }).map((_, i) => {
       const photo = displayPhotos[i];
       const isLastPhoto = i === MAX_GRID_PHOTOS - 1;
       const showOverlay = isLastPhoto && hasMorePhotos;
 
-      gridItems.push(
-        <S.PhotoWrapper key={photo?.photoId ?? `empty-${i}`}>
+      return (
+        <S.PhotoWrapper key={photo?.photoId ?? `empty-${i}`} type={type}>
           {photo ? (
             <>
               <S.Photo src={photo.src} alt={`photo-${photo.photoId}`} />
@@ -52,10 +50,7 @@ const AlbumContainer = ({
           )}
         </S.PhotoWrapper>
       );
-    }
-
-    return gridItems;
-  };
+    });
 
   return (
     <S.Container type={type} onClick={onClick}>

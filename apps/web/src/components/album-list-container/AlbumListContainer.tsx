@@ -1,10 +1,10 @@
-import { Album } from '@/types/album.type';
+import { SelectableAlbum } from '@/types/album.type';
 import AlbumRow from '../album-row/AlbumRow';
 import * as S from './AlbumListContainer.styles';
 
 interface AlbumListContainerProps {
   /** 앨범 목록 */
-  albums: Album[];
+  albums: SelectableAlbum[];
   /** 선택된 앨범 ID */
   selectedAlbumId: string | null;
   /** 앨범 선택 핸들러 */

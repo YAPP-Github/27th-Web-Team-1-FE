@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useGetSelectableAlbums } from '@repo/api-client';
+import type { SelectableAlbum } from '@/types/album.type';
 
 // TODO: 사용자 컨텍스트에서 가져오도록 수정
 const TEMP_USER_ID = 1;
@@ -19,16 +20,17 @@ const useAlbumModal = () => {
 
   const { data, isLoading } = useGetSelectableAlbums({ userId: TEMP_USER_ID });
 
-  const filteredAlbums = useMemo(
+  const filteredAlbums: SelectableAlbum[] = useMemo(
     () =>
       (data?.albums ?? [])
-        .filter((album): album is typeof album & { id: number; title: string } =>
-          album.id !== undefined && album.title !== undefined
+        .filter(
+          (album): album is typeof album & { id: number; title: string } =>
+            album.id !== undefined && album.title !== undefined,
         )
         .filter((album) =>
           searchQuery
             ? album.title.toLowerCase().includes(searchQuery.toLowerCase())
-            : true
+            : true,
         )
         .map((album) => ({
           id: String(album.id),
@@ -36,7 +38,7 @@ const useAlbumModal = () => {
           thumbnail: album.thumbnailUrl ?? '',
           photoCount: album.photoCount ?? 0,
         })),
-    [data?.albums, searchQuery]
+    [data?.albums, searchQuery],
   );
 
   const openModal = () => {

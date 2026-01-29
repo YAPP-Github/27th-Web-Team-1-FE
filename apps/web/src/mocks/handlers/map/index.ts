@@ -1,5 +1,6 @@
 import { createHandler } from '@/mocks/createHandler';
 import { mockSearchPlaces } from './searchPlaces/mockSearchPlaces';
+import { mockGetMapPhotosHandler } from './getMapPhotos/mockGetMapPhotos';
 
 const validateQuery = (request: Request): string | null => {
   const url = new URL(request.url);
@@ -12,5 +13,6 @@ const validateQuery = (request: Request): string | null => {
 };
 
 export const mapHandlers = [
+  mockGetMapPhotosHandler,
   createHandler(mockSearchPlaces, '장소_검색_성공', validateQuery),
 ];

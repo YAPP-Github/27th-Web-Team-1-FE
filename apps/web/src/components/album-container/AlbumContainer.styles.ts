@@ -1,16 +1,13 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import {
-  ALBUM_CONTAINER_TYPE,
-  AlbumContainerType,
-} from './AlbumContainer.constants';
+import { ALBUM_CONTAINER_TYPE, AlbumContainerType } from './AlbumContainer.constants';
 
 const containerTypeStyles = {
   small: () => css`
     width: 56px;
   `,
   medium: () => css`
-    width: 146px;
+    width: 100%;
   `,
 };
 
@@ -22,8 +19,9 @@ const gridTypeStyles = {
     padding: 4.94px;
   `,
   medium: () => css`
-    width: 146px;
-    height: 146px;
+    max-width: 180px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     gap: 7.3px;
     padding: 7.3px;
   `,
@@ -32,7 +30,7 @@ const gridTypeStyles = {
 export const Container = styled.div<{ type: AlbumContainerType }>`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${({ type }) => (type === ALBUM_CONTAINER_TYPE.SMALL ? '4px' : '8px')};
   cursor: pointer;
   ${({ type }) => containerTypeStyles[type]()}
 `;
@@ -47,12 +45,12 @@ export const PhotoGrid = styled.div<{ type: AlbumContainerType }>`
   ${({ type }) => gridTypeStyles[type]()}
 `;
 
-export const PhotoWrapper = styled.div`
+export const PhotoWrapper = styled.div<{ type: AlbumContainerType }>`
   position: relative;
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: ${({ type }) => (type === ALBUM_CONTAINER_TYPE.SMALL ? '4px' : '10px')};
 `;
 
 export const Photo = styled.img`
@@ -109,4 +107,3 @@ export const PhotoCount = styled.span`
   ${({ theme }) => theme.typography.body14Semibold}
   color: ${({ theme }) => theme.colors.gray[400]};
 `;
-

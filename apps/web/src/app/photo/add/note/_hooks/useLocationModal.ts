@@ -9,7 +9,9 @@ const DEBOUNCE_DELAY = 100;
 
 const useLocationModal = () => {
   const [selectedLocation, setSelectedLocation] = useState<PlaceResponse | null>(null);
-  const [tempSelectedLocationId, setTempSelectedLocationId] = useState<string | null>(null);
+  const [tempSelectedLocationId, setTempSelectedLocationId] = useState<string | null>(
+    null,
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -25,7 +27,9 @@ const useLocationModal = () => {
 
   const openModal = () => {
     setTempSelectedLocationId(
-      selectedLocation ? `${selectedLocation.longitude}-${selectedLocation.latitude}` : null
+      selectedLocation
+        ? `${selectedLocation.longitude}-${selectedLocation.latitude}`
+        : null,
     );
     setSearchQuery('');
     setIsOpen(true);
@@ -38,7 +42,7 @@ const useLocationModal = () => {
   const submitLocation = () => {
     if (tempSelectedLocationId && locations.length > 0) {
       const location = locations.find(
-        (l) => `${l.longitude}-${l.latitude}` === tempSelectedLocationId
+        (l) => `${l.longitude}-${l.latitude}` === tempSelectedLocationId,
       );
       if (location) {
         setSelectedLocation(location);

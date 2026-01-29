@@ -11,7 +11,7 @@ interface AddressResponse {
 
 const fetchAddress = async (
   latitude: number,
-  longitude: number
+  longitude: number,
 ): Promise<AddressResponse> => {
   const url = buildUrlWithQueryParams(`/api${API_URL.LOCATION.ADDRESS}`, {
     latitude,

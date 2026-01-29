@@ -7,5 +7,5 @@
  */
 
 export type GetSelectableAlbumsParams = {
-userId: number;
+  userId: number;
 };

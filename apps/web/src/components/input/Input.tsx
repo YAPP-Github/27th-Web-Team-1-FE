@@ -4,8 +4,10 @@ import { ChangeEvent } from 'react';
 import * as S from './Input.styles';
 import { DEFAULT_MAX_LENGTH, INPUT_TYPE, InputType } from './Input.constants';
 
-interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'type'> {
+interface InputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange' | 'type'
+> {
   /** 인풋 타입 */
   type?: InputType;
   /** 인풋 값 */
@@ -45,12 +47,7 @@ const Input = ({
     <S.Container>
       <S.InputWrapper isError={isError}>
         {type === INPUT_TYPE.SEARCH && <S.SearchIcon />}
-        <S.StyledInput
-          {...rest}
-          type="text"
-          value={value}
-          onChange={handleChange}
-        />
+        <S.StyledInput {...rest} type="text" value={value} onChange={handleChange} />
         {showCharCount && (
           <S.CharCount>
             {value.length}/{max}

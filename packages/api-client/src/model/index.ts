@@ -34,6 +34,7 @@ export * from './jwtTokenResponse';
 export * from './locationInfoResponse';
 export * from './locationResponse';
 export * from './loginRequest';
+export * from './loginResponse';
 export * from './mapPhotoResponse';
 export * from './mapPhotosResponse';
 export * from './photoDetailResponse';

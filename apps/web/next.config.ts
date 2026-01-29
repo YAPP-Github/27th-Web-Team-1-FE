@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://develop-api.lokit.co.kr';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://develop-api.lokit.co.kr';
 
 const nextConfig: NextConfig = {
   turbopack: {
