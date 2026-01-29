@@ -24,7 +24,7 @@ const usePhotoDelete = () => {
       {
         onSuccess: () => {
           showToast('사진이 삭제되었습니다');
-          setIsModalOpen(false);
+          closeDeleteModal();
           router.back();
         },
         onError: () => {
