@@ -9,4 +9,4 @@
 /**
  * 필드별 에러 목록
  */
-export type ErrorDetailErrors = {[key: string]: string};
+export type ErrorDetailErrors = { [key: string]: string };

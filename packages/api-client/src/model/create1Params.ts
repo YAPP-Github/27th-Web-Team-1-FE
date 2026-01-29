@@ -7,5 +7,5 @@
  */
 
 export type Create1Params = {
-userId: number;
+  userId: number;
 };
