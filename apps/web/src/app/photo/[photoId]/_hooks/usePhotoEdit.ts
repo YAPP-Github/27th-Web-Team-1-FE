@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUpdate } from '@repo/api-client';
+import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast/ToastProvider';
 
@@ -41,7 +41,7 @@ const usePhotoEdit = () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ['getPhotoDetail', data.photoId],
+        queryKey: getGetPhotoDetailQueryKey(data.photoId),
       });
 
       showToast('기록이 수정되었어요');
