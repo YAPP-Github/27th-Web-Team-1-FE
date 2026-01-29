@@ -18,13 +18,15 @@ interface CreateHandlerOptions<TData extends JsonBodyType> {
 export const createHandler = <T extends MockApiResponse<string, JsonBodyType>>(
   config: T,
   responseKey: ResponseKey<T>,
-  options?: CreateHandlerOptions<JsonBodyType> | ((request: Request) => string | null)
+  options?: CreateHandlerOptions<JsonBodyType> | ((request: Request) => string | null),
 ) => {
   const responseItem = config.response[responseKey];
 
   // 하위 호환성: 세 번째 인자가 함수면 validator로 처리
   const { validator, dataResolver } =
-    typeof options === 'function' ? { validator: options, dataResolver: undefined } : (options ?? {});
+    typeof options === 'function'
+      ? { validator: options, dataResolver: undefined }
+      : (options ?? {});
 
   return http[config.method](`*${config.url}`, async ({ request, params }) => {
     await delay(responseItem.delayTime);

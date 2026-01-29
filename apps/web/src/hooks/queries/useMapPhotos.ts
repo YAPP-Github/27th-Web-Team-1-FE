@@ -9,10 +9,7 @@ interface UseMapPhotosParams {
   albumId?: number | null;
 }
 
-const fetchMapPhotos = (
-  params: UseMapPhotosParams,
-  signal?: AbortSignal,
-) => {
+const fetchMapPhotos = (params: UseMapPhotosParams, signal?: AbortSignal) => {
   return customFetcher<MapPhotosResponse>({
     url: '/map/photos',
     method: 'GET',

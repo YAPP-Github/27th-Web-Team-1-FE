@@ -40,7 +40,12 @@ const Textarea = ({
   return (
     <S.Container>
       <S.TextareaWrapper htmlFor={textareaId} isError={isError}>
-        <S.StyledTextarea {...rest} id={textareaId} value={value} onChange={handleChange} />
+        <S.StyledTextarea
+          {...rest}
+          id={textareaId}
+          value={value}
+          onChange={handleChange}
+        />
         <S.TextareaFooter>
           <S.CharCount>
             <S.CurrentCount>{value.length}</S.CurrentCount>

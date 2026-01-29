@@ -6,10 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getCurrentPosition } from '@/utils/getCurrentPosition';
 import { LocationState } from '@/types/map.type';
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
-import {
-  SHEET_CONTEXT_TYPE,
-  SheetContext,
-} from '@/components/bottomSheet/constants';
+import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
 import { DEFAULT_LOCATION, DEFAULT_ZOOM } from './constants';
 import { useSelectableAlbums } from '@/hooks/queries/useSelectableAlbums';
 import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';

@@ -22,13 +22,14 @@ const useAlbumModal = () => {
   const filteredAlbums = useMemo(
     () =>
       (data?.albums ?? [])
-        .filter((album): album is typeof album & { id: number; title: string } =>
-          album.id !== undefined && album.title !== undefined
+        .filter(
+          (album): album is typeof album & { id: number; title: string } =>
+            album.id !== undefined && album.title !== undefined,
         )
         .filter((album) =>
           searchQuery
             ? album.title.toLowerCase().includes(searchQuery.toLowerCase())
-            : true
+            : true,
         )
         .map((album) => ({
           id: String(album.id),
@@ -36,7 +37,7 @@ const useAlbumModal = () => {
           thumbnail: album.thumbnailUrl ?? '',
           photoCount: album.photoCount ?? 0,
         })),
-    [data?.albums, searchQuery]
+    [data?.albums, searchQuery],
   );
 
   const openModal = () => {

@@ -33,7 +33,7 @@ const usePhotoData = ({ photoId, albumIdFromQuery }: UsePhotoDataProps) => {
 
     if (selectableAlbums?.albums && photoDetail?.albumName) {
       const matchedAlbum = selectableAlbums.albums.find(
-        (album) => album.title === photoDetail.albumName
+        (album) => album.title === photoDetail.albumName,
       );
       return matchedAlbum?.id;
     }

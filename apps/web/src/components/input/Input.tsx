@@ -47,12 +47,7 @@ const Input = ({
     <S.Container>
       <S.InputWrapper isError={isError}>
         {type === INPUT_TYPE.SEARCH && <S.SearchIcon />}
-        <S.StyledInput
-          {...rest}
-          type="text"
-          value={value}
-          onChange={handleChange}
-        />
+        <S.StyledInput {...rest} type="text" value={value} onChange={handleChange} />
         {showCharCount && (
           <S.CharCount>
             {value.length}/{max}

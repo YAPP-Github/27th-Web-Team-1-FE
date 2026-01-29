@@ -25,9 +25,7 @@ const BottomSheetContent = ({
       return <AlbumGrid albums={albums} onSelectAlbum={onSelectAlbum} />;
 
     case SHEET_CONTEXT_TYPE.ALBUM_DETAIL:
-      return (
-        <AlbumDetail album={albumDetailById[context.albumId]} />
-      );
+      return <AlbumDetail album={albumDetailById[context.albumId]} />;
 
     default:
       return null;
