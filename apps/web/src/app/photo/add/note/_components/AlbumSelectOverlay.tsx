@@ -1,16 +1,17 @@
 'use client';
 
-import Overlay from '@/components/popup/overlay/Overlay';
+import AlbumListContainer from '@/components/album-list-container/AlbumListContainer';
 import TextButton from '@/components/buttons/textButton/TextButton';
 import Input from '@/components/input/Input';
 import { INPUT_TYPE } from '@/components/input/Input.constants';
-import AlbumListContainer from '@/components/album-list-container/AlbumListContainer';
+import Overlay from '@/components/popup/overlay/Overlay';
 import { SelectableAlbum } from '@/types/album.type';
 import * as S from './AlbumSelectOverlay.styles';
 
 interface AlbumSelectOverlayProps {
   isOpen: boolean;
   albums: SelectableAlbum[];
+  totalAlbumCount: number;
   isLoading: boolean;
   selectedAlbumId: string | null;
   searchQuery: string;
@@ -23,6 +24,7 @@ interface AlbumSelectOverlayProps {
 const AlbumSelectOverlay = ({
   isOpen,
   albums,
+  totalAlbumCount,
   isLoading,
   selectedAlbumId,
   searchQuery,
@@ -31,6 +33,10 @@ const AlbumSelectOverlay = ({
   onClose,
   onSubmit,
 }: AlbumSelectOverlayProps) => {
+  const trimmedSearchQuery = searchQuery.trim();
+  const hasSearchQuery = trimmedSearchQuery.length > 0;
+  const isSearchResultEmpty = hasSearchQuery && albums.length === 0;
+
   return (
     <Overlay isOpen={isOpen} onClose={onClose}>
       <Overlay.Content>
@@ -41,14 +47,18 @@ const AlbumSelectOverlay = ({
             onChange={onChangeSearchQuery}
             placeholder="앨범을 검색해보세요..."
             showCharCount={false}
+            autoFocus
           />
           <S.AlbumListWrapper>
             {(() => {
               if (isLoading) {
                 return <S.LoadingText>로딩 중...</S.LoadingText>;
               }
-              if (albums.length === 0) {
+              if (totalAlbumCount === 0) {
                 return <S.EmptyText>앨범이 없습니다</S.EmptyText>;
+              }
+              if (isSearchResultEmpty) {
+                return <S.EmptyText>검색 결과가 없어요</S.EmptyText>;
               }
               return (
                 <AlbumListContainer
@@ -66,7 +76,7 @@ const AlbumSelectOverlay = ({
             text="앨범 선택"
             variant="primary"
             onClick={onSubmit}
-            disabled={!selectedAlbumId}
+            disabled={isSearchResultEmpty}
             style={{ flex: 1 }}
           />
         </Overlay.Footer>

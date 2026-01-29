@@ -54,6 +54,7 @@ export default function PhotoEditOverlay({
     searchQuery,
     setSearchQuery,
     albums,
+    totalAlbumCount,
     isLoading: isAlbumsLoading,
     isOpen: isAlbumModalOpen,
     openModal: handleAlbumSelect,
@@ -228,6 +229,7 @@ export default function PhotoEditOverlay({
       <AlbumSelectOverlay
         isOpen={isAlbumModalOpen}
         albums={albums}
+        totalAlbumCount={totalAlbumCount}
         isLoading={isAlbumsLoading}
         selectedAlbumId={tempSelectedAlbumId}
         searchQuery={searchQuery}

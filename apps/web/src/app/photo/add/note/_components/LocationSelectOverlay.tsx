@@ -44,14 +44,18 @@ const LocationSelectOverlay = ({
             onChange={onChangeSearchQuery}
             placeholder="위치를 검색해보세요..."
             showCharCount={false}
+            autoFocus
           />
           <S.LocationListWrapper>
             {(() => {
               if (isLoading) {
-                return <S.LoadingText>근처 검색...</S.LoadingText>;
+                return <S.LoadingText>검색 중...</S.LoadingText>;
+              }
+              if (searchQuery.length === 0) {
+                return <S.EmptyText>위치를 검색해보세요</S.EmptyText>;
               }
               if (locations.length === 0) {
-                return <S.EmptyText>검색 결과가 없습니다</S.EmptyText>;
+                return <S.EmptyText>검색 결과가 없어요</S.EmptyText>;
               }
               return (
                 <S.LocationListContainer>

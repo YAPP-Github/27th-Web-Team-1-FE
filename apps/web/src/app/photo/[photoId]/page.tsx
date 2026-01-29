@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import AlbumIcon from '@/assets/images/album.svg';
@@ -39,6 +40,19 @@ export default function PhotoViewPage() {
 
   const { isEditing, editingPhotoId, openEditOverlay, closeEditOverlay, saveEdit } =
     usePhotoEdit();
+
+  const [isMemoExpanded, setIsMemoExpanded] = useState(false);
+  const [showMoreButton, setShowMoreButton] = useState(false);
+  const memoRef = useRef<HTMLParagraphElement>(null);
+
+  // 메모가 2줄을 초과하는지 확인
+  useEffect(() => {
+    if (memoRef.current) {
+      const lineHeight = parseInt(getComputedStyle(memoRef.current).lineHeight);
+      const height = memoRef.current.scrollHeight;
+      setShowMoreButton(height > lineHeight * 2);
+    }
+  }, [photoDetail?.description]);
 
   // 현재 표시할 사진 결정 (currentPhoto 우선, 없으면 photoDetail)
   const displayPhoto = currentPhoto ?? photoDetail;
@@ -97,7 +111,18 @@ export default function PhotoViewPage() {
                   {photoDetail.uploaderName || '알 수 없음'}
                 </S.UploaderName>
               </S.UploaderInfo>
-              {photoDetail.description && <S.Memo>{photoDetail.description}</S.Memo>}
+              {photoDetail.description && (
+                  <S.MemoWrapper>
+                    <S.Memo ref={memoRef} $isExpanded={isMemoExpanded}>
+                      {photoDetail.description}
+                    </S.Memo>
+                    {showMoreButton && !isMemoExpanded && (
+                      <S.MoreButton onClick={() => setIsMemoExpanded(true)}>
+                        더보기
+                      </S.MoreButton>
+                    )}
+                  </S.MemoWrapper>
+                )}
             </S.ContainerA>
 
             <S.ContainerB>
