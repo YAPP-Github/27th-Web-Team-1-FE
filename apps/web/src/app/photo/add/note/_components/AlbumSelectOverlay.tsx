@@ -11,7 +11,6 @@ import * as S from './AlbumSelectOverlay.styles';
 interface AlbumSelectOverlayProps {
   isOpen: boolean;
   albums: SelectableAlbum[];
-  totalAlbumCount: number;
   isLoading: boolean;
   selectedAlbumId: string | null;
   searchQuery: string;
@@ -24,7 +23,6 @@ interface AlbumSelectOverlayProps {
 const AlbumSelectOverlay = ({
   isOpen,
   albums,
-  totalAlbumCount,
   isLoading,
   selectedAlbumId,
   searchQuery,
@@ -35,6 +33,7 @@ const AlbumSelectOverlay = ({
 }: AlbumSelectOverlayProps) => {
   const trimmedSearchQuery = searchQuery.trim();
   const hasSearchQuery = trimmedSearchQuery.length > 0;
+  const hasNoAlbums = !hasSearchQuery && albums.length === 0;
   const isSearchResultEmpty = hasSearchQuery && albums.length === 0;
 
   return (
@@ -54,7 +53,7 @@ const AlbumSelectOverlay = ({
               if (isLoading) {
                 return <S.LoadingText>로딩 중...</S.LoadingText>;
               }
-              if (totalAlbumCount === 0) {
+              if (hasNoAlbums) {
                 return <S.EmptyText>앨범이 없습니다</S.EmptyText>;
               }
               if (isSearchResultEmpty) {

@@ -71,7 +71,6 @@ const useAlbumModal = () => {
     searchQuery,
     setSearchQuery,
     albums: filteredAlbums,
-    totalAlbumCount: data?.albums?.length ?? 0,
     isLoading,
     isOpen,
     openModal,
