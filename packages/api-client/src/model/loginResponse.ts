@@ -5,9 +5,13 @@
  * Lokit API 문서
  * OpenAPI spec version: 1.0.0
  */
+import type { LoginPhotoResponse } from './loginPhotoResponse';
+import type { AlbumMapInfoResponse } from './albumMapInfoResponse';
 
 export interface LoginResponse {
   userId?: number;
   workspaceId?: number;
   albumId?: number;
+  photos?: LoginPhotoResponse[];
+  albumLocation?: AlbumMapInfoResponse;
 }

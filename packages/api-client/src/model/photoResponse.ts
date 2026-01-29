@@ -19,4 +19,6 @@ export interface PhotoResponse {
   location?: LocationResponse;
   /** 사진 설명 */
   description?: string;
+  /** 사진의 촬영 일시 */
+  takenAt?: string;
 }
