@@ -8,3 +8,6 @@ export type SheetContext =
   | { type: typeof SHEET_CONTEXT_TYPE.HOME }
   | { type: typeof SHEET_CONTEXT_TYPE.ALBUM_LIST }
   | { type: typeof SHEET_CONTEXT_TYPE.ALBUM_DETAIL; albumId: number };
+
+export const MIN_HEIGHT = 160;
+export const MID_HEIGHT = 394;

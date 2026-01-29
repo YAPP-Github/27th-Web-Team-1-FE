@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
+import { MID_HEIGHT, MIN_HEIGHT, SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 
 export function useBottomSheetController(context: SheetContext) {
-  const MIN_HEIGHT = 160;
-  const MID_HEIGHT = 394;
-
   const getMaxHeight = () => (typeof window !== 'undefined' ? window.innerHeight : 800);
 
   const [height, setHeight] = useState(MIN_HEIGHT);
