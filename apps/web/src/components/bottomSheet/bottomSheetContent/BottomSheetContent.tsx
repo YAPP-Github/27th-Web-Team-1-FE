@@ -1,5 +1,5 @@
 import AlbumDetail from '../\balbumDetail/AlbumDetail';
-import { SheetContext } from '../_context/SheetContext';
+import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 import AlbumGrid from '../albumGrid/AlbumGrid';
 import AlbumRow from '../albumRow/AlbumRow';
 import type { Album, AlbumDetailData } from '@/types/album.type';
@@ -18,13 +18,13 @@ const BottomSheetContent = ({
   onSelectAlbum,
 }: BottomSheetContentProps) => {
   switch (context.type) {
-    case 'home':
+    case SHEET_CONTEXT_TYPE.HOME:
       return <AlbumRow albums={albums} onSelectAlbum={onSelectAlbum} />;
 
-    case 'albumList':
+    case SHEET_CONTEXT_TYPE.ALBUM_LIST:
       return <AlbumGrid albums={albums} onSelectAlbum={onSelectAlbum} />;
 
-    case 'albumDetail':
+    case SHEET_CONTEXT_TYPE.ALBUM_DETAIL:
       return (
         <AlbumDetail album={albumDetailById[context.albumId]} />
       );

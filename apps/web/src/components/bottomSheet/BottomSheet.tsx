@@ -7,7 +7,7 @@ import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import * as S from './BottomSheet.styles';
 import MenuButton from '../buttons/menuButton/MenuButton';
 import TextButton from '../buttons/textButton/TextButton';
-import { SheetContext } from './_context/SheetContext';
+import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
 import type { Album, AlbumDetailData } from '@/types/album.type';
@@ -62,12 +62,12 @@ const BottomSheet = ({
   const handlePointerUp = () => {
     setIsDragging(false);
 
-    if (context.type === 'albumDetail') {
+    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
       snapHeightOnly(height);
       return;
     }
 
-    if (height > MID_HEIGHT && context.type === 'albumList') {
+    if (height > MID_HEIGHT && context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       snapHeightOnly(height);
       return;
     }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SheetContext } from '../_context/SheetContext';
+import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 
 export function useBottomSheetController(context: SheetContext) {
   const MIN_HEIGHT = 160;
@@ -10,13 +10,13 @@ export function useBottomSheetController(context: SheetContext) {
   const [height, setHeight] = useState(MIN_HEIGHT);
 
   useEffect(() => {
-    if (context.type === 'home') {
+    if (context.type === SHEET_CONTEXT_TYPE.HOME) {
       setHeight(MIN_HEIGHT);
     }
-    if (context.type === 'albumList') {
+    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       setHeight(MID_HEIGHT);
     }
-    if (context.type === 'albumDetail') setHeight(MID_HEIGHT);
+    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) setHeight(MID_HEIGHT);
   }, [context]);
 
   const clampHeight = (nextHeight: number) => {
@@ -34,10 +34,10 @@ export function useBottomSheetController(context: SheetContext) {
 
   const deriveContextFromHeight = (height: number): SheetContext => {
     if (height < (MIN_HEIGHT + MID_HEIGHT) / 2) {
-      return { type: 'home' };
+      return { type: SHEET_CONTEXT_TYPE.HOME };
     }
 
-    return { type: 'albumList' };
+    return { type: SHEET_CONTEXT_TYPE.ALBUM_LIST };
   };
 
   return {
