@@ -45,8 +45,14 @@ export default function PhotoViewPage() {
 
   const { isOverlayVisible, longPressHandlers } = useLongPress();
 
-  const { isEditing, editingPhotoId, openEditOverlay, closeEditOverlay, saveEdit } =
-    usePhotoEdit();
+  const {
+    isEditing,
+    isSaving,
+    editingPhotoId,
+    openEditOverlay,
+    closeEditOverlay,
+    saveEdit,
+  } = usePhotoEdit();
 
   const {
     isModalOpen: isDeleteModalOpen,
@@ -190,6 +196,7 @@ export default function PhotoViewPage() {
             photoId={editingPhotoId}
             onClose={closeEditOverlay}
             onSave={saveEdit}
+            isSaving={isSaving}
           />
         )}
       </AnimatePresence>

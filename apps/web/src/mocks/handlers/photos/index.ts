@@ -6,6 +6,7 @@ import { 사진_상세_목록, 사진_상세_조회_성공 } from './getPhotoDet
 import { mockGetPhotos } from './getPhotos/mockGetPhotos';
 import { mockGetPresignedUrl } from './getPresignedUrl/mockGetPresignedUrl';
 import { s3UploadHandler } from './getPresignedUrl/mockS3Upload';
+import { mockUpdatePhoto } from './updatePhoto/mockUpdatePhoto';
 
 export const photosHandlers = [
   createHandler(mockGetPhotoDetail, '사진_상세_조회_성공', {
@@ -19,4 +20,5 @@ export const photosHandlers = [
   s3UploadHandler,
   createHandler(mockCreatePhoto, '사진_생성_성공'),
   createHandler(mockDeletePhoto, '사진_삭제_성공'),
+  createHandler(mockUpdatePhoto, '사진_수정_성공'),
 ];
