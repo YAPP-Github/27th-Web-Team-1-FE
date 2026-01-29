@@ -43,7 +43,7 @@ const BottomSheet = ({
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
 
     startY.current = e.clientY;
     startHeight.current = height;

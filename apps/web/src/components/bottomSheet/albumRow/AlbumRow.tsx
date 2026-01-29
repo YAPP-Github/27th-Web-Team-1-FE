@@ -15,18 +15,20 @@ const AlbumRow = ({ albums, onSelectAlbum }: AlbumRowProps) => {
   const scrollLeft = useRef(0);
 
   const onMouseDown = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+
     isDragging.current = true;
     startX.current = e.pageX;
-    scrollLeft.current = containerRef.current!.scrollLeft;
+    scrollLeft.current = containerRef.current.scrollLeft;
   };
 
   const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return;
+    if (!isDragging.current || !containerRef.current) return;
     e.preventDefault();
 
     const x = e.pageX;
     const walk = x - startX.current;
-    containerRef.current!.scrollLeft = scrollLeft.current - walk;
+    containerRef.current.scrollLeft = scrollLeft.current - walk;
   };
 
   const onMouseUp = () => {
