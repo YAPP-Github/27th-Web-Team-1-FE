@@ -1,8 +1,13 @@
 import { getLokitAPIMock } from '@repo/api-client';
 import { customHandlers } from './handlers/index';
 
-// photos 관련 핸들러 제외 (customHandlers에서 오버라이드)
-const excludedKeywords = ['/photos/presigned-url', '/photos'];
+// customHandlers에서 오버라이드하는 엔드포인트 제외
+const excludedKeywords = [
+  '/albums/selectable',
+  '/photos/presigned-url',
+  '/photos',
+  '/map/photos',
+];
 
 const filteredLokitHandlers = getLokitAPIMock().filter((handler) => {
   const path = handler.info.path;

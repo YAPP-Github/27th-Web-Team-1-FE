@@ -1,10 +1,8 @@
-import type { AlbumWithPhotosResponse, PhotoListResponse } from '@repo/api-client';
-import type { Album, AlbumDetailData } from '@/types/album.type';
-import type { MapPin } from '@/types/map.type';
+import type { PhotoListResponse } from '@repo/api-client';
 
 const center = { latitude: 37.5665, longitude: 126.978 };
 
-const photoListResponseMock: PhotoListResponse = {
+export const photoListMockData: PhotoListResponse = {
   albums: [
     {
       id: 1,
@@ -152,55 +150,3 @@ const photoListResponseMock: PhotoListResponse = {
     },
   ],
 };
-
-const safeAlbums: AlbumWithPhotosResponse[] = photoListResponseMock.albums ?? [];
-
-export const albumList: Album[] = safeAlbums.map((album) => {
-  const photoList = (album.photos ?? [])
-    .filter((photo) => Boolean(photo?.url))
-    .map((photo) => ({
-      photoId: String(photo.id ?? ''),
-      src: photo.url ?? '',
-    }));
-
-  return {
-    id: album.id ?? 0,
-    title: album.title ?? '알 수 없는 앨범',
-    photoList,
-    photoCount: album.photoCount ?? photoList.length,
-  };
-});
-
-export const albumDetailById = safeAlbums.reduce<Record<number, AlbumDetailData>>(
-  (acc, album) => {
-    const albumId = album.id ?? 0;
-    acc[albumId] = {
-      id: albumId,
-      title: album.title ?? '알 수 없는 앨범',
-      photos: (album.photos ?? []).map((photo) => ({
-        id: photo.id ?? 0,
-        url: photo.url ?? '',
-      })),
-    };
-    return acc;
-  },
-  {},
-);
-
-export const mapPins: MapPin[] = safeAlbums.flatMap((album) => {
-  const albumId = album.id ?? 0;
-  return (album.photos ?? [])
-    .filter((photo) => {
-      const latitude = photo?.location?.latitude;
-      const longitude = photo?.location?.longitude;
-      return typeof latitude === 'number' && typeof longitude === 'number';
-    })
-    .map((photo) => ({
-      id: photo.id ?? 0,
-      albumId,
-      latitude: photo.location?.latitude ?? center.latitude,
-      longitude: photo.location?.longitude ?? center.longitude,
-      imageUrl: photo.url ?? album.thumbnailUrl ?? 'https://picsum.photos/200/200',
-      imageCount: 1,
-    }));
-});
