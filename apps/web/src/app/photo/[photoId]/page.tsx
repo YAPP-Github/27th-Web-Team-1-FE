@@ -8,8 +8,15 @@ import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import DeleteConfirmModal from './_components/DeleteConfirmModal';
 import PhotoEditOverlay from './_components/PhotoEditOverlay';
-import { useLongPress, usePhotoData, usePhotoEdit, usePhotoSlider } from './_hooks';
+import {
+  useLongPress,
+  usePhotoData,
+  usePhotoDelete,
+  usePhotoEdit,
+  usePhotoSlider,
+} from './_hooks';
 import * as S from './page.styles';
 
 export default function PhotoViewPage() {
@@ -40,6 +47,14 @@ export default function PhotoViewPage() {
 
   const { isEditing, editingPhotoId, openEditOverlay, closeEditOverlay, saveEdit } =
     usePhotoEdit();
+
+  const {
+    isModalOpen: isDeleteModalOpen,
+    isDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+    confirmDelete,
+  } = usePhotoDelete();
 
   const [isMemoExpanded, setIsMemoExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
@@ -99,7 +114,9 @@ export default function PhotoViewPage() {
                 <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
                   기록 수정하기
                 </MenuHeader.Item>
-                <MenuHeader.Item variant="danger">사진 삭제하기</MenuHeader.Item>
+                <MenuHeader.Item variant="danger" onClick={openDeleteModal}>
+                  사진 삭제하기
+                </MenuHeader.Item>
               </MenuHeader.Menu>
             </MenuHeader>
           </S.HeaderWrapper>
@@ -176,6 +193,13 @@ export default function PhotoViewPage() {
           />
         )}
       </AnimatePresence>
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        isDeleting={isDeleting}
+        onClose={closeDeleteModal}
+        onConfirm={() => confirmDelete(displayPhotoId)}
+      />
     </S.Container>
   );
 }
