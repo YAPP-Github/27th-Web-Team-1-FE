@@ -48,7 +48,8 @@ export default function PhotoViewPage() {
   // 메모가 2줄을 초과하는지 확인
   useEffect(() => {
     if (memoRef.current) {
-      const lineHeight = parseInt(getComputedStyle(memoRef.current).lineHeight);
+      const style = getComputedStyle(memoRef.current);
+      const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
       const height = memoRef.current.scrollHeight;
       setShowMoreButton(height > lineHeight * 2);
     }
@@ -112,17 +113,17 @@ export default function PhotoViewPage() {
                 </S.UploaderName>
               </S.UploaderInfo>
               {photoDetail.description && (
-                  <S.MemoWrapper>
-                    <S.Memo ref={memoRef} $isExpanded={isMemoExpanded}>
-                      {photoDetail.description}
-                    </S.Memo>
-                    {showMoreButton && !isMemoExpanded && (
-                      <S.MoreButton onClick={() => setIsMemoExpanded(true)}>
-                        더보기
-                      </S.MoreButton>
-                    )}
-                  </S.MemoWrapper>
-                )}
+                <S.MemoWrapper>
+                  <S.Memo ref={memoRef} $isExpanded={isMemoExpanded}>
+                    {photoDetail.description}
+                  </S.Memo>
+                  {showMoreButton && !isMemoExpanded && (
+                    <S.MoreButton onClick={() => setIsMemoExpanded(true)}>
+                      더보기
+                    </S.MoreButton>
+                  )}
+                </S.MemoWrapper>
+              )}
             </S.ContainerA>
 
             <S.ContainerB>
