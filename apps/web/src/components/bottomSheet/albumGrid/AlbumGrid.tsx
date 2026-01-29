@@ -31,6 +31,7 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
           value={searchValue}
           onChange={handleSearchChange}
           placeholder="앨범을 검색해보세요..."
+          showCharCount={false}
         />
       </S.InputSection>
       <S.GridSection>
