@@ -1,4 +1,4 @@
-import AlbumDetail from '../\balbumDetail/AlbumDetail';
+import AlbumDetail from '../albumDetail/AlbumDetail';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 import AlbumGrid from '../albumGrid/AlbumGrid';
 import AlbumRow from '../albumRow/AlbumRow';
