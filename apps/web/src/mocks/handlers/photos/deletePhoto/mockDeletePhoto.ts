@@ -2,7 +2,7 @@ import { API_URL } from '@/constants';
 import type { MockApiResponse } from '@/mocks/types';
 
 export const mockDeletePhoto = {
-  url: `${API_URL.PHOTOS.BASE}/:id`,
+  url: API_URL.PHOTOS.DETAIL(':id'),
   description: '사진 삭제',
   method: 'delete',
   response: {
