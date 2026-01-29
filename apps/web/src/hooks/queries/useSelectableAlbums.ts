@@ -21,9 +21,8 @@ export const useSelectableAlbums = () => {
     return (query.data?.albums ?? []).map((album) => ({
       id: album.id ?? 0,
       title: album.title ?? '알 수 없는 앨범',
-      // TODO: API 스펙 변경 시 photoList가 string[]으로 변경될 수 있음
-      photoList: album.thumbnailUrl
-        ? [{ photoId: 'thumbnail', src: album.thumbnailUrl }]
+      photoList: album.thumbnailUrls?.[0]
+        ? [{ photoId: 'thumbnail', src: album.thumbnailUrls[0] }]
         : [],
       photoCount: album.photoCount ?? 0,
     }));

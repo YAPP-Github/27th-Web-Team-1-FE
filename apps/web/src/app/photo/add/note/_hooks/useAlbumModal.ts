@@ -38,7 +38,7 @@ const useAlbumModal = () => {
         .map((album) => ({
           id: String(album.id),
           title: album.title,
-          thumbnail: album.thumbnailUrl ?? '',
+          thumbnail: album.thumbnailUrls?.[0] ?? '',
           photoCount: album.photoCount ?? 0,
         })),
     [data?.albums, trimmedSearchQuery],
