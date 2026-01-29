@@ -11,6 +11,7 @@ import {
   SheetContext,
 } from '@/components/bottomSheet/constants';
 import { albumDetailById, albumList, mapPins } from './mockData';
+import { DEFAULT_LOCATION, DEFAULT_ZOOM } from './constants';
 
 export default function MapPage() {
   const [viewState, setViewState] = useState<LocationState | null>(null);
@@ -26,15 +27,11 @@ export default function MapPage() {
         setViewState({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
-          zoom: 14,
+          zoom: DEFAULT_ZOOM,
         });
       } catch (err) {
         console.log(err);
-        setViewState({
-          latitude: 37.5665,
-          longitude: 126.978,
-          zoom: 12,
-        });
+        setViewState(DEFAULT_LOCATION);
       }
     };
 
