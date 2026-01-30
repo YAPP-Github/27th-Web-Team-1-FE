@@ -107,8 +107,11 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
       {
         onSuccess: () => {
           showToast('사진이 추가되었습니다');
-          // TODO: 앨범이 선택되어 있으면 앨범 상세로, 아니면 홈으로 이동
-          router.push(ROUTES.HOME);
+          if (selectedAlbum) {
+            router.push(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
+          } else {
+            router.push(ROUTES.HOME);
+          }
         },
         onError: (error) => {
           console.error('Upload failed:', error);

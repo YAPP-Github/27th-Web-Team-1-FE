@@ -1,5 +1,8 @@
 export const ROUTES = {
   HOME: '/',
+  ALBUM: {
+    DETAIL: (albumId: number) => `/album/${albumId}`,
+  },
   PHOTO: {
     ADD: '/photo/add',
     NOTE: {
