@@ -21,8 +21,8 @@ export const useSelectableAlbums = () => {
     return (query.data?.albums ?? []).map((album) => ({
       id: album.id ?? 0,
       title: album.title ?? '알 수 없는 앨범',
-      photoList: album.thumbnailUrls?.[0]
-        ? [{ photoId: 'thumbnail', src: album.thumbnailUrls[0] }]
+      photoList: album.thumbnailUrl
+        ? [{ photoId: 'thumbnail', src: album.thumbnailUrl }]
         : [],
       photoCount: album.photoCount ?? 0,
     }));

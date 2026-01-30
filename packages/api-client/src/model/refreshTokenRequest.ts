@@ -6,6 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * 리프레시 토큰 요청
+ */
 export interface RefreshTokenRequest {
+  /** 리프레시 토큰 */
   refreshToken?: string;
 }

@@ -6,10 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * 로그인 요청
- */
-export interface LoginRequest {
-  /** 사용자 이메일 */
-  email?: string;
-}
+export type UpdateParams = {
+  userId: number;
+};

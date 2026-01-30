@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast/ToastProvider';
+import { getUserIdFromCookie } from '@/auth/cookies';
 
 interface EditData {
   photoId: number;
@@ -44,6 +45,12 @@ const usePhotoEdit = () => {
   };
 
   const saveEdit = (data: EditData) => {
+    const userId = getUserIdFromCookie();
+    if (userId === null) {
+      showToast('로그인이 필요합니다');
+      return;
+    }
+
     updatePhoto({
       id: data.photoId,
       data: {
@@ -52,6 +59,7 @@ const usePhotoEdit = () => {
         latitude: data.location?.latitude,
         longitude: data.location?.longitude,
       },
+      params: { userId },
     });
   };
 

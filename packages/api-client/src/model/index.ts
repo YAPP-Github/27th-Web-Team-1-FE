@@ -8,6 +8,7 @@
 
 export * from './albumMapInfoResponse';
 export * from './albumRequest';
+export * from './albumThumbnails';
 export * from './albumWithPhotosResponse';
 export * from './apiResponseErrorDetail';
 export * from './boundingBoxResponse';
@@ -27,6 +28,8 @@ export * from './getPhotosParams';
 export * from './getPresignedUrlParams';
 export * from './getSelectableAlbumsParams';
 export * from './greetingResponse';
+export * from './homeParams';
+export * from './homeResponse';
 export * from './idResponse';
 export * from './joinByInviteCodeParams';
 export * from './joinWorkspaceRequest';
@@ -50,4 +53,5 @@ export * from './searchPlacesParams';
 export * from './selectableAlbum';
 export * from './selectableAlbumResponse';
 export * from './updateAlbumTitleRequest';
+export * from './updateParams';
 export * from './updatePhotoRequest';

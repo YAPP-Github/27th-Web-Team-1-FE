@@ -7,15 +7,15 @@
  */
 
 /**
- * 선택 가능한 앨범 정보
+ * 앨범 썸네일 정보
  */
-export interface SelectableAlbum {
+export interface AlbumThumbnails {
   /** 앨범 ID */
   id?: number;
-  /** 앨범 제목 */
+  /** 앨범 ID */
   title?: string;
-  /** 앨범 내 사진 수 */
+  /** 앨범 ID */
   photoCount?: number;
-  /** 앨범 썸네일 URL */
-  thumbnailUrl?: string;
+  /** 앨범 썸네일 사진들 (최대 4장) */
+  thumbnailUrls?: string[];
 }

@@ -32,7 +32,6 @@ export const usePhotoUpload = () => {
           fileName: photo.filename,
           contentType,
         },
-        params: { userId },
       });
 
       if (!presignedUrlResponse.presignedUrl || !presignedUrlResponse.objectUrl) {

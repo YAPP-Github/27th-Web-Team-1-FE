@@ -8,10 +8,18 @@
 import type { LoginPhotoResponse } from './loginPhotoResponse';
 import type { AlbumMapInfoResponse } from './albumMapInfoResponse';
 
+/**
+ * 로그인 응답
+ */
 export interface LoginResponse {
+  /** 사용자 ID */
   userId?: number;
+  /** 워크스페이스 ID */
   workspaceId?: number;
+  /** 앨범 ID */
   albumId?: number;
+  /** 사진 목록 */
   photos?: LoginPhotoResponse[];
+  /** 앨범 위치 정보 */
   albumLocation?: AlbumMapInfoResponse;
 }

@@ -6,10 +6,18 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * 로그인 사진 응답
+ */
 export interface LoginPhotoResponse {
+  /** 사진 ID */
   photoId?: number;
+  /** 사진 URL */
   url?: string;
+  /** 경도 */
   longitude?: number;
+  /** 위도 */
   latitude?: number;
+  /** 사진 설명 */
   description?: string;
 }
