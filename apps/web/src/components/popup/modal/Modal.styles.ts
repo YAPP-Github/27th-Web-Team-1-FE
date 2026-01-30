@@ -12,11 +12,14 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 24px;
+  gap: 12px;
 `;
 
 export const Footer = styled.footer`
-  width: 100%;
+  width: calc(100% + 48px);
+  margin: 0 -24px -24px -24px;
   display: flex;
   justify-content: center;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
