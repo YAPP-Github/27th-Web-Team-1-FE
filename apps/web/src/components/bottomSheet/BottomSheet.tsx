@@ -114,7 +114,7 @@ const BottomSheet = ({
           <div className="handle" />
         </S.HandleBar>
 
-        <S.Content>
+        <S.Content $noPadding={context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL}>
           <BottomSheetContent
             context={context}
             albums={albums}

@@ -53,8 +53,8 @@ export const ActionColumn = styled.div<ActionColumnProps>`
   z-index: 1001;
 `;
 
-export const Content = styled.div`
-  padding: 0px 20px;
+export const Content = styled.div<{ $noPadding?: boolean }>`
+  padding: ${({ $noPadding }) => ($noPadding ? '0' : '0px 20px')};
   flex: 1;
   overflow: hidden;
 `;
