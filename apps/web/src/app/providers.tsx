@@ -10,6 +10,7 @@ import { MSWProvider } from '@/mocks/MSWProvider';
 import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider } from '@repo/api-client';
 import { getAuthorizationHeader } from '@/auth/cookies';
+import { API_URL } from '@/constants/apiUrl';
 import { ToastProvider } from '@/components/toast';
 
 export type AppProvidersProps = PropsWithChildren<{
@@ -39,7 +40,7 @@ export function AppProviders({
 
   useEffect(() => {
     setAuthHeaderProvider((config) => {
-      if (config.url.includes('/auth/login')) {
+      if (config.url.includes(API_URL.AUTH.LOGIN)) {
         return undefined;
       }
       return getAuthorizationHeader();

@@ -1,46 +1,18 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { clearUserIdCookie, getUserIdFromCookie, setUserIdCookie } from '@/auth/cookies';
 import Button from '@/components/buttons/button/Button';
 import Input from '@/components/input/Input';
+import { login } from '@repo/api-client';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useState } from 'react';
 import * as S from './page.styles';
-import { clearUserIdCookie, getUserIdFromCookie, setUserIdCookie } from '@/auth/cookies';
-
-type LoginApiResponse = {
-  code: number;
-  message: string;
-  data?: {
-    userId?: number;
-  };
-};
-
-const resolveLoginUrl = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-  return baseUrl ? `${baseUrl}/auth/login` : '/auth/login';
-};
 
 const requestLogin = async (email: string) => {
-  const response = await fetch(resolveLoginUrl(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
+  const response = await login({ email: email.trim() });
+  const userId = response.userId;
 
-  let payload: LoginApiResponse | null = null;
-  try {
-    payload = (await response.json()) as LoginApiResponse;
-  } catch {
-    payload = null;
-  }
-
-  if (!response.ok) {
-    const message = payload?.message ?? '로그인에 실패했습니다.';
-    throw new Error(message);
-  }
-
-  const userId = payload?.data?.userId;
-  if (!userId) {
+  if (userId === undefined || userId === null) {
     throw new Error('응답에서 userId를 찾을 수 없습니다.');
   }
 
