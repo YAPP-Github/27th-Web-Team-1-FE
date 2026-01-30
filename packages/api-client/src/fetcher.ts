@@ -17,11 +17,37 @@ export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
   authHeaderProvider = provider;
 };
 
-const PROXY_PREFIX = '/api';
-
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
+
+function resolveBaseUrl() {
+  if (typeof process === 'undefined') {
+    return '';
+  }
+
+  return (
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.EXPO_PUBLIC_API_BASE_URL ??
+    process.env.API_BASE_URL ??
+    ''
+  );
+}
+
+function joinUrl(url: string, baseUrl: string) {
+  if (url.startsWith('http')) {
+    return url;
+  }
+
+  if (!baseUrl) {
+    return url;
+  }
+
+  const normalizedBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+
+  return `${normalizedBase}${normalizedPath}`;
+}
 
 /**
  * Path parameter 치환: /users/{userId} → /users/123
@@ -84,10 +110,9 @@ export async function customFetcher<TResponse>(
   config: FetcherConfig,
   options: RequestInit = {},
 ): Promise<TResponse> {
-  const urlWithPath = buildUrlWithPathParams(
-    `${PROXY_PREFIX}${config.url}`,
-    config.pathParams,
-  );
+  const baseUrl = resolveBaseUrl();
+  const baseTargetUrl = joinUrl(config.url, baseUrl);
+  const urlWithPath = buildUrlWithPathParams(baseTargetUrl, config.pathParams);
   const targetUrl = buildUrlWithQueryParams(urlWithPath, config.params);
   const body = config.body ?? config.data;
   const headers = new Headers({

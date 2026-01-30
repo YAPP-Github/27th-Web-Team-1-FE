@@ -1,12 +1,51 @@
 'use client';
 
-import { clearUserIdCookie, getUserIdFromCookie, setUserIdCookie } from '@/auth/cookies';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/buttons/button/Button';
 import Input from '@/components/input/Input';
-import { login } from '@repo/api-client';
-import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
 import * as S from './page.styles';
+import { clearUserIdCookie, getUserIdFromCookie, setUserIdCookie } from '@/auth/cookies';
+
+type LoginApiResponse = {
+  code: number;
+  message: string;
+  data?: {
+    userId?: number;
+  };
+};
+
+const resolveLoginUrl = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
+  return baseUrl ? `${baseUrl}/auth/login` : '/auth/login';
+};
+
+const requestLogin = async (email: string) => {
+  const response = await fetch(resolveLoginUrl(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  let payload: LoginApiResponse | null = null;
+  try {
+    payload = (await response.json()) as LoginApiResponse;
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const message = payload?.message ?? '로그인에 실패했습니다.';
+    throw new Error(message);
+  }
+
+  const userId = payload?.data?.userId;
+  if (!userId) {
+    throw new Error('응답에서 userId를 찾을 수 없습니다.');
+  }
+
+  return userId;
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,12 +66,9 @@ export default function LoginPage() {
 
     try {
       setIsSubmitting(true);
-      const response = await login({ email: email.trim() });
-      if (!response?.userId) {
-        throw new Error('유효하지 않은 응답입니다.');
-      }
-      setUserIdCookie(response.userId);
-      setUserId(response.userId);
+      const receivedUserId = await requestLogin(email.trim());
+      setUserIdCookie(receivedUserId);
+      setUserId(receivedUserId);
       router.push('/map');
     } catch (error) {
       const message = error instanceof Error ? error.message : '로그인에 실패했습니다.';
