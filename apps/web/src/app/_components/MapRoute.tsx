@@ -12,8 +12,7 @@ import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
 import { useSelectableAlbums } from '@/hooks/queries/useSelectableAlbums';
 import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';
 import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
-import { useGetAlbumMapInfo } from '@repo/api-client';
-import type { AlbumDetailData } from '@/types/album.type';
+import { useGetAlbumMapInfo, type AlbumWithPhotosResponse } from '@repo/api-client';
 import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
 import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
@@ -72,8 +71,8 @@ export default function MapRoute() {
     albumId: selectedAlbumId,
   });
 
-  const albumDetailById = useMemo<Record<number, AlbumDetailData>>(() => {
-    if (!albumDetail) return {};
+  const albumDetailById = useMemo<Record<number, AlbumWithPhotosResponse>>(() => {
+    if (!albumDetail?.id) return {};
     return { [albumDetail.id]: albumDetail };
   }, [albumDetail]);
 

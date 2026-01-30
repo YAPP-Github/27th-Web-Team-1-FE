@@ -1,10 +1,10 @@
-import { Album } from '@/types/album.type';
+import type { SelectableAlbum } from '@repo/api-client';
 import * as S from './AlbumRow.styles';
 import AlbumContainer from '@/components/album-container/AlbumContainer';
 import { useRef } from 'react';
 
 interface AlbumRowProps {
-  albums: Album[];
+  albums: SelectableAlbum[];
   onSelectAlbum: (albumId: number) => void;
 }
 
@@ -46,11 +46,11 @@ const AlbumRow = ({ albums, onSelectAlbum }: AlbumRowProps) => {
       {albums.map((album) => (
         <AlbumContainer
           key={album.id}
-          title={album.title}
+          title={album.title ?? ''}
           type="small"
-          photoList={album.photoList}
-          photoCount={album.photoCount}
-          onClick={() => onSelectAlbum(album.id)}
+          thumbnailUrl={album.thumbnailUrl}
+          photoCount={album.photoCount ?? 0}
+          onClick={() => onSelectAlbum(album.id ?? 0)}
         />
       ))}
     </S.Wrapper>

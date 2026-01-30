@@ -4,7 +4,7 @@ interface AlbumRowProps {
   /** 앨범 제목 */
   title: string;
   /** 앨범 썸네일 이미지 URL */
-  thumbnail: string;
+  thumbnail?: string;
   /** 사진 개수 */
   photoCount: number;
   /** 클릭 핸들러 */
@@ -23,7 +23,7 @@ const AlbumRow = ({
   return (
     <S.Container onClick={onClick}>
       <S.InfoContainer>
-        <S.Thumbnail src={thumbnail} alt={title} />
+        {thumbnail && <S.Thumbnail src={thumbnail} alt={title} />}
         <S.TextSection>
           <S.Title>{title}</S.Title>
           <S.PhotoCount>{photoCount}</S.PhotoCount>

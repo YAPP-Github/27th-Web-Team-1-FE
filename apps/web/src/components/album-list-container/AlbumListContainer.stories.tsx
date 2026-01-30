@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { SelectableAlbum } from '@repo/api-client';
 import { useState } from 'react';
 import AlbumListContainer from './AlbumListContainer';
 
@@ -25,29 +26,29 @@ const meta: Meta<typeof AlbumListContainer> = {
 export default meta;
 type Story = StoryObj<typeof AlbumListContainer>;
 
-const mockAlbums = [
+const mockAlbums: SelectableAlbum[] = [
   {
-    id: '1',
+    id: 1,
     title: '우리의 추억',
-    thumbnail: 'https://picsum.photos/200/200?random=1',
+    thumbnailUrl: 'https://picsum.photos/200/200?random=1',
     photoCount: 42,
   },
   {
-    id: '2',
+    id: 2,
     title: '여행',
-    thumbnail: 'https://picsum.photos/200/200?random=2',
+    thumbnailUrl: 'https://picsum.photos/200/200?random=2',
     photoCount: 128,
   },
   {
-    id: '3',
+    id: 3,
     title: '일상',
-    thumbnail: 'https://picsum.photos/200/200?random=3',
+    thumbnailUrl: 'https://picsum.photos/200/200?random=3',
     photoCount: 15,
   },
   {
-    id: '4',
+    id: 4,
     title: '아주 긴 앨범 제목이 들어가는 경우',
-    thumbnail: 'https://picsum.photos/200/200?random=4',
+    thumbnailUrl: 'https://picsum.photos/200/200?random=4',
     photoCount: 7,
   },
 ];
@@ -55,9 +56,9 @@ const mockAlbums = [
 const AlbumListContainerWithState = ({
   initialSelectedId = null,
 }: {
-  initialSelectedId?: string | null;
+  initialSelectedId?: number | null;
 }) => {
-  const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId);
+  const [selectedId, setSelectedId] = useState<number | null>(initialSelectedId);
 
   return (
     <AlbumListContainer
@@ -73,5 +74,5 @@ export const Default: Story = {
 };
 
 export const WithSelection: Story = {
-  render: () => <AlbumListContainerWithState initialSelectedId="2" />,
+  render: () => <AlbumListContainerWithState initialSelectedId={2} />,
 };

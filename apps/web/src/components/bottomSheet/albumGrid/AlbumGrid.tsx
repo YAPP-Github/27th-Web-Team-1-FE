@@ -1,12 +1,12 @@
+import type { SelectableAlbum } from '@repo/api-client';
 import Input from '@/components/input/Input';
 import * as S from './AlbumGrid.styles';
 import { useMemo, useState } from 'react';
 import AlbumContainer from '@/components/album-container/AlbumContainer';
 import AlbumGridContainer from '@/components/album-grid-container/AlbumGridContainer';
-import type { Album } from '@/types/album.type';
 
 interface AlbumGridProps {
-  albums: Album[];
+  albums: SelectableAlbum[];
   onSelectAlbum: (albumId: number) => void;
 }
 
@@ -20,7 +20,7 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
   const filteredAlbums = useMemo(() => {
     const keyword = searchValue.trim();
     if (!keyword) return albums;
-    return albums.filter((album) => album.title.includes(keyword));
+    return albums.filter((album) => album.title?.includes(keyword));
   }, [albums, searchValue]);
 
   return (
@@ -39,11 +39,11 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
           {filteredAlbums.map((album) => (
             <AlbumContainer
               key={album.id}
-              title={album.title}
+              title={album.title ?? ''}
               type="medium"
-              photoList={album.photoList}
-              photoCount={album.photoCount}
-              onClick={() => onSelectAlbum(album.id)}
+              thumbnailUrl={album.thumbnailUrl}
+              photoCount={album.photoCount ?? 0}
+              onClick={() => onSelectAlbum(album.id ?? 0)}
             />
           ))}
         </AlbumGridContainer>

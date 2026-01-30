@@ -10,12 +10,12 @@ import TextButton from '../buttons/textButton/TextButton';
 import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
-import type { Album, AlbumDetailData } from '@/types/album.type';
+import type { SelectableAlbum, AlbumWithPhotosResponse } from '@repo/api-client';
 
 interface BottomSheetProps {
   context: SheetContext;
-  albums: Album[];
-  albumDetailById: Record<number, AlbumDetailData>;
+  albums: SelectableAlbum[];
+  albumDetailById: Record<number, AlbumWithPhotosResponse>;
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
 }

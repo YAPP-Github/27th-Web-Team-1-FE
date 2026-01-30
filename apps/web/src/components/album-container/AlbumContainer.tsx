@@ -1,4 +1,3 @@
-import { Photo } from '@/types/album.type';
 import * as S from './AlbumContainer.styles';
 import {
   ALBUM_CONTAINER_TYPE,
@@ -11,8 +10,8 @@ interface AlbumContainerProps {
   title: string;
   /** 앨범 타입 (small: 사진 개수 숨김) */
   type?: AlbumContainerType;
-  /** 사진 목록 */
-  photoList: Photo[];
+  /** 썸네일 URL */
+  thumbnailUrl?: string;
   /** 총 사진 수 */
   photoCount: number;
   /** 앨범 클릭 시 콜백 */
@@ -22,25 +21,24 @@ interface AlbumContainerProps {
 const AlbumContainer = ({
   title,
   type = ALBUM_CONTAINER_TYPE.MEDIUM,
-  photoList,
+  thumbnailUrl,
   photoCount,
   onClick,
 }: AlbumContainerProps) => {
-  const displayPhotos = photoList.slice(0, MAX_GRID_PHOTOS);
   const remainingCount = photoCount - MAX_GRID_PHOTOS;
   const hasMorePhotos = remainingCount > 0;
 
   const renderPhotoGrid = () =>
     Array.from({ length: MAX_GRID_PHOTOS }).map((_, i) => {
-      const photo = displayPhotos[i];
+      const isFirstPhoto = i === 0;
       const isLastPhoto = i === MAX_GRID_PHOTOS - 1;
       const showOverlay = isLastPhoto && hasMorePhotos;
 
       return (
-        <S.PhotoWrapper key={photo?.photoId ?? `empty-${i}`} type={type}>
-          {photo ? (
+        <S.PhotoWrapper key={`photo-${i}`} type={type}>
+          {isFirstPhoto && thumbnailUrl ? (
             <>
-              <S.Photo src={photo.src} alt={`photo-${photo.photoId}`} />
+              <S.Photo src={thumbnailUrl} alt={`${title}-thumbnail`} />
               {showOverlay && (
                 <S.MoreOverlay type={type}>+{remainingCount}</S.MoreOverlay>
               )}

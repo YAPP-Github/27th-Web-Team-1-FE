@@ -5,17 +5,17 @@ import TextButton from '@/components/buttons/textButton/TextButton';
 import Input from '@/components/input/Input';
 import { INPUT_TYPE } from '@/components/input/Input.constants';
 import Overlay from '@/components/popup/overlay/Overlay';
-import { SelectableAlbum } from '@/types/album.type';
+import type { SelectableAlbum } from '@repo/api-client';
 import * as S from './AlbumSelectOverlay.styles';
 
 interface AlbumSelectOverlayProps {
   isOpen: boolean;
   albums: SelectableAlbum[];
   isLoading: boolean;
-  selectedAlbumId: string | null;
+  selectedAlbumId: number | null;
   searchQuery: string;
   onChangeSearchQuery: (value: string) => void;
-  onSelectAlbum: (albumId: string) => void;
+  onSelectAlbum: (albumId: number) => void;
   onClose: () => void;
   onSubmit: () => void;
 }
