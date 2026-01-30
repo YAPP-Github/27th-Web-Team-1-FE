@@ -1,14 +1,22 @@
 'use client';
 
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { AnimatePresence } from 'framer-motion';
 import AlbumIcon from '@/assets/images/album.svg';
 import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import { AnimatePresence } from 'framer-motion';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import DeleteConfirmModal from './_components/DeleteConfirmModal';
 import PhotoEditOverlay from './_components/PhotoEditOverlay';
-import { useLongPress, usePhotoData, usePhotoEdit, usePhotoSlider } from './_hooks';
+import {
+  useLongPress,
+  usePhotoData,
+  usePhotoDelete,
+  usePhotoEdit,
+  usePhotoSlider,
+} from './_hooks';
 import * as S from './page.styles';
 
 export default function PhotoViewPage() {
@@ -37,8 +45,36 @@ export default function PhotoViewPage() {
 
   const { isOverlayVisible, longPressHandlers } = useLongPress();
 
-  const { isEditing, editingPhotoId, openEditOverlay, closeEditOverlay, saveEdit } =
-    usePhotoEdit();
+  const {
+    isEditing,
+    isSaving,
+    editingPhotoId,
+    openEditOverlay,
+    closeEditOverlay,
+    saveEdit,
+  } = usePhotoEdit();
+
+  const {
+    isModalOpen: isDeleteModalOpen,
+    isDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+    confirmDelete,
+  } = usePhotoDelete();
+
+  const [isMemoExpanded, setIsMemoExpanded] = useState(false);
+  const [showMoreButton, setShowMoreButton] = useState(false);
+  const memoRef = useRef<HTMLParagraphElement>(null);
+
+  // 메모가 2줄을 초과하는지 확인
+  useEffect(() => {
+    if (memoRef.current) {
+      const style = getComputedStyle(memoRef.current);
+      const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
+      const height = memoRef.current.scrollHeight;
+      setShowMoreButton(height > lineHeight * 2);
+    }
+  }, [photoDetail?.description]);
 
   // 현재 표시할 사진 결정 (currentPhoto 우선, 없으면 photoDetail)
   const displayPhoto = currentPhoto ?? photoDetail;
@@ -84,7 +120,9 @@ export default function PhotoViewPage() {
                 <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
                   기록 수정하기
                 </MenuHeader.Item>
-                <MenuHeader.Item variant="danger">사진 삭제하기</MenuHeader.Item>
+                <MenuHeader.Item variant="danger" onClick={openDeleteModal}>
+                  사진 삭제하기
+                </MenuHeader.Item>
               </MenuHeader.Menu>
             </MenuHeader>
           </S.HeaderWrapper>
@@ -97,7 +135,18 @@ export default function PhotoViewPage() {
                   {photoDetail.uploaderName || '알 수 없음'}
                 </S.UploaderName>
               </S.UploaderInfo>
-              {photoDetail.description && <S.Memo>{photoDetail.description}</S.Memo>}
+              {photoDetail.description && (
+                <S.MemoWrapper>
+                  <S.Memo ref={memoRef} $isExpanded={isMemoExpanded}>
+                    {photoDetail.description}
+                  </S.Memo>
+                  {showMoreButton && !isMemoExpanded && (
+                    <S.MoreButton onClick={() => setIsMemoExpanded(true)}>
+                      더보기
+                    </S.MoreButton>
+                  )}
+                </S.MemoWrapper>
+              )}
             </S.ContainerA>
 
             <S.ContainerB>
@@ -147,9 +196,17 @@ export default function PhotoViewPage() {
             photoId={editingPhotoId}
             onClose={closeEditOverlay}
             onSave={saveEdit}
+            isSaving={isSaving}
           />
         )}
       </AnimatePresence>
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        isDeleting={isDeleting}
+        onClose={closeDeleteModal}
+        onConfirm={() => confirmDelete(displayPhotoId)}
+      />
     </S.Container>
   );
 }

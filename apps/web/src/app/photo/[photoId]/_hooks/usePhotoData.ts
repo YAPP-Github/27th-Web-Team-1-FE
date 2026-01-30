@@ -41,10 +41,9 @@ const usePhotoData = ({ photoId, albumIdFromQuery }: UsePhotoDataProps) => {
     return undefined;
   }, [albumIdFromQuery, selectableAlbums?.albums, photoDetail?.albumName]);
 
-  const albumParams = { albumId: albumId ?? 0 };
-  const { data: albumPhotos } = useGetPhotos(albumParams, {
+  const { data: albumPhotos } = useGetPhotos(albumId ?? 0, {
     query: {
-      queryKey: getGetPhotosQueryKey(albumParams),
+      queryKey: getGetPhotosQueryKey(albumId),
       enabled: !!albumId,
     },
   });

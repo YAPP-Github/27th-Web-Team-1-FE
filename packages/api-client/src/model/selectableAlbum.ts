@@ -10,5 +10,5 @@ export interface SelectableAlbum {
   id?: number;
   title?: string;
   photoCount?: number;
-  thumbnailUrl?: string;
+  thumbnailUrls?: string[];
 }

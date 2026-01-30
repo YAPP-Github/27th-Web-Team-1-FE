@@ -31,6 +31,7 @@ const MemoModal = ({
           onChange={onChangeTempMemo}
           max={MAX_MEMO_LENGTH}
           placeholder="텍스트를 입력해주세요"
+          autoFocus
         />
         <Modal.Footer>
           <TextButton text="취소" onClick={onClose} style={{ flex: 1 }} />

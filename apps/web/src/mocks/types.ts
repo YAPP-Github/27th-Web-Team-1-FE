@@ -2,9 +2,9 @@ import { type http } from 'msw';
 
 type HttpMethod = keyof typeof http;
 
-type StatusCode = 200 | 400 | 401 | 403 | 500;
+type StatusCode = 200 | 204 | 400 | 401 | 403 | 500;
 
-type SuccessStatusCode = Extract<StatusCode, 200>;
+type SuccessStatusCode = Extract<StatusCode, 200 | 204>;
 
 type ErrorStatusCode = Exclude<StatusCode, 200>;
 

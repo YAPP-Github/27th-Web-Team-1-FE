@@ -17,29 +17,30 @@
  */
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
-import MemoModal from './MemoModal';
-import AlbumSelectOverlay from './AlbumSelectOverlay';
-import LocationSelectOverlay from './LocationSelectOverlay';
 import { ROUTES } from '@/constants';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
 import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
-import { useReverseGeocode } from '../_hooks/useReverseGeocode';
-import { usePhotoUpload } from '../_hooks/usePhotoUpload';
-import useMemoModal from '../_hooks/useMemoModal';
 import useAlbumModal from '../_hooks/useAlbumModal';
 import useLocationModal from '../_hooks/useLocationModal';
+import useMemoModal from '../_hooks/useMemoModal';
+import { usePhotoUpload } from '../_hooks/usePhotoUpload';
+import { useReverseGeocode } from '../_hooks/useReverseGeocode';
+import AlbumSelectOverlay from './AlbumSelectOverlay';
+import LocationSelectOverlay from './LocationSelectOverlay';
+import MemoModal from './MemoModal';
 import * as S from './PhotoNoteOverlay.styles';
 
+import AlbumIcon from '@/assets/images/album.svg';
+import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
+import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
 import WarningIcon from '@/assets/images/warning.svg';
-import AlbumIcon from '@/assets/images/album.svg';
-import MapPinIcon from '@/assets/images/mapPin.svg';
-import ArrowRightIcon from '@/assets/images/arrowRight.svg';
+import { useToast } from '@/components/toast';
 
 // TODO: 사용자 컨텍스트에서 가져오도록 수정
 const TEMP_USER_ID = 1;
@@ -50,6 +51,7 @@ interface PhotoNoteOverlayProps {
 
 export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const { selectedPhoto, selectedPhotoRect } = usePhotoContext();
   const {
     memo,
@@ -97,7 +99,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const { mutate: uploadPhoto, isPending: isUploading } = usePhotoUpload();
 
   const handleUpload = () => {
-    if (!selectedPhoto) return;
+    if (!selectedPhoto || !hasLocation) return;
 
     uploadPhoto(
       {
@@ -108,11 +110,13 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
       },
       {
         onSuccess: () => {
+          showToast('사진이 추가되었습니다');
+          // TODO: 앨범이 선택되어 있으면 앨범 상세로, 아니면 홈으로 이동
           router.push(ROUTES.HOME);
         },
         onError: (error) => {
           console.error('Upload failed:', error);
-          // TODO: 에러 토스트 표시
+          showToast('사진 추가에 실패했습니다. 다시 시도해주세요');
         },
       },
     );
@@ -274,14 +278,22 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         {/* 최하단 컨테이너 (사진 밑에 위치) */}
         <S.BottomContainer>
           <S.ActionButtons>
-            <S.MapPreviewButton type="button" onClick={handleMapPreview}>
+            <S.MapPreviewButton
+              type="button"
+              onClick={handleMapPreview}
+              disabled={!hasLocation}
+            >
               <S.MapIcon>
                 <MapPinIcon width={16} height={17} />
               </S.MapIcon>
               <S.MapPreviewText>지도뷰 미리보기</S.MapPreviewText>
             </S.MapPreviewButton>
 
-            <S.UploadButton type="button" onClick={handleUpload} disabled={isUploading}>
+            <S.UploadButton
+              type="button"
+              onClick={handleUpload}
+              disabled={isUploading || !hasLocation}
+            >
               <S.UploadIcon>
                 <ArrowRightIcon width={24} height={24} />
               </S.UploadIcon>

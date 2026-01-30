@@ -26,7 +26,6 @@ import type {
   GetClusterPhotosParams,
   GetLocationInfoParams,
   GetPhotos1Params,
-  GetPhotosParams,
   GetPresignedUrlParams,
   GetSelectableAlbumsParams,
   JoinByInviteCodeParams,
@@ -36,6 +35,7 @@ import type {
   RefreshTokenRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
+  UpdatePhotoRequest,
 } from './model';
 
 import { faker } from '@faker-js/faker';
@@ -62,6 +62,231 @@ import { customFetcher } from './fetcher';
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
+
+/**
+ * 
+            사진 ID를 기반으로 사진 상세 정보를 조회합니다.
+
+            - 촬영일, 앨범명, 등록자명, 주소, 설명 포함
+            - 주소는 좌표 기반 역지오코딩으로 조회
+        
+ * @summary 사진 상세 조회
+ */
+export const getPhotoDetail = (id: number, signal?: AbortSignal) => {
+  return customFetcher<PhotoDetailResponse>({
+    url: `/photos/${id}`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetPhotoDetailQueryKey = (id?: number) => {
+  return [`/photos/${id}`] as const;
+};
+
+export const getGetPhotoDetailQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+  TError = ApiResponseErrorDetail | void,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({
+    signal,
+  }) => getPhotoDetail(id, signal);
+
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPhotoDetail>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPhotoDetailQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPhotoDetail>>
+>;
+export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void;
+
+/**
+ * @summary 사진 상세 조회
+ */
+
+export function useGetPhotoDetail<
+  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+  TError = ApiResponseErrorDetail | void,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPhotoDetailQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * 사진의 설명을 수정합니다.
+ * @summary 사진 수정
+ */
+export const update = (id: number, updatePhotoRequest: UpdatePhotoRequest) => {
+  return customFetcher<IdResponse>({
+    url: `/photos/${id}`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updatePhotoRequest,
+  });
+};
+
+export const getUpdateMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof update>>,
+    TError,
+    { id: number; data: UpdatePhotoRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof update>>,
+  TError,
+  { id: number; data: UpdatePhotoRequest },
+  TContext
+> => {
+  const mutationKey = ['update'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof update>>,
+    { id: number; data: UpdatePhotoRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return update(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMutationResult = NonNullable<Awaited<ReturnType<typeof update>>>;
+export type UpdateMutationBody = UpdatePhotoRequest;
+export type UpdateMutationError = ApiResponseErrorDetail | void;
+
+/**
+ * @summary 사진 수정
+ */
+export const useUpdate = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof update>>,
+    TError,
+    { id: number; data: UpdatePhotoRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof update>>,
+  TError,
+  { id: number; data: UpdatePhotoRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 사진을 삭제합니다.
+ * @summary 사진 삭제
+ */
+export const _delete = (id: number) => {
+  return customFetcher<void>({ url: `/photos/${id}`, method: 'DELETE' });
+};
+
+export const getDeleteMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof _delete>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof _delete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ['_delete'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof _delete>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return _delete(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type _DeleteMutationResult = NonNullable<Awaited<ReturnType<typeof _delete>>>;
+
+export type _DeleteMutationError = ApiResponseErrorDetail | void;
+
+/**
+ * @summary 사진 삭제
+ */
+export const useDelete = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof _delete>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof _delete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationOptions = getDeleteMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
 
 /**
  * 새로운 워크스페이스를 생성합니다.
@@ -232,73 +457,6 @@ export const useJoinByInviteCode = <
 
   return useMutation(mutationOptions);
 };
-
-/**
- * 앨범별로 그룹화된 사진 목록을 조회합니다. (카카오/인스타그램 스타일)
- * @summary 사진 목록 조회
- */
-export const getPhotos = (params: GetPhotosParams, signal?: AbortSignal) => {
-  return customFetcher<PhotoListResponse>({
-    url: `/photos`,
-    method: 'GET',
-    params,
-    signal,
-  });
-};
-
-export const getGetPhotosQueryKey = (params?: GetPhotosParams) => {
-  return [`/photos`, ...(params ? [params] : [])] as const;
-};
-
-export const getGetPhotosQueryOptions = <
-  TData = Awaited<ReturnType<typeof getPhotos>>,
-  TError = ApiResponseErrorDetail | void,
->(
-  params: GetPhotosParams,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetPhotosQueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotos>>> = ({ signal }) =>
-    getPhotos(params, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getPhotos>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type GetPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotos>>>;
-export type GetPhotosQueryError = ApiResponseErrorDetail | void;
-
-/**
- * @summary 사진 목록 조회
- */
-
-export function useGetPhotos<
-  TData = Awaited<ReturnType<typeof getPhotos>>,
-  TError = ApiResponseErrorDetail | void,
->(
-  params: GetPhotosParams,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetPhotosQueryOptions(params, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
 
 /**
  * S3에 업로드된 사진 정보를 저장합니다.
@@ -714,27 +872,27 @@ export const useCreate2 = <
  * 앨범을 삭제합니다.
  * @summary 앨범 삭제
  */
-export const _delete = (id: number) => {
+export const delete1 = (id: number) => {
   return customFetcher<void>({ url: `/albums/${id}`, method: 'DELETE' });
 };
 
-export const getDeleteMutationOptions = <
+export const getDelete1MutationOptions = <
   TError = ApiResponseErrorDetail | void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof _delete>>,
+    Awaited<ReturnType<typeof delete1>>,
     TError,
     { id: number },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof _delete>>,
+  Awaited<ReturnType<typeof delete1>>,
   TError,
   { id: number },
   TContext
 > => {
-  const mutationKey = ['_delete'];
+  const mutationKey = ['delete1'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -744,41 +902,41 @@ export const getDeleteMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof _delete>>,
+    Awaited<ReturnType<typeof delete1>>,
     { id: number }
   > = (props) => {
     const { id } = props ?? {};
 
-    return _delete(id);
+    return delete1(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type _DeleteMutationResult = NonNullable<Awaited<ReturnType<typeof _delete>>>;
+export type Delete1MutationResult = NonNullable<Awaited<ReturnType<typeof delete1>>>;
 
-export type _DeleteMutationError = ApiResponseErrorDetail | void;
+export type Delete1MutationError = ApiResponseErrorDetail | void;
 
 /**
  * @summary 앨범 삭제
  */
-export const useDelete = <
+export const useDelete1 = <
   TError = ApiResponseErrorDetail | void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof _delete>>,
+    Awaited<ReturnType<typeof delete1>>,
     TError,
     { id: number },
     TContext
   >;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof _delete>>,
+  Awaited<ReturnType<typeof delete1>>,
   TError,
   { id: number },
   TContext
 > => {
-  const mutationOptions = getDeleteMutationOptions(options);
+  const mutationOptions = getDelete1MutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -867,69 +1025,61 @@ export const useUpdateTitle = <
 };
 
 /**
- * 
-            사진 ID를 기반으로 사진 상세 정보를 조회합니다.
-
-            - 촬영일, 앨범명, 등록자명, 주소, 설명 포함
-            - 주소는 좌표 기반 역지오코딩으로 조회
-        
- * @summary 사진 상세 조회
+ * 앨범별로 그룹화된 사진 목록을 조회합니다. (카카오/인스타그램 스타일)
+ * @summary 사진 목록 조회
  */
-export const getPhotoDetail = (photoId: number, signal?: AbortSignal) => {
-  return customFetcher<PhotoDetailResponse>({
-    url: `/photos/${photoId}`,
+export const getPhotos = (albumId: number, signal?: AbortSignal) => {
+  return customFetcher<PhotoListResponse>({
+    url: `/photos/album/${albumId}`,
     method: 'GET',
     signal,
   });
 };
 
-export const getGetPhotoDetailQueryKey = (photoId?: number) => {
-  return [`/photos/${photoId}`] as const;
+export const getGetPhotosQueryKey = (albumId?: number) => {
+  return [`/photos/album/${albumId}`] as const;
 };
 
-export const getGetPhotoDetailQueryOptions = <
-  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+export const getGetPhotosQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPhotos>>,
   TError = ApiResponseErrorDetail | void,
 >(
-  photoId: number,
+  albumId: number,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(photoId);
+  const queryKey = queryOptions?.queryKey ?? getGetPhotosQueryKey(albumId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({
-    signal,
-  }) => getPhotoDetail(photoId, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotos>>> = ({ signal }) =>
+    getPhotos(albumId, signal);
 
-  return { queryKey, queryFn, enabled: !!photoId, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getPhotoDetail>>,
+  return { queryKey, queryFn, enabled: !!albumId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPhotos>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetPhotoDetailQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getPhotoDetail>>
->;
-export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void;
+export type GetPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotos>>>;
+export type GetPhotosQueryError = ApiResponseErrorDetail | void;
 
 /**
- * @summary 사진 상세 조회
+ * @summary 사진 목록 조회
  */
 
-export function useGetPhotoDetail<
-  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+export function useGetPhotos<
+  TData = Awaited<ReturnType<typeof getPhotos>>,
   TError = ApiResponseErrorDetail | void,
 >(
-  photoId: number,
+  albumId: number,
   options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetPhotoDetailQueryOptions(photoId, options);
+  const queryOptions = getGetPhotosQueryOptions(albumId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1014,6 +1164,7 @@ export function useSearchPlaces<
 
   return query;
 }
+
 /**
  * 
             줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
@@ -1408,6 +1559,50 @@ export function useGetSelectableAlbums<
   return query;
 }
 
+export const getGetPhotoDetailResponseMock = (
+  overrideResponse: Partial<PhotoDetailResponse> = {},
+): PhotoDetailResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  url: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  takenAt: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  albumName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  uploaderName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  address: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  description: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
 export const getCreateResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
@@ -1419,6 +1614,147 @@ export const getCreateResponseMock = (
 });
 
 export const getJoinByInviteCodeResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getCreate1ResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetPresignedUrlResponseMock = (
+  overrideResponse: Partial<PresignedUrl> = {},
+): PresignedUrl => ({
+  presignedUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  objectUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getRefreshResponseMock = (
+  overrideResponse: Partial<JwtTokenResponse> = {},
+): JwtTokenResponse => ({
+  accessToken: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  refreshToken: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getLoginResponseMock = (
+  overrideResponse: Partial<LoginResponse> = {},
+): LoginResponse => ({
+  userId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  workspaceId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  albumId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  photos: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        photoId: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        url: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          undefined,
+        ]),
+        latitude: faker.helpers.arrayElement([
+          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+          undefined,
+        ]),
+        description: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+      }),
+    ),
+    undefined,
+  ]),
+  albumLocation: faker.helpers.arrayElement([
+    {
+      albumId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      centerLongitude: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      centerLatitude: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      boundingBox: faker.helpers.arrayElement([
+        {
+          west: faker.helpers.arrayElement([
+            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+            undefined,
+          ]),
+          south: faker.helpers.arrayElement([
+            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+            undefined,
+          ]),
+          east: faker.helpers.arrayElement([
+            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+            undefined,
+          ]),
+          north: faker.helpers.arrayElement([
+            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+            undefined,
+          ]),
+        },
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getCreate2ResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateTitleResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
   id: faker.helpers.arrayElement([
@@ -1488,121 +1824,15 @@ export const getGetPhotosResponseMock = (
               faker.string.alpha({ length: { min: 10, max: 20 } }),
               undefined,
             ]),
+            takenAt: faker.helpers.arrayElement([
+              `${faker.date.past().toISOString().split('.')[0]}Z`,
+              undefined,
+            ]),
           })),
           undefined,
         ]),
       }),
     ),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getCreate1ResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getGetPresignedUrlResponseMock = (
-  overrideResponse: Partial<PresignedUrl> = {},
-): PresignedUrl => ({
-  presignedUrl: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  objectUrl: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getRefreshResponseMock = (
-  overrideResponse: Partial<JwtTokenResponse> = {},
-): JwtTokenResponse => ({
-  accessToken: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  refreshToken: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getLoginResponseMock = (
-  overrideResponse: Partial<LoginResponse> = {},
-): LoginResponse => ({
-  userId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  workspaceId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  albumId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getCreate2ResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getUpdateTitleResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getGetPhotoDetailResponseMock = (
-  overrideResponse: Partial<PhotoDetailResponse> = {},
-): PhotoDetailResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  url: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  takenAt: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  albumName: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  uploaderName: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  address: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  description: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
     undefined,
   ]),
   ...overrideResponse,
@@ -1830,8 +2060,11 @@ export const getGetSelectableAlbumsResponseMock = (
           faker.number.int({ min: undefined, max: undefined }),
           undefined,
         ]),
-        thumbnailUrl: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
+        thumbnailUrls: faker.helpers.arrayElement([
+          Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1,
+          ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
           undefined,
         ]),
       }),
@@ -1840,6 +2073,81 @@ export const getGetSelectableAlbumsResponseMock = (
   ]),
   ...overrideResponse,
 });
+
+export const getGetPhotoDetailMockHandler = (
+  overrideResponse?:
+    | PhotoDetailResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<PhotoDetailResponse> | PhotoDetailResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPhotoDetailResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getUpdateMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.put(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getDeleteMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
 
 export const getCreateMockHandler = (
   overrideResponse?:
@@ -1889,34 +2197,6 @@ export const getJoinByInviteCodeMockHandler = (
               ? await overrideResponse(info)
               : overrideResponse
             : getJoinByInviteCodeResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getGetPhotosMockHandler = (
-  overrideResponse?:
-    | PhotoListResponse
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<PhotoListResponse> | PhotoListResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/photos',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetPhotosResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -2065,7 +2345,7 @@ export const getCreate2MockHandler = (
   );
 };
 
-export const getDeleteMockHandler = (
+export const getDelete1MockHandler = (
   overrideResponse?:
     | void
     | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
@@ -2112,16 +2392,16 @@ export const getUpdateTitleMockHandler = (
   );
 };
 
-export const getGetPhotoDetailMockHandler = (
+export const getGetPhotosMockHandler = (
   overrideResponse?:
-    | PhotoDetailResponse
+    | PhotoListResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<PhotoDetailResponse> | PhotoDetailResponse),
+      ) => Promise<PhotoListResponse> | PhotoListResponse),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
-    '*/photos/:photoId',
+    '*/photos/album/:albumId',
     async (info) => {
       await delay(1000);
 
@@ -2131,7 +2411,7 @@ export const getGetPhotoDetailMockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getGetPhotoDetailResponseMock(),
+            : getGetPhotosResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -2308,17 +2588,19 @@ export const getGetSelectableAlbumsMockHandler = (
   );
 };
 export const getLokitAPIMock = () => [
+  getGetPhotoDetailMockHandler(),
+  getUpdateMockHandler(),
+  getDeleteMockHandler(),
   getCreateMockHandler(),
   getJoinByInviteCodeMockHandler(),
-  getGetPhotosMockHandler(),
   getCreate1MockHandler(),
   getGetPresignedUrlMockHandler(),
   getRefreshMockHandler(),
   getLoginMockHandler(),
   getCreate2MockHandler(),
-  getDeleteMockHandler(),
+  getDelete1MockHandler(),
   getUpdateTitleMockHandler(),
-  getGetPhotoDetailMockHandler(),
+  getGetPhotosMockHandler(),
   getSearchPlacesMockHandler(),
   getGetPhotos1MockHandler(),
   getGetLocationInfoMockHandler(),
