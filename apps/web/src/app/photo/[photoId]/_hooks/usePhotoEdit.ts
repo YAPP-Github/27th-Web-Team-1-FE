@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/components/toast/ToastProvider';
+import { getUserIdFromCookie } from '@/auth/cookies';
 
 interface EditData {
   photoId: number;
@@ -10,6 +14,25 @@ interface EditData {
 const usePhotoEdit = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingPhotoId, setEditingPhotoId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+
+  const { mutate: updatePhoto, isPending: isSaving } = useUpdate({
+    mutation: {
+      onSuccess: (_data, variables) => {
+        queryClient.invalidateQueries({
+          queryKey: getGetPhotoDetailQueryKey(variables.id),
+        });
+        showToast('기록이 수정되었어요');
+        setIsEditing(false);
+        setEditingPhotoId(null);
+      },
+      onError: (error) => {
+        console.error('사진 수정 실패:', error);
+        showToast('수정에 실패했어요. 다시 시도해주세요');
+      },
+    },
+  });
 
   const openEditOverlay = (photoId: number) => {
     setEditingPhotoId(photoId);
@@ -22,14 +45,27 @@ const usePhotoEdit = () => {
   };
 
   const saveEdit = (data: EditData) => {
-    // TODO: 사진 수정 API 연동
-    console.log('Save photo edit:', data);
-    setIsEditing(false);
-    setEditingPhotoId(null);
+    const userId = getUserIdFromCookie();
+    if (userId === null) {
+      showToast('로그인이 필요합니다');
+      return;
+    }
+
+    updatePhoto({
+      id: data.photoId,
+      data: {
+        description: data.memo,
+        albumId: data.albumId,
+        latitude: data.location?.latitude,
+        longitude: data.location?.longitude,
+      },
+      params: { userId },
+    });
   };
 
   return {
     isEditing,
+    isSaving,
     editingPhotoId,
     openEditOverlay,
     closeEditOverlay,

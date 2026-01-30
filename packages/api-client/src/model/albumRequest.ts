@@ -15,7 +15,7 @@ export interface AlbumRequest {
    * @minLength 0
    * @maxLength 10
    */
-  title?: string;
+  title: string;
   /** 워크스페이스 ID */
   workspaceId?: number;
 }

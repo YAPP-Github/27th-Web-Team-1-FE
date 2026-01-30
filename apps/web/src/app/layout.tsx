@@ -19,6 +19,7 @@ export default function RootLayout({
           </EmotionRegistry>
         </AppProviders>
         <div id="modal-root" />
+        <div id="toast-root" />
       </body>
     </html>
   );

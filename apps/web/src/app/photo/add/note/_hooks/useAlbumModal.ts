@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import { useGetSelectableAlbums } from '@repo/api-client';
-import type { SelectableAlbum } from '@/types/album.type';
+import { useMemo, useState } from 'react';
 
 interface SelectedAlbum {
   id: number;
@@ -17,7 +16,11 @@ const useAlbumModal = () => {
 
   const { data, isLoading } = useGetSelectableAlbums();
 
-  const filteredAlbums: SelectableAlbum[] = useMemo(
+  // TODO: 앨범 상세에서 진입 시 또는 수정 화면에서 기존 앨범 자동 선택
+
+  const trimmedSearchQuery = searchQuery.trim();
+
+  const filteredAlbums = useMemo(
     () =>
       (data?.albums ?? [])
         .filter(
@@ -25,8 +28,8 @@ const useAlbumModal = () => {
             album.id !== undefined && album.title !== undefined,
         )
         .filter((album) =>
-          searchQuery
-            ? album.title.toLowerCase().includes(searchQuery.toLowerCase())
+          trimmedSearchQuery.length > 0
+            ? album.title.toLowerCase().includes(trimmedSearchQuery.toLowerCase())
             : true,
         )
         .map((album) => ({
@@ -35,7 +38,7 @@ const useAlbumModal = () => {
           thumbnail: album.thumbnailUrl ?? '',
           photoCount: album.photoCount ?? 0,
         })),
-    [data?.albums, searchQuery],
+    [data?.albums, trimmedSearchQuery],
   );
 
   const openModal = () => {

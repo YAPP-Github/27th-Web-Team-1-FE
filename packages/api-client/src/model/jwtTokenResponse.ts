@@ -6,7 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * JWT 토큰 응답
+ */
 export interface JwtTokenResponse {
+  /** 액세스 토큰 */
   accessToken?: string;
+  /** 리프레시 토큰 */
   refreshToken?: string;
 }

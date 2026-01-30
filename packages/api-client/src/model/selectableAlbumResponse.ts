@@ -7,6 +7,10 @@
  */
 import type { SelectableAlbum } from './selectableAlbum';
 
+/**
+ * 선택 가능한 앨범 응답
+ */
 export interface SelectableAlbumResponse {
+  /** 선택 가능한 앨범 목록 */
   albums?: SelectableAlbum[];
 }

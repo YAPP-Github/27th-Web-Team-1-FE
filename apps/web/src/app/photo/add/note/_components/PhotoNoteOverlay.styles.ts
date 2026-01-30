@@ -76,6 +76,7 @@ export const Tooltip = styled.div`
   background: ${({ theme }) => theme.colors.gray.a80};
   border-radius: 10px;
   backdrop-filter: blur(5px);
+  max-width: calc(100% - 32px);
 
   &::before {
     content: '';
@@ -101,6 +102,11 @@ export const TooltipIcon = styled.div`
 export const TooltipText = styled.span`
   ${({ theme }) => theme.typography.body15Semibold};
   color: ${({ theme }) => theme.colors.gray[0]};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 `;
 
 export const TooltipButton = styled.button`
@@ -183,8 +189,13 @@ export const MapPreviewButton = styled.button`
   border-radius: 999px;
   cursor: pointer;
 
-  &:active {
+  &:active:not(:disabled) {
     background: ${({ theme }) => theme.colors.gray[800]};
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 `;
 

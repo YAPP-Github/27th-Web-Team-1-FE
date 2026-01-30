@@ -84,12 +84,41 @@ export const UploaderName = styled.span`
   color: ${({ theme }) => theme.colors.gray[0]};
 `;
 
-export const Memo = styled.p`
+export const MemoWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+export const Memo = styled.p<{ $isExpanded?: boolean }>`
   ${({ theme }) => theme.typography.body14Regular}
   color: ${({ theme }) => theme.colors.gray[100]};
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+
+  ${({ $isExpanded }) =>
+    !$isExpanded &&
+    `
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  `}
+`;
+
+export const MoreButton = styled.button`
+  ${({ theme }) => theme.typography.body14Regular}
+  color: ${({ theme }) => theme.colors.gray[400]};
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  align-self: flex-start;
+
+  &:active {
+    opacity: 0.7;
+  }
 `;
 
 export const ContainerB = styled.div`

@@ -1,3 +1,34 @@
+export type ApiErrorData = {
+  errorCode: string;
+  detail: string;
+  instance: string;
+  errors: Record<string, unknown>;
+};
+
+export type ApiErrorResponse = {
+  code: number;
+  message: string;
+  data: ApiErrorData;
+};
+
+export class ApiError extends Error {
+  code: number;
+  errorCode: string;
+  detail: string;
+  instance: string;
+  errors: Record<string, unknown>;
+
+  constructor(response: ApiErrorResponse) {
+    super(response.data.detail || response.message);
+    this.name = 'ApiError';
+    this.code = response.code;
+    this.errorCode = response.data.errorCode;
+    this.detail = response.data.detail;
+    this.instance = response.data.instance;
+    this.errors = response.data.errors;
+  }
+}
+
 type FetcherConfig = {
   url: string;
   method: string;
@@ -7,6 +38,14 @@ type FetcherConfig = {
   data?: unknown;
   params?: Record<string, unknown>;
   pathParams?: Record<string, string | number>;
+};
+
+export type AuthHeaderProvider = (config: FetcherConfig) => string | undefined;
+
+let authHeaderProvider: AuthHeaderProvider | null = null;
+
+export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
+  authHeaderProvider = provider;
 };
 
 const DEFAULT_HEADERS = {
@@ -100,6 +139,24 @@ export function buildUrlWithQueryParams(
   return url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`;
 }
 
+function mergeHeaders(...sources: (HeadersInit | undefined)[]): Headers {
+  const merged = new Headers();
+
+  for (const source of sources) {
+    if (!source) continue;
+
+    if (source instanceof Headers) {
+      source.forEach((value, key) => merged.set(key, value));
+    } else if (Array.isArray(source)) {
+      source.forEach(([key, value]) => merged.set(key, value));
+    } else {
+      Object.entries(source).forEach(([key, value]) => merged.set(key, value));
+    }
+  }
+
+  return merged;
+}
+
 export async function customFetcher<TResponse>(
   config: FetcherConfig,
   options: RequestInit = {},
@@ -109,26 +166,44 @@ export async function customFetcher<TResponse>(
   const urlWithPath = buildUrlWithPathParams(baseTargetUrl, config.pathParams);
   const targetUrl = buildUrlWithQueryParams(urlWithPath, config.params);
   const body = config.body ?? config.data;
+  const headers = mergeHeaders(DEFAULT_HEADERS, config.headers, options.headers);
+  const authHeader = authHeaderProvider?.(config);
+
+  if (authHeader && !headers.has('Authorization')) {
+    headers.set('Authorization', authHeader);
+  }
 
   const response = await fetch(targetUrl, {
     method: config.method,
     body: body ? JSON.stringify(body) : undefined,
     signal: config.signal,
-    headers: {
-      ...DEFAULT_HEADERS,
-      ...(config.headers ?? {}),
-      ...(options.headers ?? {}),
-    },
+    headers,
     ...options,
   });
 
   if (!response.ok) {
-    throw new Error(`Request to ${targetUrl} failed with status ${response.status}`);
+    let errorResponse: ApiErrorResponse;
+    try {
+      errorResponse = (await response.json()) as ApiErrorResponse;
+    } catch {
+      errorResponse = {
+        code: response.status,
+        message: `Request failed with status ${response.status}`,
+        data: {
+          errorCode: '',
+          detail: '',
+          instance: '',
+          errors: {},
+        },
+      };
+    }
+    throw new ApiError(errorResponse);
   }
 
   if (response.status === 204) {
     return undefined as TResponse;
   }
 
-  return (await response.json()) as TResponse;
+  const json = (await response.json()) as { data: TResponse };
+  return json.data;
 }

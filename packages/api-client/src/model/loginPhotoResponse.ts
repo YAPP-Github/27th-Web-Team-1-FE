@@ -7,22 +7,17 @@
  */
 
 /**
- * 사진 생성 요청
+ * 로그인 사진 응답
  */
-export interface CreatePhotoRequest {
-  /**
-   * 사진 URL
-   * @minLength 1
-   */
-  url: string;
-  /** 앨범 ID */
-  albumId?: number;
+export interface LoginPhotoResponse {
+  /** 사진 ID */
+  photoId?: number;
+  /** 사진 URL */
+  url?: string;
   /** 경도 */
   longitude?: number;
   /** 위도 */
   latitude?: number;
-  /** 촬영일시 (EXIF 데이터) */
-  takenAt?: string;
   /** 사진 설명 */
   description?: string;
 }
