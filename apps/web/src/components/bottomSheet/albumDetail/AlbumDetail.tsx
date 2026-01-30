@@ -6,6 +6,7 @@ import type { AlbumWithPhotosResponse } from '@repo/api-client';
 import PhotoGridContainer from '@/components/photoGridContainer/PhotoGridContainer';
 import PhotoGridItem from '@/components/photoGridItem/PhotoGridItem';
 import { processPhotosWithDateDisplay } from '@/utils/photoGrid';
+import { ROUTES } from '@/constants/routes';
 
 interface AlbumDetailProps {
   album?: AlbumWithPhotosResponse;
@@ -24,7 +25,7 @@ const AlbumDetail = ({ album }: AlbumDetailProps) => {
   }
 
   const handlePhotoClick = (photoId: number) => {
-    router.push(`/photo/${photoId}`);
+    router.push(ROUTES.PHOTO.VIEW(photoId, album.id));
   };
 
   return (
