@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDelete } from '@repo/api-client';
+import {
+  useDelete,
+  getGetSelectableAlbumsQueryKey,
+  getGetPhotosQueryKey,
+} from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 const useDeleteAlbum = () => {
@@ -23,8 +27,8 @@ const useDeleteAlbum = () => {
       { id: albumId },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['selectableAlbums'] });
-          queryClient.invalidateQueries({ queryKey: ['albumPhotos', albumId] });
+          queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey({ albumId }) });
           closeDeleteModal();
           router.back();
         },
