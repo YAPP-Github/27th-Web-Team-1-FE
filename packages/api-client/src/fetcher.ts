@@ -1,15 +1,31 @@
+export type ApiErrorData = {
+  errorCode: string;
+  detail: string;
+  instance: string;
+  errors: Record<string, unknown>;
+};
+
 export type ApiErrorResponse = {
   code: number;
   message: string;
+  data: ApiErrorData;
 };
 
 export class ApiError extends Error {
   code: number;
+  errorCode: string;
+  detail: string;
+  instance: string;
+  errors: Record<string, unknown>;
 
   constructor(response: ApiErrorResponse) {
-    super(response.message);
+    super(response.data.detail || response.message);
     this.name = 'ApiError';
     this.code = response.code;
+    this.errorCode = response.data.errorCode;
+    this.detail = response.data.detail;
+    this.instance = response.data.instance;
+    this.errors = response.data.errors;
   }
 }
 
@@ -171,6 +187,12 @@ export async function customFetcher<TResponse>(
       errorResponse = {
         code: response.status,
         message: `Request failed with status ${response.status}`,
+        data: {
+          errorCode: '',
+          detail: '',
+          instance: '',
+          errors: {},
+        },
       };
     }
     throw new ApiError(errorResponse);
