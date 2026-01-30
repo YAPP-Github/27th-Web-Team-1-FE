@@ -50,5 +50,5 @@ export const clearUserIdCookie = () => {
 
 export const getAuthorizationHeader = () => {
   const userId = getUserIdFromCookie();
-  return userId !== null ? String(userId) : undefined;
+  return userId !== null ? `Bearer ${userId}` : undefined;
 };

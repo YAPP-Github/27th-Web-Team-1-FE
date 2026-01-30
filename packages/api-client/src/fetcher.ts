@@ -48,10 +48,18 @@ export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
   authHeaderProvider = provider;
 };
 
+/**
+ * 브라우저 쿠키에서 userId 읽기
+ * SSR 환경에서는 null 반환
+ */
+const getUserIdFromCookie = (): string | null => {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/lokit_user_id=(\d+)/);
+  return match ? match[1] : null;
+};
+
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
-  // TODO: 실제 인증 토큰으로 교체 필요
-  Authorization: 'Bearer 1',
 };
 
 function resolveBaseUrl() {
@@ -167,10 +175,18 @@ export async function customFetcher<TResponse>(
   const targetUrl = buildUrlWithQueryParams(urlWithPath, config.params);
   const body = config.body ?? config.data;
   const headers = mergeHeaders(DEFAULT_HEADERS, config.headers, options.headers);
-  const authHeader = authHeaderProvider?.(config);
 
-  if (authHeader && !headers.has('Authorization')) {
-    headers.set('Authorization', authHeader);
+  // Authorization 헤더 설정 (우선순위: 기존 헤더 > authHeaderProvider > 쿠키 userId)
+  if (!headers.has('Authorization')) {
+    const authHeader = authHeaderProvider?.(config);
+    if (authHeader) {
+      headers.set('Authorization', authHeader);
+    } else {
+      const userId = getUserIdFromCookie();
+      if (userId) {
+        headers.set('Authorization', `Bearer ${userId}`);
+      }
+    }
   }
 
   const response = await fetch(targetUrl, {
