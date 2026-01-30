@@ -17,7 +17,7 @@ import type { AlbumDetailData } from '@/types/album.type';
 import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
 import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
-import AlbumDeleteModal from './\balbumDeleteModal/AlbumDeleteModal';
+import AlbumDeleteModal from './albumDeleteModal/AlbumDeleteModal';
 
 
 const calculateBbox = (viewState: LocationState): string => {
