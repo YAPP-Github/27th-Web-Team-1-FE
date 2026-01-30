@@ -11,6 +11,8 @@ type FetcherConfig = {
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
+  // TODO: 실제 인증 토큰으로 교체 필요
+  Authorization: 'Bearer 1',
 };
 
 function resolveBaseUrl() {
