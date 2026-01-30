@@ -10,7 +10,7 @@ export const Wrapper = styled.div`
 
 export const InputSection = styled.div`
   flex-shrink: 0;
-  padding: 16px 0;
+  padding: 4px 0 0 0;
 `;
 
 export const GridSection = styled.div`
