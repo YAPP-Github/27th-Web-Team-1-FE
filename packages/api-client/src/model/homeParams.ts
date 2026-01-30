@@ -7,7 +7,6 @@
  */
 
 export type HomeParams = {
-  userId: number;
   longitude: number;
   latitude: number;
 };

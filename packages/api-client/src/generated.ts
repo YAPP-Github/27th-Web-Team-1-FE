@@ -19,23 +19,18 @@ import type {
 import type {
   AlbumRequest,
   ApiResponseErrorDetail,
-  Create1Params,
-  CreateParams,
   CreatePhotoRequest,
   CreateWorkspaceRequest,
   GetClusterPhotosParams,
   GetLocationInfoParams,
   GetPhotos1Params,
-  GetSelectableAlbumsParams,
   HomeParams,
-  JoinByInviteCodeParams,
   JoinWorkspaceRequest,
   LoginRequest,
   PresignedUrlRequest,
   RefreshTokenRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
-  UpdateParams,
   UpdatePhotoRequest,
 } from './model';
 
@@ -143,17 +138,12 @@ export function useGetPhotoDetail<
  * 사진의 설명을 수정합니다.
  * @summary 사진 수정
  */
-export const update = (
-  id: number,
-  updatePhotoRequest: UpdatePhotoRequest,
-  params: UpdateParams,
-) => {
+export const update = (id: number, updatePhotoRequest: UpdatePhotoRequest) => {
   return customFetcher<IdResponse>({
     url: `/photos/${id}`,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     data: updatePhotoRequest,
-    params,
   });
 };
 
@@ -164,13 +154,13 @@ export const getUpdateMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof update>>,
     TError,
-    { id: number; data: UpdatePhotoRequest; params: UpdateParams },
+    { id: number; data: UpdatePhotoRequest },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof update>>,
   TError,
-  { id: number; data: UpdatePhotoRequest; params: UpdateParams },
+  { id: number; data: UpdatePhotoRequest },
   TContext
 > => {
   const mutationKey = ['update'];
@@ -184,11 +174,11 @@ export const getUpdateMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof update>>,
-    { id: number; data: UpdatePhotoRequest; params: UpdateParams }
+    { id: number; data: UpdatePhotoRequest }
   > = (props) => {
-    const { id, data, params } = props ?? {};
+    const { id, data } = props ?? {};
 
-    return update(id, data, params);
+    return update(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -208,13 +198,13 @@ export const useUpdate = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof update>>,
     TError,
-    { id: number; data: UpdatePhotoRequest; params: UpdateParams },
+    { id: number; data: UpdatePhotoRequest },
     TContext
   >;
 }): UseMutationResult<
   Awaited<ReturnType<typeof update>>,
   TError,
-  { id: number; data: UpdatePhotoRequest; params: UpdateParams },
+  { id: number; data: UpdatePhotoRequest },
   TContext
 > => {
   const mutationOptions = getUpdateMutationOptions(options);
@@ -301,7 +291,6 @@ export const useDelete = <
  */
 export const create = (
   createWorkspaceRequest: CreateWorkspaceRequest,
-  params: CreateParams,
   signal?: AbortSignal,
 ) => {
   return customFetcher<IdResponse>({
@@ -309,7 +298,6 @@ export const create = (
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: createWorkspaceRequest,
-    params,
     signal,
   });
 };
@@ -321,13 +309,13 @@ export const getCreateMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create>>,
     TError,
-    { data: CreateWorkspaceRequest; params: CreateParams },
+    { data: CreateWorkspaceRequest },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof create>>,
   TError,
-  { data: CreateWorkspaceRequest; params: CreateParams },
+  { data: CreateWorkspaceRequest },
   TContext
 > => {
   const mutationKey = ['create'];
@@ -341,11 +329,11 @@ export const getCreateMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof create>>,
-    { data: CreateWorkspaceRequest; params: CreateParams }
+    { data: CreateWorkspaceRequest }
   > = (props) => {
-    const { data, params } = props ?? {};
+    const { data } = props ?? {};
 
-    return create(data, params);
+    return create(data);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -365,13 +353,13 @@ export const useCreate = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create>>,
     TError,
-    { data: CreateWorkspaceRequest; params: CreateParams },
+    { data: CreateWorkspaceRequest },
     TContext
   >;
 }): UseMutationResult<
   Awaited<ReturnType<typeof create>>,
   TError,
-  { data: CreateWorkspaceRequest; params: CreateParams },
+  { data: CreateWorkspaceRequest },
   TContext
 > => {
   const mutationOptions = getCreateMutationOptions(options);
@@ -385,7 +373,6 @@ export const useCreate = <
  */
 export const joinByInviteCode = (
   joinWorkspaceRequest: JoinWorkspaceRequest,
-  params: JoinByInviteCodeParams,
   signal?: AbortSignal,
 ) => {
   return customFetcher<IdResponse>({
@@ -393,7 +380,6 @@ export const joinByInviteCode = (
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: joinWorkspaceRequest,
-    params,
     signal,
   });
 };
@@ -405,13 +391,13 @@ export const getJoinByInviteCodeMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof joinByInviteCode>>,
     TError,
-    { data: JoinWorkspaceRequest; params: JoinByInviteCodeParams },
+    { data: JoinWorkspaceRequest },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof joinByInviteCode>>,
   TError,
-  { data: JoinWorkspaceRequest; params: JoinByInviteCodeParams },
+  { data: JoinWorkspaceRequest },
   TContext
 > => {
   const mutationKey = ['joinByInviteCode'];
@@ -425,11 +411,11 @@ export const getJoinByInviteCodeMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof joinByInviteCode>>,
-    { data: JoinWorkspaceRequest; params: JoinByInviteCodeParams }
+    { data: JoinWorkspaceRequest }
   > = (props) => {
-    const { data, params } = props ?? {};
+    const { data } = props ?? {};
 
-    return joinByInviteCode(data, params);
+    return joinByInviteCode(data);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -451,13 +437,13 @@ export const useJoinByInviteCode = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof joinByInviteCode>>,
     TError,
-    { data: JoinWorkspaceRequest; params: JoinByInviteCodeParams },
+    { data: JoinWorkspaceRequest },
     TContext
   >;
 }): UseMutationResult<
   Awaited<ReturnType<typeof joinByInviteCode>>,
   TError,
-  { data: JoinWorkspaceRequest; params: JoinByInviteCodeParams },
+  { data: JoinWorkspaceRequest },
   TContext
 > => {
   const mutationOptions = getJoinByInviteCodeMutationOptions(options);
@@ -469,17 +455,12 @@ export const useJoinByInviteCode = <
  * S3에 업로드된 사진 정보를 저장합니다.
  * @summary 사진 생성
  */
-export const create1 = (
-  createPhotoRequest: CreatePhotoRequest,
-  params: Create1Params,
-  signal?: AbortSignal,
-) => {
+export const create1 = (createPhotoRequest: CreatePhotoRequest, signal?: AbortSignal) => {
   return customFetcher<IdResponse>({
     url: `/photos`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: createPhotoRequest,
-    params,
     signal,
   });
 };
@@ -491,13 +472,13 @@ export const getCreate1MutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create1>>,
     TError,
-    { data: CreatePhotoRequest; params: Create1Params },
+    { data: CreatePhotoRequest },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof create1>>,
   TError,
-  { data: CreatePhotoRequest; params: Create1Params },
+  { data: CreatePhotoRequest },
   TContext
 > => {
   const mutationKey = ['create1'];
@@ -511,11 +492,11 @@ export const getCreate1MutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof create1>>,
-    { data: CreatePhotoRequest; params: Create1Params }
+    { data: CreatePhotoRequest }
   > = (props) => {
-    const { data, params } = props ?? {};
+    const { data } = props ?? {};
 
-    return create1(data, params);
+    return create1(data);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -535,13 +516,13 @@ export const useCreate1 = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create1>>,
     TError,
-    { data: CreatePhotoRequest; params: Create1Params },
+    { data: CreatePhotoRequest },
     TContext
   >;
 }): UseMutationResult<
   Awaited<ReturnType<typeof create1>>,
   TError,
-  { data: CreatePhotoRequest; params: Create1Params },
+  { data: CreatePhotoRequest },
   TContext
 > => {
   const mutationOptions = getCreate1MutationOptions(options);
@@ -1541,42 +1522,31 @@ export function useGetAlbumMapInfo<
  * 사용자가 선택할 수 있는 앨범 목록을 조회합니다.
  * @summary 선택 가능한 앨범 조회
  */
-export const getSelectableAlbums = (
-  params: GetSelectableAlbumsParams,
-  signal?: AbortSignal,
-) => {
+export const getSelectableAlbums = (signal?: AbortSignal) => {
   return customFetcher<SelectableAlbumResponse>({
     url: `/albums/selectable`,
     method: 'GET',
-    params,
     signal,
   });
 };
 
-export const getGetSelectableAlbumsQueryKey = (params?: GetSelectableAlbumsParams) => {
-  return [`/albums/selectable`, ...(params ? [params] : [])] as const;
+export const getGetSelectableAlbumsQueryKey = () => {
+  return [`/albums/selectable`] as const;
 };
 
 export const getGetSelectableAlbumsQueryOptions = <
   TData = Awaited<ReturnType<typeof getSelectableAlbums>>,
   TError = ApiResponseErrorDetail,
->(
-  params: GetSelectableAlbumsParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getSelectableAlbums>>,
-      TError,
-      TData
-    >;
-  },
-) => {
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>;
+}) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetSelectableAlbumsQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getGetSelectableAlbumsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getSelectableAlbums>>> = ({
     signal,
-  }) => getSelectableAlbums(params, signal);
+  }) => getSelectableAlbums(signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getSelectableAlbums>>,
@@ -1597,17 +1567,10 @@ export type GetSelectableAlbumsQueryError = ApiResponseErrorDetail;
 export function useGetSelectableAlbums<
   TData = Awaited<ReturnType<typeof getSelectableAlbums>>,
   TError = ApiResponseErrorDetail,
->(
-  params: GetSelectableAlbumsParams,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getSelectableAlbums>>,
-      TError,
-      TData
-    >;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetSelectableAlbumsQueryOptions(params, options);
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetSelectableAlbumsQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
