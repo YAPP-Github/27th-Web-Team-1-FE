@@ -106,7 +106,6 @@ export default function LoginPage() {
             <Button
               text={isSubmitting ? '로그인 중...' : '로그인'}
               onClick={handleLogin}
-              type="submit"
               disabled={!isReady}
             />
             {userId && (
