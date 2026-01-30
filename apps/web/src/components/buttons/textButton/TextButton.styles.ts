@@ -17,6 +17,7 @@ export const Wrapper = styled.button<{ variant: TextButtonVariant; disabled?: bo
   ${({ theme }) => theme.typography.body16Semibold}
   padding: 12px 16px;
   border-radius: 8px;
+  text-align: left;
   ${({ variant, theme }) => variantStyles[variant](theme)}
 
   &:disabled {

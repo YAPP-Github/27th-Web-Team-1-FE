@@ -89,7 +89,7 @@ const BottomSheet = ({
           )}
           placement="top"
         >
-          <TextButton text="사진 추가" onClick={() => {}} />
+          <TextButton text="사진 촬영" onClick={() => {}} />
           <TextButton text="사진 추가" onClick={() => {}} />
           <TextButton text="앨범 추가" onClick={() => {}} />
         </MenuButton>
