@@ -12,13 +12,12 @@ import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
 import { useSelectableAlbums } from '@/hooks/queries/useSelectableAlbums';
 import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';
 import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
-import { useAlbumMapInfo } from '@/hooks/queries/useAlbumMapInfo';
+import { useGetAlbumMapInfo } from '@repo/api-client';
 import type { AlbumDetailData } from '@/types/album.type';
 import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
 import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
 import AlbumDeleteModal from './albumDeleteModal/AlbumDeleteModal';
-
 
 const calculateBbox = (viewState: LocationState): string => {
   const offset = 0.05;
@@ -66,7 +65,7 @@ export default function MapRoute() {
 
   const { albumList } = useSelectableAlbums();
   const { albumDetail } = useAlbumPhotos(selectedAlbumId);
-  const { data: albumMapInfo } = useAlbumMapInfo(selectedAlbumId);
+  const { data: albumMapInfo } = useGetAlbumMapInfo(selectedAlbumId ?? 0);
   const { mapPins } = useMapPhotos({
     zoom: viewState?.zoom ?? DEFAULT_ZOOM,
     bbox: viewState ? calculateBbox(viewState) : '',
@@ -99,7 +98,10 @@ export default function MapRoute() {
 
   useEffect(() => {
     if (albumIdFromPath) {
-      setSheetContext({ type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL, albumId: albumIdFromPath });
+      setSheetContext({
+        type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL,
+        albumId: albumIdFromPath,
+      });
       return;
     }
 
@@ -107,7 +109,10 @@ export default function MapRoute() {
   }, [albumIdFromPath]);
 
   useEffect(() => {
-    if (albumMapInfo?.centerLongitude !== undefined && albumMapInfo?.centerLatitude !== undefined) {
+    if (
+      albumMapInfo?.centerLongitude !== undefined &&
+      albumMapInfo?.centerLatitude !== undefined
+    ) {
       setViewState((prev) => ({
         longitude: albumMapInfo.centerLongitude!,
         latitude: albumMapInfo.centerLatitude!,
@@ -147,7 +152,7 @@ export default function MapRoute() {
         {sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? (
           <MenuHeader
             title={selectedAlbumTitle ?? '앨범'}
-            onClickBack={(handleCloseAlbumDetail)}
+            onClickBack={handleCloseAlbumDetail}
           >
             <MenuHeader.Menu>
               <MenuHeader.Item onClick={handleOpenAlbumRename}>
