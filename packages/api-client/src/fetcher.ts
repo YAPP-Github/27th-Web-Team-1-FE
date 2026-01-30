@@ -1,3 +1,18 @@
+export type ApiErrorResponse = {
+  code: number;
+  message: string;
+};
+
+export class ApiError extends Error {
+  code: number;
+
+  constructor(response: ApiErrorResponse) {
+    super(response.message);
+    this.name = 'ApiError';
+    this.code = response.code;
+  }
+}
+
 type FetcherConfig = {
   url: string;
   method: string;
@@ -149,12 +164,22 @@ export async function customFetcher<TResponse>(
   });
 
   if (!response.ok) {
-    throw new Error(`Request to ${targetUrl} failed with status ${response.status}`);
+    let errorResponse: ApiErrorResponse;
+    try {
+      errorResponse = (await response.json()) as ApiErrorResponse;
+    } catch {
+      errorResponse = {
+        code: response.status,
+        message: `Request failed with status ${response.status}`,
+      };
+    }
+    throw new ApiError(errorResponse);
   }
 
   if (response.status === 204) {
     return undefined as TResponse;
   }
 
-  return (await response.json()) as TResponse;
+  const json = (await response.json()) as { data: TResponse };
+  return json.data;
 }
