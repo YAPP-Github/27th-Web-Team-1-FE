@@ -24,7 +24,7 @@ export default function MapPreview({
   onClose,
 }: MapPreviewProps) {
   const [context, setContext] = useState<SheetContext>({
-    type: SHEET_CONTEXT_TYPE.ALBUM_LIST,
+    type: SHEET_CONTEXT_TYPE.HOME,
   });
 
   // 사진 위치를 지도 핀으로 변환
