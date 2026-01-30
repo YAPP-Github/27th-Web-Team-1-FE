@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { AnimatePresence } from 'framer-motion';
 import AlbumIcon from '@/assets/images/album.svg';
 import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import { AnimatePresence } from 'framer-motion';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import DeleteConfirmModal from './_components/DeleteConfirmModal';
 import PhotoEditOverlay from './_components/PhotoEditOverlay';
 import {
@@ -53,28 +53,6 @@ export default function PhotoViewPage() {
     closeEditOverlay,
     saveEdit,
   } = usePhotoEdit();
-
-  const {
-    isModalOpen: isDeleteModalOpen,
-    isDeleting,
-    openDeleteModal,
-    closeDeleteModal,
-    confirmDelete,
-  } = usePhotoDelete();
-
-  const [isMemoExpanded, setIsMemoExpanded] = useState(false);
-  const [showMoreButton, setShowMoreButton] = useState(false);
-  const memoRef = useRef<HTMLParagraphElement>(null);
-
-  // 메모가 2줄을 초과하는지 확인
-  useEffect(() => {
-    if (memoRef.current) {
-      const style = getComputedStyle(memoRef.current);
-      const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
-      const height = memoRef.current.scrollHeight;
-      setShowMoreButton(height > lineHeight * 2);
-    }
-  }, [photoDetail?.description]);
 
   const {
     isModalOpen: isDeleteModalOpen,
