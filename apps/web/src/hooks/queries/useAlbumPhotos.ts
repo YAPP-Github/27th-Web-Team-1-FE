@@ -1,26 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import { customFetcher, type PhotoListResponse } from '@repo/api-client';
-import { useMemo } from 'react';
 import type { AlbumDetailData } from '@/types/album.type';
-
-const fetchAlbumPhotos = (albumId: number, signal?: AbortSignal) => {
-  return customFetcher<PhotoListResponse>({
-    url: '/photos',
-    method: 'GET',
-    params: { albumId },
-    signal,
-  });
-};
+import { getGetPhotosQueryKey, useGetPhotos } from '@repo/api-client';
+import { useMemo } from 'react';
 
 export const useAlbumPhotos = (albumId: number | null) => {
-  const query = useQuery({
-    queryKey: ['albumPhotos', albumId],
-    queryFn: ({ signal }) => fetchAlbumPhotos(albumId!, signal),
-    enabled: albumId !== null,
+  const response = useGetPhotos(albumId ?? 0, {
+    query: {
+      queryKey: getGetPhotosQueryKey(albumId ?? 0),
+      enabled: albumId !== null,
+    },
   });
 
   const albumDetail: AlbumDetailData | null = useMemo(() => {
-    const album = query.data?.albums?.[0];
+    const album = response.data?.albums?.[0];
     if (!album) return null;
 
     return {
@@ -31,12 +22,12 @@ export const useAlbumPhotos = (albumId: number | null) => {
         url: photo.url ?? '',
       })),
     };
-  }, [query.data]);
+  }, [response.data]);
 
   return {
     albumDetail,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
+    isLoading: response.isLoading,
+    isError: response.isError,
+    error: response.error,
   };
 };

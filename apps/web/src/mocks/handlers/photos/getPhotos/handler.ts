@@ -8,15 +8,13 @@ const getAlbumById = (albumId: number): PhotoListResponse => {
   return { albums: album ? [album] : [] };
 };
 
-// albumId 쿼리 파라미터를 처리하는 커스텀 핸들러
+// /photos/album/:albumId 엔드포인트 핸들러
 export const getPhotosHandler = http.get(
-  `*${API_URL.PHOTOS.BASE}`,
-  async ({ request }) => {
+  `*${API_URL.PHOTOS.BY_ALBUM(':albumId')}`,
+  async ({ params }) => {
     await delay(300);
 
-    const url = new URL(request.url);
-    const albumId = url.searchParams.get('albumId');
-
+    const albumId = params.albumId;
     if (albumId) {
       return HttpResponse.json({ data: getAlbumById(Number(albumId)) }, { status: 200 });
     }

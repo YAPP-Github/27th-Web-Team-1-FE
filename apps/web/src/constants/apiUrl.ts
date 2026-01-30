@@ -14,6 +14,7 @@ export const API_URL = {
   },
   PHOTOS: {
     BASE: '/photos',
+    BY_ALBUM: (albumId: number | string) => `/photos/album/${albumId}`,
     DETAIL: (photoId: number | string) => `/photos/${photoId}`,
     PRESIGNED_URL: '/photos/presigned-url',
   },
