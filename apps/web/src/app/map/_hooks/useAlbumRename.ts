@@ -31,7 +31,7 @@ const useAlbumRename = () => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
-          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey({ albumId }) });
+          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey(albumId) });
           closeRenameModal();
         },
       },

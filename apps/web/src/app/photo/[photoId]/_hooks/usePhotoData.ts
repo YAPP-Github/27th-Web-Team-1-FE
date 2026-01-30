@@ -1,14 +1,11 @@
 import { useMemo } from 'react';
 import {
-  getGetPhotosQueryKey,
-  getGetSelectableAlbumsQueryKey,
   useGetPhotoDetail,
   useGetPhotos,
   useGetSelectableAlbums,
+  getGetSelectableAlbumsQueryKey,
+  getGetPhotosQueryKey,
 } from '@repo/api-client';
-
-// TODO: 사용자 컨텍스트에서 가져오도록 수정
-const TEMP_USER_ID = 1;
 
 interface UsePhotoDataProps {
   photoId: number;
@@ -19,10 +16,9 @@ const usePhotoData = ({ photoId, albumIdFromQuery }: UsePhotoDataProps) => {
   const { data: photoDetail, isLoading: isPhotoLoading } = useGetPhotoDetail(photoId);
 
   // 앨범 목록 조회 (albumId가 없을 때 albumName으로 찾기 위함)
-  const selectableAlbumsParams = { userId: TEMP_USER_ID };
-  const { data: selectableAlbums } = useGetSelectableAlbums(selectableAlbumsParams, {
+  const { data: selectableAlbums } = useGetSelectableAlbums({
     query: {
-      queryKey: getGetSelectableAlbumsQueryKey(selectableAlbumsParams),
+      queryKey: getGetSelectableAlbumsQueryKey(),
       enabled: !albumIdFromQuery && !!photoDetail?.albumName,
     },
   });
@@ -41,10 +37,9 @@ const usePhotoData = ({ photoId, albumIdFromQuery }: UsePhotoDataProps) => {
     return undefined;
   }, [albumIdFromQuery, selectableAlbums?.albums, photoDetail?.albumName]);
 
-  const albumParams = { albumId: albumId ?? 0 };
-  const { data: albumPhotos } = useGetPhotos(albumParams, {
+  const { data: albumPhotos } = useGetPhotos(albumId ?? 0, {
     query: {
-      queryKey: getGetPhotosQueryKey(albumParams),
+      queryKey: getGetPhotosQueryKey(albumId),
       enabled: !!albumId,
     },
   });

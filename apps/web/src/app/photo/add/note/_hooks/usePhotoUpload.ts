@@ -8,7 +8,6 @@ interface UploadPhotoParams {
   photo: SelectedPhoto;
   description?: string;
   albumId?: number;
-  userId: number;
 }
 
 const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
@@ -21,7 +20,7 @@ export const usePhotoUpload = () => {
   const { mutateAsync: createPhoto } = useCreate1();
 
   return useMutation({
-    mutationFn: async ({ photo, description, albumId, userId }: UploadPhotoParams) => {
+    mutationFn: async ({ photo, description, albumId }: UploadPhotoParams) => {
       // 1. Data URL을 Blob으로 변환
       const blob = await dataUrlToBlob(photo.uri);
       const contentType = blob.type || 'image/jpeg';
@@ -32,7 +31,6 @@ export const usePhotoUpload = () => {
           fileName: photo.filename,
           contentType,
         },
-        params: { userId },
       });
 
       if (!presignedUrlResponse.presignedUrl || !presignedUrlResponse.objectUrl) {
@@ -61,7 +59,6 @@ export const usePhotoUpload = () => {
           latitude: photo.location?.latitude,
           description,
         },
-        params: { userId },
       });
 
       return createResponse;

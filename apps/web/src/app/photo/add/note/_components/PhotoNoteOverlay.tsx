@@ -41,9 +41,6 @@ import AlbumIcon from '@/assets/images/album.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 
-// TODO: 사용자 컨텍스트에서 가져오도록 수정
-const TEMP_USER_ID = 1;
-
 interface PhotoNoteOverlayProps {
   onClose: () => void;
 }
@@ -104,7 +101,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         photo: selectedPhoto,
         description: memo || undefined,
         albumId: selectedAlbum?.id,
-        userId: TEMP_USER_ID,
       },
       {
         onSuccess: () => {

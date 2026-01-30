@@ -22,9 +22,7 @@ const AlbumDeleteModal = ({
       <Modal.Content>
         <S.TextWrapper>
           <S.Title>앨범을 삭제할까요?</S.Title>
-          <S.Description>
-            앨범 안의 모든 사진이 사라지고, 복구할 수 없어요.
-          </S.Description>
+          <S.Description>앨범 안의 모든 사진이 사라지고, 복구할 수 없어요.</S.Description>
         </S.TextWrapper>
         <Modal.Footer>
           <TextButton

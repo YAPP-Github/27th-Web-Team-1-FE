@@ -28,7 +28,7 @@ const useDeleteAlbum = () => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
-          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey({ albumId }) });
+          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey(albumId) });
           closeDeleteModal();
           router.back();
         },
