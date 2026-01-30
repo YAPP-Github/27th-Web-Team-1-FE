@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import AddIcon from '@/assets/images/add.svg';
 import CrossHairIcon from '@/assets/images/crossHair.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
@@ -11,6 +12,7 @@ import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
 import type { SelectableAlbum, AlbumWithPhotosResponse } from '@repo/api-client';
+import { ROUTES } from '@/constants/routes';
 
 interface BottomSheetProps {
   context: SheetContext;
@@ -27,6 +29,7 @@ const BottomSheet = ({
   onChangeContext,
   onSelectAlbum,
 }: BottomSheetProps) => {
+  const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
 
   const {
@@ -90,7 +93,7 @@ const BottomSheet = ({
           placement="top"
         >
           <TextButton text="사진 촬영" onClick={() => {}} />
-          <TextButton text="사진 추가" onClick={() => {}} />
+          <TextButton text="사진 추가" onClick={() => router.push(ROUTES.PHOTO.ADD)} />
           <TextButton text="앨범 추가" onClick={() => {}} />
         </MenuButton>
 
