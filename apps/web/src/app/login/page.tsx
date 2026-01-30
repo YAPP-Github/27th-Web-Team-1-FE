@@ -1,7 +1,7 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/buttons/button/Button';
 import Input from '@/components/input/Input';
 import * as S from './page.styles';
@@ -49,8 +49,6 @@ const requestLogin = async (email: string) => {
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectTo = useMemo(() => searchParams.get('redirect') ?? '/', [searchParams]);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -71,7 +69,7 @@ export default function LoginPage() {
       const receivedUserId = await requestLogin(email.trim());
       setUserIdCookie(receivedUserId);
       setUserId(receivedUserId);
-      router.push(redirectTo);
+      router.push('/map');
     } catch (error) {
       const message = error instanceof Error ? error.message : '로그인에 실패했습니다.';
       setErrorMessage(message);
