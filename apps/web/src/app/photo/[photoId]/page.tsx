@@ -76,6 +76,28 @@ export default function PhotoViewPage() {
     }
   }, [photoDetail?.description]);
 
+  const {
+    isModalOpen: isDeleteModalOpen,
+    isDeleting,
+    openDeleteModal,
+    closeDeleteModal,
+    confirmDelete,
+  } = usePhotoDelete();
+
+  const [isMemoExpanded, setIsMemoExpanded] = useState(false);
+  const [showMoreButton, setShowMoreButton] = useState(false);
+  const memoRef = useRef<HTMLParagraphElement>(null);
+
+  // 메모가 2줄을 초과하는지 확인
+  useEffect(() => {
+    if (memoRef.current) {
+      const style = getComputedStyle(memoRef.current);
+      const lineHeight = parseInt(style.lineHeight) || parseInt(style.fontSize) * 1.2;
+      const height = memoRef.current.scrollHeight;
+      setShowMoreButton(height > lineHeight * 2);
+    }
+  }, [photoDetail?.description]);
+
   // 현재 표시할 사진 결정 (currentPhoto 우선, 없으면 photoDetail)
   const displayPhoto = currentPhoto ?? photoDetail;
   const displayPhotoUrl = displayPhoto?.url;
