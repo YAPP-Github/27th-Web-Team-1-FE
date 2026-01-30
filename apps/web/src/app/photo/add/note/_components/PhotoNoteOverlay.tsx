@@ -119,8 +119,22 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   };
 
   const handleMapPreview = () => {
-    // TODO: 지도뷰 미리보기 구현
-    console.log('Open map preview');
+    if (!selectedPhoto || !hasLocation) return;
+
+    const latitude = selectedLocation?.latitude || selectedPhoto.location?.latitude;
+    const longitude = selectedLocation?.longitude || selectedPhoto.location?.longitude;
+
+    if (latitude && longitude) {
+      sessionStorage.setItem(
+        'mapPreviewState',
+        JSON.stringify({
+          latitude,
+          longitude,
+          photoUrl: selectedPhoto.uri,
+        })
+      );
+      router.push(ROUTES.PHOTO.PREVIEW);
+    }
   };
 
   if (!selectedPhoto) {

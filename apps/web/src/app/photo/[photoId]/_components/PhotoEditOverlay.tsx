@@ -1,9 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useGetPhotoDetail } from '@repo/api-client';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
+import { ROUTES } from '@/constants';
 import MemoModal from '../../add/note/_components/MemoModal';
 import AlbumSelectOverlay from '../../add/note/_components/AlbumSelectOverlay';
 import LocationSelectOverlay from '../../add/note/_components/LocationSelectOverlay';
@@ -36,6 +38,7 @@ export default function PhotoEditOverlay({
   onSave,
   isSaving = false,
 }: PhotoEditOverlayProps) {
+  const router = useRouter();
   const { data: photoDetail, isLoading } = useGetPhotoDetail(photoId);
   const {
     memo,
@@ -74,6 +77,25 @@ export default function PhotoEditOverlay({
     closeModal: handleLocationModalClose,
     submitLocation: handleLocationSubmit,
   } = useLocationModal();
+
+  const handleMapPreview = () => {
+    if (!photoDetail || !selectedLocation) return;
+
+    const latitude = selectedLocation.latitude;
+    const longitude = selectedLocation.longitude;
+
+    if (latitude && longitude) {
+      sessionStorage.setItem(
+        'mapPreviewState',
+        JSON.stringify({
+          latitude,
+          longitude,
+          photoUrl: photoDetail.url || '',
+        })
+      );
+      router.push(ROUTES.PHOTO.PREVIEW);
+    }
+  };
 
   const handleSave = () => {
     const latitude = selectedLocation?.latitude;
@@ -201,7 +223,11 @@ export default function PhotoEditOverlay({
 
         <S.BottomContainer>
           <S.ActionButtons>
-            <S.MapPreviewButton type="button">
+            <S.MapPreviewButton
+              type="button"
+              onClick={handleMapPreview}
+              disabled={!selectedLocation}
+            >
               <S.MapIcon>
                 <MapPinIcon width={16} height={17} />
               </S.MapIcon>
