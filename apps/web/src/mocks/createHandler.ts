@@ -44,8 +44,11 @@ export const createHandler = <T extends MockApiResponse<string, JsonBodyType>>(
     // dataResolver가 있으면 동적으로 데이터 생성
     const data = dataResolver ? dataResolver(params) : responseItem.data;
 
-    return HttpResponse.json(data, {
-      status: responseItem.status,
-    });
+    return HttpResponse.json(
+      { data },
+      {
+        status: responseItem.status,
+      },
+    );
   });
 };

@@ -1,24 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { customFetcher, type SelectableAlbumResponse } from '@repo/api-client';
-import { useMemo } from 'react';
 import type { Album } from '@/types/album.type';
-
-const fetchSelectableAlbums = (signal?: AbortSignal) => {
-  return customFetcher<SelectableAlbumResponse>({
-    url: '/albums/selectable',
-    method: 'GET',
-    signal,
-  });
-};
+import { useGetSelectableAlbums } from '@repo/api-client';
+import { useMemo } from 'react';
 
 export const useSelectableAlbums = () => {
-  const query = useQuery({
-    queryKey: ['selectableAlbums'],
-    queryFn: ({ signal }) => fetchSelectableAlbums(signal),
-  });
+  const response = useGetSelectableAlbums();
 
   const albumList: Album[] = useMemo(() => {
-    return (query.data?.albums ?? []).map((album) => ({
+    return (response.data?.albums ?? []).map((album) => ({
       id: album.id ?? 0,
       title: album.title ?? '알 수 없는 앨범',
       photoList: album.thumbnailUrl
@@ -26,12 +14,12 @@ export const useSelectableAlbums = () => {
         : [],
       photoCount: album.photoCount ?? 0,
     }));
-  }, [query.data]);
+  }, [response.data]);
 
   return {
     albumList,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
+    isLoading: response.isLoading,
+    isError: response.isError,
+    error: response.error,
   };
 };

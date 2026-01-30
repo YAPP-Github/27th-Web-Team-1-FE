@@ -22,5 +22,5 @@ export const mockGetMapPhotosHandler = http.get('*/map/photos', async ({ request
       ? { clusters: [], photos: filteredPhotos }
       : { clusters: filteredClusters, photos: [] };
 
-  return HttpResponse.json(data, { status: 200 });
+  return HttpResponse.json({ data }, { status: 200 });
 });
