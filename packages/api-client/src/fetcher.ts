@@ -106,6 +106,24 @@ export function buildUrlWithQueryParams(
   return url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`;
 }
 
+function mergeHeaders(...sources: (HeadersInit | undefined)[]): Headers {
+  const merged = new Headers();
+
+  for (const source of sources) {
+    if (!source) continue;
+
+    if (source instanceof Headers) {
+      source.forEach((value, key) => merged.set(key, value));
+    } else if (Array.isArray(source)) {
+      source.forEach(([key, value]) => merged.set(key, value));
+    } else {
+      Object.entries(source).forEach(([key, value]) => merged.set(key, value));
+    }
+  }
+
+  return merged;
+}
+
 export async function customFetcher<TResponse>(
   config: FetcherConfig,
   options: RequestInit = {},
@@ -115,11 +133,7 @@ export async function customFetcher<TResponse>(
   const urlWithPath = buildUrlWithPathParams(baseTargetUrl, config.pathParams);
   const targetUrl = buildUrlWithQueryParams(urlWithPath, config.params);
   const body = config.body ?? config.data;
-  const headers = new Headers({
-    ...DEFAULT_HEADERS,
-    ...(config.headers ?? {}),
-    ...(options.headers ?? {}),
-  });
+  const headers = mergeHeaders(DEFAULT_HEADERS, config.headers, options.headers);
   const authHeader = authHeaderProvider?.(config);
 
   if (authHeader && !headers.has('Authorization')) {
