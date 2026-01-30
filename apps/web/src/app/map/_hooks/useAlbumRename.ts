@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import {
-  useUpdateTitle,
-  getGetSelectableAlbumsQueryKey,
-  getGetPhotosQueryKey,
-} from '@repo/api-client';
+import { useUpdateTitle, getGetSelectableAlbumsQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 
 const useAlbumRename = () => {
@@ -31,7 +27,7 @@ const useAlbumRename = () => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
-          queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey(albumId) });
+          queryClient.invalidateQueries({ queryKey: ['albumPhotos', albumId] });
           closeRenameModal();
         },
       },
