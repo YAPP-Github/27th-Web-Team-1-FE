@@ -4,10 +4,12 @@ import createCache from '@emotion/cache';
 import { CacheProvider, ThemeProvider } from '@emotion/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { PropsWithChildren, useMemo, useState } from 'react';
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { theme } from '@/theme';
 import { MSWProvider } from '@/mocks/MSWProvider';
 import GlobalStyles from '@/theme/globalStyles';
+import { setAuthHeaderProvider } from '@repo/api-client';
+import { getAuthorizationHeader } from '@/auth/cookies';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
@@ -33,6 +35,19 @@ export function AppProviders({
   );
 
   const cache = useMemo(() => createCache({ key: 'web', prepend: true }), []);
+
+  useEffect(() => {
+    setAuthHeaderProvider((config) => {
+      if (config.url.includes('/auth/login')) {
+        return undefined;
+      }
+      return getAuthorizationHeader();
+    });
+
+    return () => {
+      setAuthHeaderProvider(null);
+    };
+  }, []);
 
   const content = (
     <CacheProvider value={cache}>

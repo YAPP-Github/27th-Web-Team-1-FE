@@ -9,6 +9,14 @@ type FetcherConfig = {
   pathParams?: Record<string, string | number>;
 };
 
+export type AuthHeaderProvider = (config: FetcherConfig) => string | undefined;
+
+let authHeaderProvider: AuthHeaderProvider | null = null;
+
+export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
+  authHeaderProvider = provider;
+};
+
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
@@ -107,16 +115,22 @@ export async function customFetcher<TResponse>(
   const urlWithPath = buildUrlWithPathParams(baseTargetUrl, config.pathParams);
   const targetUrl = buildUrlWithQueryParams(urlWithPath, config.params);
   const body = config.body ?? config.data;
+  const headers = new Headers({
+    ...DEFAULT_HEADERS,
+    ...(config.headers ?? {}),
+    ...(options.headers ?? {}),
+  });
+  const authHeader = authHeaderProvider?.(config);
+
+  if (authHeader && !headers.has('Authorization')) {
+    headers.set('Authorization', authHeader);
+  }
 
   const response = await fetch(targetUrl, {
     method: config.method,
     body: body ? JSON.stringify(body) : undefined,
     signal: config.signal,
-    headers: {
-      ...DEFAULT_HEADERS,
-      ...(config.headers ?? {}),
-      ...(options.headers ?? {}),
-    },
+    headers,
     ...options,
   });
 
