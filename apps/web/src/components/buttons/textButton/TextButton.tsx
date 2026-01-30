@@ -10,6 +10,8 @@ interface TextButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   variant?: TextButtonVariant;
   /** 버튼 활성화 여부 */
   disabled?: boolean;
+  /** 텍스트 정렬 */
+  textAlign?: 'left' | 'center';
 }
 
 const TextButton = ({
@@ -17,6 +19,7 @@ const TextButton = ({
   onClick,
   variant = 'default',
   disabled = false,
+  textAlign = 'center',
   ...rest
 }: TextButtonProps) => {
   return (
@@ -25,6 +28,7 @@ const TextButton = ({
       onClick={onClick}
       variant={variant}
       disabled={disabled}
+      textAlign={textAlign}
       {...rest}
     >
       {text}

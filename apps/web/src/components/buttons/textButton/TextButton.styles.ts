@@ -13,11 +13,15 @@ const variantStyles = {
     color: ${theme.colors.status.red[200]};
   `,
 };
-export const Wrapper = styled.button<{ variant: TextButtonVariant; disabled?: boolean }>`
+export const Wrapper = styled.button<{
+  variant: TextButtonVariant;
+  disabled?: boolean;
+  textAlign: 'left' | 'center';
+}>`
   ${({ theme }) => theme.typography.body16Semibold}
   padding: 12px 16px;
   border-radius: 8px;
-  text-align: left;
+  text-align: ${({ textAlign }) => textAlign};
   ${({ variant, theme }) => variantStyles[variant](theme)}
 
   &:disabled {

@@ -92,9 +92,13 @@ const BottomSheet = ({
           )}
           placement="top"
         >
-          <TextButton text="사진 촬영" onClick={() => {}} />
-          <TextButton text="사진 추가" onClick={() => router.push(ROUTES.PHOTO.ADD)} />
-          <TextButton text="앨범 추가" onClick={() => {}} />
+          <TextButton text="사진 촬영" onClick={() => {}} textAlign="left" />
+          <TextButton
+            text="사진 추가"
+            onClick={() => router.push(ROUTES.PHOTO.ADD)}
+            textAlign="left"
+          />
+          <TextButton text="앨범 추가" onClick={() => {}} textAlign="left" />
         </MenuButton>
 
         <CircleButton aria-label="취소" onClick={() => {}}>
