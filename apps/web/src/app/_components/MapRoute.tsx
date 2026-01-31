@@ -17,7 +17,7 @@ import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
 import AlbumDeleteModal from './albumDeleteModal/AlbumDeleteModal';
 import LocationPermissionModal from './locationPermissionModal/LocationPermissionModal';
-import { useGeolocationPermission } from '@/hooks/useGeolocationPermission';
+import { getCurrentPosition } from '@/utils/getCurrentPosition';
 
 const calculateBbox = (viewState: LocationState): string => {
   const offset = 0.05;
@@ -36,11 +36,6 @@ export default function MapRoute() {
     type: SHEET_CONTEXT_TYPE.HOME,
   });
   const [isLocationDeniedModalOpen, setIsLocationDeniedModalOpen] = useState(false);
-  const {
-    permissionState,
-    isLoading: isPermissionLoading,
-    requestPermission,
-  } = useGeolocationPermission();
   const {
     isModalOpen: isAlbumDeleteOpen,
     isDeleting: isAlbumDeleting,
@@ -84,21 +79,8 @@ export default function MapRoute() {
   }, [albumDetail]);
 
   useEffect(() => {
-    if (isPermissionLoading) return;
-
     const initLocation = async () => {
-      if (permissionState === 'unsupported') {
-        setViewState(DEFAULT_LOCATION);
-        return;
-      }
-
-      if (permissionState === 'denied') {
-        setIsLocationDeniedModalOpen(true);
-        setViewState(DEFAULT_LOCATION);
-        return;
-      }
-
-      const position = await requestPermission();
+      const position = await getCurrentPosition();
       if (!position) {
         setIsLocationDeniedModalOpen(true);
         setViewState(DEFAULT_LOCATION);
@@ -113,7 +95,7 @@ export default function MapRoute() {
     };
 
     initLocation();
-  }, [isPermissionLoading, permissionState, requestPermission]);
+  }, []);
 
   const handleCloseLocationDeniedModal = () => {
     setIsLocationDeniedModalOpen(false);
