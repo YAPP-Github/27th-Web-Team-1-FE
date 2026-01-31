@@ -7,12 +7,12 @@
  */
 
 export type GetClusterPhotosParams = {
-  /**
-   * 페이지 번호 (0부터 시작)
-   */
-  page?: number;
-  /**
-   * 페이지 크기
-   */
-  size?: number;
+/**
+ * 페이지 번호 (0부터 시작)
+ */
+page?: number;
+/**
+ * 페이지 크기
+ */
+size?: number;
 };
