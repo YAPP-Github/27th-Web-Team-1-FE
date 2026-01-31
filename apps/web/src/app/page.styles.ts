@@ -12,3 +12,11 @@ export const HeaderContainer = styled.div`
   top: 0;
   z-index: 10;
 `;
+
+export const FloatingButtonWrapper = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 54px;
+  transform: translateX(-50%);
+  z-index: 999;
+`;

@@ -14,7 +14,7 @@ const fetchMapPhotos = (params: UseMapPhotosParams, signal?: AbortSignal) => {
     url: '/map/photos',
     method: 'GET',
     params: {
-      zoom: params.zoom,
+      zoom: Math.round(params.zoom),
       bbox: params.bbox,
       ...(params.albumId ? { albumId: params.albumId } : {}),
     },
@@ -23,9 +23,12 @@ const fetchMapPhotos = (params: UseMapPhotosParams, signal?: AbortSignal) => {
 };
 
 export const useMapPhotos = (params: UseMapPhotosParams) => {
+  // zoom을 정수로 정규화하여 캐시 성능 향상
+  const roundedZoom = Math.round(params.zoom);
+
   const query = useQuery({
-    queryKey: ['mapPhotos', params.zoom, params.bbox, params.albumId],
-    queryFn: ({ signal }) => fetchMapPhotos(params, signal),
+    queryKey: ['mapPhotos', roundedZoom, params.bbox, params.albumId],
+    queryFn: ({ signal }) => fetchMapPhotos({ ...params, zoom: roundedZoom }, signal),
     enabled: Boolean(params.bbox),
   });
 
@@ -40,19 +43,22 @@ export const useMapPhotos = (params: UseMapPhotosParams) => {
       longitude: photo.longitude ?? 0,
       imageUrl: photo.thumbnailUrl ?? '',
       imageCount: 1,
+      isCluster: false,
     }));
 
-    const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster, index) => ({
-      id: index,
+    const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
+      id: 0,
       albumId: 0,
       latitude: cluster.latitude ?? 0,
       longitude: cluster.longitude ?? 0,
       imageUrl: cluster.thumbnailUrl ?? '',
       imageCount: cluster.count ?? 1,
+      clusterId: cluster.clusterId ?? '',
+      isCluster: true,
     }));
 
-    return params.zoom >= 15 ? photoPins : clusterPins;
-  }, [query.data, params.zoom]);
+    return roundedZoom >= 15 ? photoPins : clusterPins;
+  }, [query.data, roundedZoom]);
 
   return {
     mapPins,

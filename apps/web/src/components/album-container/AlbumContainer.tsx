@@ -10,8 +10,8 @@ interface AlbumContainerProps {
   title: string;
   /** 앨범 타입 (small: 사진 개수 숨김) */
   type?: AlbumContainerType;
-  /** 썸네일 URL */
-  thumbnailUrl?: string;
+  /** 썸네일 URL 목록 (최대 4개) */
+  thumbnailUrls?: string[];
   /** 총 사진 수 */
   photoCount: number;
   /** 앨범 클릭 시 콜백 */
@@ -21,7 +21,7 @@ interface AlbumContainerProps {
 const AlbumContainer = ({
   title,
   type = ALBUM_CONTAINER_TYPE.MEDIUM,
-  thumbnailUrl,
+  thumbnailUrls,
   photoCount,
   onClick,
 }: AlbumContainerProps) => {
@@ -30,15 +30,15 @@ const AlbumContainer = ({
 
   const renderPhotoGrid = () =>
     Array.from({ length: MAX_GRID_PHOTOS }).map((_, i) => {
-      const isFirstPhoto = i === 0;
       const isLastPhoto = i === MAX_GRID_PHOTOS - 1;
       const showOverlay = isLastPhoto && hasMorePhotos;
+      const thumbnailUrl = thumbnailUrls?.[i];
 
       return (
         <S.PhotoWrapper key={`photo-${i}`} type={type}>
-          {isFirstPhoto && thumbnailUrl ? (
+          {thumbnailUrl ? (
             <>
-              <S.Photo src={thumbnailUrl} alt={`${title}-thumbnail`} />
+              <S.Photo src={thumbnailUrl} alt={`${title}-thumbnail-${i}`} />
               {showOverlay && (
                 <S.MoreOverlay type={type}>+{remainingCount}</S.MoreOverlay>
               )}
