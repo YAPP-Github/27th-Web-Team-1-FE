@@ -58,7 +58,7 @@ export default function MapPreview({
 
       <BottomSheet
         context={context}
-        albums={[{ id: 1, title: '전체보기', photoList: [], photoCount: 0 }]}
+        albums={[{ id: 1, title: '전체보기', photoCount: 0 }]}
         albumDetailById={{}}
         onChangeContext={setContext}
         onSelectAlbum={() => {}}
