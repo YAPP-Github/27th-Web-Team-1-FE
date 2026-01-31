@@ -11,6 +11,11 @@ export const Wrapper = styled.button`
   background: ${({ theme }) => theme.colors.blueWhite.bg5};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[25]};
   border-radius: 99px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
 `;
 
 export const TextContainer = styled.p`
