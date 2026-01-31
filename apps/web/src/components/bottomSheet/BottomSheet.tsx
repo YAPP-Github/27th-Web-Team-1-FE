@@ -23,6 +23,7 @@ interface BottomSheetProps {
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
+  onOpenAddAlbumModal?: () => void;
 }
 
 const BottomSheet = ({
@@ -32,6 +33,7 @@ const BottomSheet = ({
   onChangeContext,
   onSelectAlbum,
   onGoToCurrentLocation,
+  onOpenAddAlbumModal,
 }: BottomSheetProps) => {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
@@ -91,6 +93,10 @@ const BottomSheet = ({
     onChangeContext({ type: SHEET_CONTEXT_TYPE.HOME });
   };
 
+  const handleAddAlbumClick = () => {
+    onOpenAddAlbumModal?.();
+  };
+
   return (
     <>
       <S.ActionColumn $sheetHeight={height}>
@@ -111,7 +117,7 @@ const BottomSheet = ({
             onClick={() => router.push(ROUTES.PHOTO.ADD)}
             textAlign="left"
           />
-          <TextButton text="앨범 추가" onClick={() => {}} textAlign="left" />
+          <TextButton text="앨범 추가" onClick={handleAddAlbumClick} textAlign="left" />
         </MenuButton>
 
         <CircleButton aria-label="현재 위치로 이동" onClick={onGoToCurrentLocation}>
