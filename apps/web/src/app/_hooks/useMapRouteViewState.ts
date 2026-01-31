@@ -29,6 +29,11 @@ export const useMapRouteViewState = (): UseMapRouteViewStateReturn => {
       try {
         const pos = await getCurrentPosition();
 
+        if (!pos) {
+          setViewState(DEFAULT_LOCATION);
+          return;
+        }
+
         setViewState({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
