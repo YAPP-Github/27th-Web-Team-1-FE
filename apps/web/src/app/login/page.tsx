@@ -3,6 +3,7 @@
 import { clearUserIdCookie, getUserIdFromCookie, setUserIdCookie } from '@/auth/cookies';
 import Button from '@/components/buttons/button/Button';
 import Input from '@/components/input/Input';
+import { ROUTES } from '@/constants/routes';
 import { login } from '@repo/api-client';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
@@ -41,7 +42,7 @@ export default function LoginPage() {
       const receivedUserId = await requestLogin(email.trim());
       setUserIdCookie(receivedUserId);
       setUserId(receivedUserId);
-      router.push('/map');
+      router.push(ROUTES.HOME);
     } catch (error) {
       const message = error instanceof Error ? error.message : '로그인에 실패했습니다.';
       setErrorMessage(message);

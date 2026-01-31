@@ -4,22 +4,26 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import AddIcon from '@/assets/images/add.svg';
 import CrossHairIcon from '@/assets/images/crossHair.svg';
+import MapPinIcon from '@/assets/images/mapPin.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
+import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import * as S from './BottomSheet.styles';
 import MenuButton from '../buttons/menuButton/MenuButton';
 import TextButton from '../buttons/textButton/TextButton';
 import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
-import type { SelectableAlbum, AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
 import { ROUTES } from '@/constants/routes';
 
 interface BottomSheetProps {
   context: SheetContext;
-  albums: SelectableAlbum[];
+  albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
+  onGoToCurrentLocation: () => void;
+  onOpenAddAlbumModal?: () => void;
 }
 
 const BottomSheet = ({
@@ -28,6 +32,8 @@ const BottomSheet = ({
   albumDetailById,
   onChangeContext,
   onSelectAlbum,
+  onGoToCurrentLocation,
+  onOpenAddAlbumModal,
 }: BottomSheetProps) => {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
@@ -39,6 +45,7 @@ const BottomSheet = ({
     snapHeightOnly,
     deriveContextFromHeight,
     MID_HEIGHT,
+    showFloatingButton,
   } = useBottomSheetController(context);
 
   const startY = useRef(0);
@@ -65,7 +72,10 @@ const BottomSheet = ({
   const handlePointerUp = () => {
     setIsDragging(false);
 
-    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
+    if (
+      context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ||
+      context.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
+    ) {
       snapHeightOnly(height);
       return;
     }
@@ -76,6 +86,15 @@ const BottomSheet = ({
     }
 
     onChangeContext(deriveContextFromHeight(height));
+  };
+
+  const handleFloatingButtonClick = () => {
+    router.push(ROUTES.HOME);
+    onChangeContext({ type: SHEET_CONTEXT_TYPE.HOME });
+  };
+
+  const handleAddAlbumClick = () => {
+    onOpenAddAlbumModal?.();
   };
 
   return (
@@ -98,10 +117,10 @@ const BottomSheet = ({
             onClick={() => router.push(ROUTES.PHOTO.ADD)}
             textAlign="left"
           />
-          <TextButton text="앨범 추가" onClick={() => {}} textAlign="left" />
+          <TextButton text="앨범 추가" onClick={handleAddAlbumClick} textAlign="left" />
         </MenuButton>
 
-        <CircleButton aria-label="취소" onClick={() => {}}>
+        <CircleButton aria-label="현재 위치로 이동" onClick={onGoToCurrentLocation}>
           <CrossHairIcon />
         </CircleButton>
       </S.ActionColumn>
@@ -121,7 +140,12 @@ const BottomSheet = ({
           <div className="handle" />
         </S.HandleBar>
 
-        <S.Content $noPadding={context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL}>
+        <S.Content
+          $noPadding={
+            context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ||
+            context.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
+          }
+        >
           <BottomSheetContent
             context={context}
             albums={albums}
@@ -130,6 +154,16 @@ const BottomSheet = ({
           />
         </S.Content>
       </S.SheetWrapper>
+
+      {showFloatingButton && (
+        <S.FloatingButtonWrapper>
+          <FloatingButton
+            text="지도뷰로 보기"
+            icon={<MapPinIcon />}
+            onClick={handleFloatingButtonClick}
+          />
+        </S.FloatingButtonWrapper>
+      )}
     </>
   );
 };

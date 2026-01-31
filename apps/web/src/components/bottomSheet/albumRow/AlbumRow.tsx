@@ -1,10 +1,10 @@
-import type { SelectableAlbum } from '@repo/api-client';
+import type { AlbumThumbnails } from '@repo/api-client';
 import * as S from './AlbumRow.styles';
 import AlbumContainer from '@/components/album-container/AlbumContainer';
 import { useRef } from 'react';
 
 interface AlbumRowProps {
-  albums: SelectableAlbum[];
+  albums: AlbumThumbnails[];
   onSelectAlbum: (albumId: number) => void;
 }
 
@@ -48,7 +48,7 @@ const AlbumRow = ({ albums, onSelectAlbum }: AlbumRowProps) => {
           key={album.id}
           title={album.title ?? ''}
           type="small"
-          thumbnailUrl={album.thumbnailUrl}
+          thumbnailUrls={album.thumbnailUrls}
           photoCount={album.photoCount ?? 0}
           onClick={() => onSelectAlbum(album.id ?? 0)}
         />

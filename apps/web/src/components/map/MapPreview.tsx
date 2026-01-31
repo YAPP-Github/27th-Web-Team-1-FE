@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import MapView from './MapView';
+import { useState, useRef } from 'react';
+import MapView, { type MapViewHandle } from './MapView';
 import BottomSheet from '../bottomSheet/BottomSheet';
 import MenuHeader from '../header/menu/MenuHeader';
 import { LocationState, MapPin } from '@/types/map.type';
@@ -23,6 +23,7 @@ export default function MapPreview({
   photoUrl,
   onClose,
 }: MapPreviewProps) {
+  const mapViewRef = useRef<MapViewHandle>(null);
   const [context, setContext] = useState<SheetContext>({
     type: SHEET_CONTEXT_TYPE.HOME,
   });
@@ -35,6 +36,15 @@ export default function MapPreview({
     longitude,
     imageUrl: photoUrl,
     imageCount: 1,
+    isCluster: false,
+  };
+
+  const handlePinClick = () => {
+    // MapPreview에서는 특별한 처리 필요 없음
+  };
+
+  const handleGoToCurrentLocation = () => {
+    // MapPreview에서는 특별한 처리 필요 없음
   };
 
   const locationState: LocationState = {
@@ -53,7 +63,13 @@ export default function MapPreview({
       </MenuHeader>
 
       <S.MapContainer>
-        <MapView locationState={locationState} pins={[mapPin]} selectedAlbumId={null} />
+        <MapView
+          ref={mapViewRef}
+          locationState={locationState}
+          pins={[mapPin]}
+          onPinClick={handlePinClick}
+          onViewStateChange={undefined}
+        />
       </S.MapContainer>
 
       <BottomSheet
@@ -62,6 +78,7 @@ export default function MapPreview({
         albumDetailById={{}}
         onChangeContext={setContext}
         onSelectAlbum={() => {}}
+        onGoToCurrentLocation={handleGoToCurrentLocation}
       />
     </S.Container>
   );

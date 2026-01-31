@@ -31,6 +31,8 @@ export interface MenuHeaderProps {
   children?: ReactNode;
   /** 위치 아이콘 표시 여부 */
   showLocation?: boolean;
+  /** 메뉴 버튼 표시 여부 */
+  showMenu?: boolean;
 }
 
 const MenuHeaderMain = ({
@@ -38,6 +40,7 @@ const MenuHeaderMain = ({
   onClickBack,
   children,
   showLocation,
+  showMenu = true,
 }: MenuHeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -72,12 +75,14 @@ const MenuHeaderMain = ({
             </S.CenterWrapper>
           }
           right={
-            <CircleButton
-              onClick={handleClickMenu}
-              style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
-            >
-              <MenuIcon width={ICON_SIZE} height={ICON_SIZE} />
-            </CircleButton>
+            showMenu ? (
+              <CircleButton
+                onClick={handleClickMenu}
+                style={{ width: BUTTON_SIZE, height: BUTTON_SIZE }}
+              >
+                <MenuIcon width={ICON_SIZE} height={ICON_SIZE} />
+              </CircleButton>
+            ) : null
           }
         />
         {children}

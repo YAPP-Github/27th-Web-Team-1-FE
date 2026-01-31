@@ -1,12 +1,13 @@
-import type { SelectableAlbum, AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
 import AlbumDetail from '../albumDetail/AlbumDetail';
+import ClusterDetail from '../clusterDetail/ClusterDetail';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 import AlbumGrid from '../albumGrid/AlbumGrid';
 import AlbumRow from '../albumRow/AlbumRow';
 
 interface BottomSheetContentProps {
   context: SheetContext;
-  albums: SelectableAlbum[];
+  albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   onSelectAlbum: (albumId: number) => void;
 }
@@ -26,6 +27,9 @@ const BottomSheetContent = ({
 
     case SHEET_CONTEXT_TYPE.ALBUM_DETAIL:
       return <AlbumDetail album={albumDetailById[context.albumId]} />;
+
+    case SHEET_CONTEXT_TYPE.CLUSTER_DETAIL:
+      return <ClusterDetail clusterId={context.clusterId} />;
 
     default:
       return null;

@@ -11,4 +11,6 @@ export interface MapPin {
   longitude: number;
   imageUrl: string;
   imageCount: number;
+  clusterId?: string;
+  isCluster: boolean;
 }

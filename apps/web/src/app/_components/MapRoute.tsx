@@ -1,132 +1,112 @@
 'use client';
-import { ExploreHeader, MenuHeader } from '@/components/header';
-import MapView from '@/components/map/MapView';
-import * as S from '../page.styles';
+
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { LocationState } from '@/types/map.type';
-import BottomSheet from '@/components/bottomSheet/BottomSheet';
-import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
-import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
-import { useSelectableAlbums } from '@/hooks/queries/useSelectableAlbums';
-import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';
-import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
-import { useGetAlbumMapInfo, type AlbumWithPhotosResponse } from '@repo/api-client';
-import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
-import useDeleteAlbum from '../_hooks/useDeleteAlbum';
-import useAlbumRename from '../_hooks/useAlbumRename';
-import AlbumDeleteModal from './albumDeleteModal/AlbumDeleteModal';
+import MapView from '@/components/map/MapView';
+import { MapPin } from '@/types/map.type';
+import { ROUTES } from '@/constants/routes';
+import { SHEET_CONTEXT_TYPE } from '@/components/bottomSheet/constants';
+import { DEFAULT_ZOOM } from '../constants';
+import * as S from '../page.styles';
+import { useMapRouteViewState } from '../_hooks/useMapRouteViewState';
+import { useMapRouteSheetContext } from '../_hooks/useMapRouteSheetContext';
+import { useMapRouteData } from '../_hooks/useMapRouteData';
+import { calculatePhotoCount } from '../_utils/mapRoute.calc';
+import { MapRouteHeader } from './MapRouteHeader';
+import { MapRouteBottomSection } from './MapRouteBottomSection';
+import { AlbumAddModalContainer } from './albumAddModal/AlbumAddModalContainer';
+import { AlbumRenameModalContainer } from './albumRenameModal/AlbumRenameModalContainer';
+import { AlbumDeleteModalContainer } from './albumDeleteModal/AlbumDeleteModalContainer';
 import LocationPermissionModal from './locationPermissionModal/LocationPermissionModal';
 import { getCurrentPosition } from '@/utils/getCurrentPosition';
 
-const calculateBbox = (viewState: LocationState): string => {
-  const offset = 0.05;
-  const west = viewState.longitude - offset;
-  const south = viewState.latitude - offset;
-  const east = viewState.longitude + offset;
-  const north = viewState.latitude + offset;
-  return `${west},${south},${east},${north}`;
-};
-
 export default function MapRoute() {
   const router = useRouter();
-  const pathname = usePathname();
-  const [viewState, setViewState] = useState<LocationState | null>(null);
-  const [sheetContext, setSheetContext] = useState<SheetContext>({
-    type: SHEET_CONTEXT_TYPE.HOME,
+
+  // 상태 관리
+  const { viewState, mapViewRef, handleViewStateChange, handleGoToCurrentLocation } =
+    useMapRouteViewState();
+
+  const { sheetContext, setSheetContext, selectedAlbumId } = useMapRouteSheetContext();
+
+  // 데이터 페칭
+  const {
+    albumList,
+    address,
+    albumDetail,
+    albumMapInfo,
+    mapPins,
+    clusterLocationData,
+    clusterPhotosData,
+  } = useMapRouteData({
+    viewState,
+    sheetContext,
+    selectedAlbumId,
   });
+
+  // 모달 상태 관리
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLocationDeniedModalOpen, setIsLocationDeniedModalOpen] = useState(false);
-  const {
-    isModalOpen: isAlbumDeleteOpen,
-    isDeleting: isAlbumDeleting,
-    openDeleteModal: openAlbumDeleteModal,
-    closeDeleteModal: closeAlbumDeleteModal,
-    confirmDelete: confirmAlbumDelete,
-  } = useDeleteAlbum();
-  const {
-    isModalOpen: isAlbumRenameOpen,
-    isUpdating: isAlbumRenaming,
-    albumName,
-    setAlbumName,
-    openRenameModal: openAlbumRenameModal,
-    closeRenameModal: closeAlbumRenameModal,
-    confirmRename: confirmAlbumRename,
-  } = useAlbumRename();
 
-  const albumIdFromPath = useMemo(() => {
-    const match = pathname.match(/^\/album\/(\d+)/);
-    if (!match) return null;
-    const parsedId = Number(match[1]);
-    return Number.isNaN(parsedId) ? null : parsedId;
-  }, [pathname]);
-
-  const selectedAlbumId =
-    albumIdFromPath ??
-    (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? sheetContext.albumId : null);
-
-  const { albumList } = useSelectableAlbums();
-  const { albumDetail } = useAlbumPhotos(selectedAlbumId);
-  const { data: albumMapInfo } = useGetAlbumMapInfo(selectedAlbumId ?? 0);
-  const { mapPins } = useMapPhotos({
-    zoom: viewState?.zoom ?? DEFAULT_ZOOM,
-    bbox: viewState ? calculateBbox(viewState) : '',
-    albumId: selectedAlbumId,
-  });
-
-  const albumDetailById = useMemo<Record<number, AlbumWithPhotosResponse>>(() => {
-    if (!albumDetail?.id) return {};
-    return { [albumDetail.id]: albumDetail };
-  }, [albumDetail]);
+  // 앨범이 선택되었을 때 앨범의 중심 위치로 지도 이동
+  useEffect(() => {
+    if (
+      viewState &&
+      selectedAlbumId &&
+      albumMapInfo?.centerLongitude &&
+      albumMapInfo?.centerLatitude
+    ) {
+      handleViewStateChange({
+        longitude: albumMapInfo.centerLongitude,
+        latitude: albumMapInfo.centerLatitude,
+        zoom: viewState.zoom ?? DEFAULT_ZOOM,
+      });
+    }
+  }, [selectedAlbumId, albumMapInfo, viewState, handleViewStateChange]);
 
   useEffect(() => {
     const initLocation = async () => {
       const position = await getCurrentPosition();
       if (!position) {
         setIsLocationDeniedModalOpen(true);
-        setViewState(DEFAULT_LOCATION);
         return;
       }
-
-      setViewState({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        zoom: DEFAULT_ZOOM,
-      });
     };
-
     initLocation();
   }, []);
 
-  const handleCloseLocationDeniedModal = () => {
-    setIsLocationDeniedModalOpen(false);
-  };
+  // 계산된 데이터
+  const albumDetailById = useMemo(() => {
+    if (!albumDetail?.id) return {};
+    return { [albumDetail.id]: albumDetail };
+  }, [albumDetail]);
 
-  useEffect(() => {
-    if (albumIdFromPath) {
-      setSheetContext({
-        type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL,
-        albumId: albumIdFromPath,
-      });
-      return;
-    }
-
-    setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
-  }, [albumIdFromPath]);
-
-  useEffect(() => {
-    if (
-      albumMapInfo?.centerLongitude !== undefined &&
-      albumMapInfo?.centerLatitude !== undefined
-    ) {
-      setViewState((prev) => ({
-        longitude: albumMapInfo.centerLongitude!,
-        latitude: albumMapInfo.centerLatitude!,
-        zoom: prev?.zoom ?? DEFAULT_ZOOM,
-      }));
-    }
-  }, [albumMapInfo?.centerLongitude, albumMapInfo?.centerLatitude]);
+  const photoCount = useMemo(() => {
+    const clusterPhotoCount = clusterPhotosData?.totalElements ?? 0;
+    return calculatePhotoCount(
+      sheetContext,
+      albumDetail,
+      clusterPhotoCount,
+      mapPins.length,
+    );
+  }, [sheetContext, albumDetail, clusterPhotosData, mapPins.length]);
 
   const selectedAlbumTitle = albumDetail?.title;
+
+  const handlePinClick = (pin: MapPin) => {
+    if (pin.isCluster) {
+      setSheetContext({
+        type: SHEET_CONTEXT_TYPE.CLUSTER_DETAIL,
+        clusterId: pin.clusterId!,
+        latitude: pin.latitude,
+        longitude: pin.longitude,
+      });
+    } else {
+      router.push(ROUTES.PHOTO.VIEW(pin.id));
+    }
+  };
 
   const handleSelectAlbum = (albumId: number) => {
     setSheetContext({ type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL, albumId });
@@ -138,71 +118,71 @@ export default function MapRoute() {
   };
 
   const handleOpenAlbumRename = () => {
-    openAlbumRenameModal(selectedAlbumTitle ?? '');
+    setIsRenameModalOpen(true);
   };
 
-  const handleConfirmAlbumRename = () => {
-    if (!selectedAlbumId) return;
-    confirmAlbumRename(selectedAlbumId);
+  const handleOpenAlbumDelete = () => {
+    setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmAlbumDelete = () => {
-    if (!selectedAlbumId) return;
-    confirmAlbumDelete(selectedAlbumId);
+  const handleCloseClusterDetail = () => {
+    setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
+  };
+
+  const handleCloseLocationDeniedModal = () => {
+    setIsLocationDeniedModalOpen(false);
   };
 
   return (
     <S.Wrapper>
       <S.HeaderContainer>
-        {sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? (
-          <MenuHeader
-            title={selectedAlbumTitle ?? '앨범'}
-            onClickBack={handleCloseAlbumDetail}
-          >
-            <MenuHeader.Menu>
-              <MenuHeader.Item onClick={handleOpenAlbumRename}>
-                앨범 이름 변경
-              </MenuHeader.Item>
-              <MenuHeader.Item variant="danger" onClick={openAlbumDeleteModal}>
-                앨범 삭제
-              </MenuHeader.Item>
-            </MenuHeader.Menu>
-          </MenuHeader>
-        ) : (
-          <ExploreHeader
-            title="서울특별시 마포구"
-            onClickProfile={() => {}}
-            onClickExplore={() => {}}
-          />
-        )}
+        <MapRouteHeader
+          sheetContext={sheetContext}
+          selectedAlbumTitle={selectedAlbumTitle}
+          clusterLocationData={clusterLocationData}
+          address={address}
+          onCloseAlbumDetail={handleCloseAlbumDetail}
+          onOpenAlbumRename={handleOpenAlbumRename}
+          onOpenAlbumDelete={handleOpenAlbumDelete}
+          onCloseClusterDetail={handleCloseClusterDetail}
+        />
       </S.HeaderContainer>
+
       {viewState && (
         <MapView
+          ref={mapViewRef}
           locationState={viewState}
           pins={mapPins}
-          selectedAlbumId={selectedAlbumId}
+          onPinClick={handlePinClick}
+          onViewStateChange={handleViewStateChange}
         />
       )}
-      <BottomSheet
-        context={sheetContext}
-        albums={albumList}
+
+      <MapRouteBottomSection
+        sheetContext={sheetContext}
+        albumList={albumList}
         albumDetailById={albumDetailById}
+        photoCount={photoCount}
         onChangeContext={setSheetContext}
         onSelectAlbum={handleSelectAlbum}
+        onGoToCurrentLocation={handleGoToCurrentLocation}
+        onOpenAddAlbumModal={() => setIsAddModalOpen(true)}
       />
-      <AlbumDeleteModal
-        isOpen={isAlbumDeleteOpen}
-        isDeleting={isAlbumDeleting}
-        onClose={closeAlbumDeleteModal}
-        onConfirm={handleConfirmAlbumDelete}
+
+      <AlbumAddModalContainer
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
       />
-      <AlbumRenameModal
-        isOpen={isAlbumRenameOpen}
-        isUpdating={isAlbumRenaming}
-        albumName={albumName}
-        onChangeAlbumName={setAlbumName}
-        onClose={closeAlbumRenameModal}
-        onConfirm={handleConfirmAlbumRename}
+      <AlbumRenameModalContainer
+        isOpen={isRenameModalOpen}
+        onClose={() => setIsRenameModalOpen(false)}
+        selectedAlbumId={selectedAlbumId ?? undefined}
+        initialTitle={selectedAlbumTitle}
+      />
+      <AlbumDeleteModalContainer
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        selectedAlbumId={selectedAlbumId ?? undefined}
       />
       <LocationPermissionModal
         isOpen={isLocationDeniedModalOpen}
