@@ -9,7 +9,7 @@ import { LocationState } from '@/types/map.type';
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
 import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
-import { useSelectableAlbums } from '@/hooks/queries/useSelectableAlbums';
+import { useMapHomeAlbums } from '@/hooks/queries/useMapHomeAlbums';
 import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';
 import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
 import { useGetAlbumMapInfo, type AlbumWithPhotosResponse } from '@repo/api-client';
@@ -62,7 +62,10 @@ export default function MapRoute() {
     albumIdFromPath ??
     (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? sheetContext.albumId : null);
 
-  const { albumList } = useSelectableAlbums();
+  const { albumList, address } = useMapHomeAlbums({
+    longitude: viewState?.longitude,
+    latitude: viewState?.latitude,
+  });
   const { albumDetail } = useAlbumPhotos(selectedAlbumId);
   const { data: albumMapInfo } = useGetAlbumMapInfo(selectedAlbumId ?? 0);
   const { mapPins } = useMapPhotos({
@@ -164,7 +167,7 @@ export default function MapRoute() {
           </MenuHeader>
         ) : (
           <ExploreHeader
-            title="서울특별시 마포구"
+            title={address || '위치 정보 로딩 중'}
             onClickProfile={() => {}}
             onClickExplore={() => {}}
           />

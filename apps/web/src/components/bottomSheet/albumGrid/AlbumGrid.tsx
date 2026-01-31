@@ -1,4 +1,4 @@
-import type { SelectableAlbum } from '@repo/api-client';
+import type { AlbumThumbnails } from '@repo/api-client';
 import Input from '@/components/input/Input';
 import * as S from './AlbumGrid.styles';
 import { useMemo, useState } from 'react';
@@ -6,7 +6,7 @@ import AlbumContainer from '@/components/album-container/AlbumContainer';
 import AlbumGridContainer from '@/components/album-grid-container/AlbumGridContainer';
 
 interface AlbumGridProps {
-  albums: SelectableAlbum[];
+  albums: AlbumThumbnails[];
   onSelectAlbum: (albumId: number) => void;
 }
 
@@ -41,7 +41,7 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
               key={album.id}
               title={album.title ?? ''}
               type="medium"
-              thumbnailUrl={album.thumbnailUrl}
+              thumbnailUrls={album.thumbnailUrls}
               photoCount={album.photoCount ?? 0}
               onClick={() => onSelectAlbum(album.id ?? 0)}
             />

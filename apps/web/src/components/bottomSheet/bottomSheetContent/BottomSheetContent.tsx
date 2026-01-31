@@ -1,4 +1,4 @@
-import type { SelectableAlbum, AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
 import AlbumDetail from '../albumDetail/AlbumDetail';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
 import AlbumGrid from '../albumGrid/AlbumGrid';
@@ -6,7 +6,7 @@ import AlbumRow from '../albumRow/AlbumRow';
 
 interface BottomSheetContentProps {
   context: SheetContext;
-  albums: SelectableAlbum[];
+  albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   onSelectAlbum: (albumId: number) => void;
 }
