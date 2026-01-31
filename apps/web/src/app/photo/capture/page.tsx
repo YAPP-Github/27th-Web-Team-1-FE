@@ -122,7 +122,7 @@ export default function PhotoCapturePage() {
 
     ctx.drawImage(video, 0, 0);
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    const dataUrl = canvas.toDataURL(CAMERA.IMAGE_TYPE, CAMERA.JPEG_QUALITY);
     const photo = await dataUrlToSelectedPhoto(dataUrl, currentLocation ?? undefined);
 
     if (photo) {
