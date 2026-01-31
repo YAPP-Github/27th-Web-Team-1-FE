@@ -18,6 +18,14 @@ export const useGeolocationPermission = (): UseGeolocationPermissionReturn => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let permissionStatus: PermissionStatus | null = null;
+
+    const handleChange = () => {
+      if (permissionStatus) {
+        setPermissionState(permissionStatus.state as GeolocationPermissionState);
+      }
+    };
+
     const checkPermission = async () => {
       if (!navigator.geolocation) {
         setPermissionState('unsupported');
@@ -32,12 +40,9 @@ export const useGeolocationPermission = (): UseGeolocationPermissionReturn => {
       }
 
       try {
-        const result = await navigator.permissions.query({ name: 'geolocation' });
-        setPermissionState(result.state as GeolocationPermissionState);
-
-        result.addEventListener('change', () => {
-          setPermissionState(result.state as GeolocationPermissionState);
-        });
+        permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+        setPermissionState(permissionStatus.state as GeolocationPermissionState);
+        permissionStatus.addEventListener('change', handleChange);
       } catch {
         setPermissionState('prompt');
       } finally {
@@ -46,6 +51,12 @@ export const useGeolocationPermission = (): UseGeolocationPermissionReturn => {
     };
 
     checkPermission();
+
+    return () => {
+      if (permissionStatus) {
+        permissionStatus.removeEventListener('change', handleChange);
+      }
+    };
   }, []);
 
   const requestPermission = useCallback(async (): Promise<GeolocationPosition | null> => {
