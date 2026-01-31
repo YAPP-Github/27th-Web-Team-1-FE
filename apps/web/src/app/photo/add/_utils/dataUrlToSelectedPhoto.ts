@@ -16,10 +16,12 @@ export const dataUrlToSelectedPhoto = async (
       return null;
     }
 
+    const id = crypto.randomUUID();
+
     return {
-      id: crypto.randomUUID(),
+      id,
       uri: dataUrl,
-      filename: `photo_${Date.now()}.jpg`,
+      filename: `photo_${id}.jpg`,
       createdAt: new Date().toISOString(),
       width: dimensions.width,
       height: dimensions.height,
