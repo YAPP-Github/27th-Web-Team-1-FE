@@ -9,7 +9,7 @@ import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
 import {
   useGetAlbumMapInfo,
   useGetClusterPhotos,
-  customFetcher,
+  getGetLocationInfoQueryOptions,
   type AlbumWithPhotosResponse,
   type LocationInfoResponse,
 } from '@repo/api-client';
@@ -86,14 +86,10 @@ export const useMapRouteData = ({
       : null;
 
   const { data: clusterLocationData } = useQuery({
-    queryKey: ['clusterLocation', clusterLatitude, clusterLongitude],
-    queryFn: ({ signal }: { signal: AbortSignal }) =>
-      customFetcher<LocationInfoResponse>({
-        url: '/map/location',
-        method: 'GET',
-        params: { longitude: clusterLongitude!, latitude: clusterLatitude! },
-        signal,
-      }),
+    ...getGetLocationInfoQueryOptions({
+      longitude: clusterLongitude ?? 0,
+      latitude: clusterLatitude ?? 0,
+    }),
     enabled: !!clusterLatitude && !!clusterLongitude,
   });
 
