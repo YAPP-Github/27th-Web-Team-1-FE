@@ -4,7 +4,6 @@ import MapView from '@/components/map/MapView';
 import * as S from '../page.styles';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { getCurrentPosition } from '@/utils/getCurrentPosition';
 import { LocationState } from '@/types/map.type';
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
@@ -17,6 +16,8 @@ import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
 import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
 import AlbumDeleteModal from './albumDeleteModal/AlbumDeleteModal';
+import LocationPermissionModal from './locationPermissionModal/LocationPermissionModal';
+import { useGeolocationPermission } from '@/hooks/useGeolocationPermission';
 
 const calculateBbox = (viewState: LocationState): string => {
   const offset = 0.05;
@@ -34,6 +35,12 @@ export default function MapRoute() {
   const [sheetContext, setSheetContext] = useState<SheetContext>({
     type: SHEET_CONTEXT_TYPE.HOME,
   });
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const {
+    permissionState,
+    isLoading: isPermissionLoading,
+    requestPermission,
+  } = useGeolocationPermission();
   const {
     isModalOpen: isAlbumDeleteOpen,
     isDeleting: isAlbumDeleting,
@@ -77,23 +84,46 @@ export default function MapRoute() {
   }, [albumDetail]);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        const pos = await getCurrentPosition();
+    if (isPermissionLoading) return;
 
-        setViewState({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          zoom: DEFAULT_ZOOM,
-        });
-      } catch (err) {
-        console.log(err);
+    const initLocation = async () => {
+      if (permissionState === 'granted') {
+        const position = await requestPermission();
+        if (position) {
+          setViewState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            zoom: DEFAULT_ZOOM,
+          });
+        } else {
+          setViewState(DEFAULT_LOCATION);
+        }
+      } else if (permissionState === 'prompt') {
+        setIsLocationModalOpen(true);
+        setViewState(DEFAULT_LOCATION);
+      } else {
         setViewState(DEFAULT_LOCATION);
       }
     };
 
-    init();
-  }, []);
+    initLocation();
+  }, [isPermissionLoading, permissionState, requestPermission]);
+
+  const handleAllowLocation = async () => {
+    setIsLocationModalOpen(false);
+    const position = await requestPermission();
+    if (position) {
+      setViewState({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        zoom: DEFAULT_ZOOM,
+      });
+    }
+  };
+
+  const handleCloseLocationModal = () => {
+    setIsLocationModalOpen(false);
+  };
 
   useEffect(() => {
     if (albumIdFromPath) {
@@ -197,6 +227,11 @@ export default function MapRoute() {
         onChangeAlbumName={setAlbumName}
         onClose={closeAlbumRenameModal}
         onConfirm={handleConfirmAlbumRename}
+      />
+      <LocationPermissionModal
+        isOpen={isLocationModalOpen}
+        onClose={handleCloseLocationModal}
+        onAllow={handleAllowLocation}
       />
     </S.Wrapper>
   );
