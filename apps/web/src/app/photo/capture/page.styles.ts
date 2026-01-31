@@ -62,16 +62,30 @@ export const Controls = styled.div`
 `;
 
 export const CaptureButton = styled.button`
+  position: relative;
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.gray[0]};
-  border: 4px solid rgba(255, 255, 255, 0.3);
+  background-color: transparent;
+  border: 4px solid ${({ theme }) => theme.colors.gray[0]};
   cursor: pointer;
   transition: transform 0.1s;
 
-  &:active {
-    transform: scale(0.95);
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: ${({ theme }) => theme.colors.gray[0]};
+    transition: transform 0.1s;
+  }
+
+  &:active::after {
+    transform: translate(-50%, -50%) scale(0.9);
   }
 
   &:disabled {
