@@ -43,7 +43,6 @@ export const useMapRouteViewState = (): UseMapRouteViewStateReturn => {
     init();
   }, []);
 
-
   // 지도 이동 시 debounce 적용 (500ms)으로 API 호출 빈도 제한
   const handleViewStateChange = useCallback((newViewState: LocationState) => {
     // 기존 타이머 취소

@@ -13,7 +13,10 @@ import {
   type AlbumWithPhotosResponse,
   type LocationInfoResponse,
 } from '@repo/api-client';
-import { SHEET_CONTEXT_TYPE, type SheetContext } from '@/components/bottomSheet/constants';
+import {
+  SHEET_CONTEXT_TYPE,
+  type SheetContext,
+} from '@/components/bottomSheet/constants';
 import { calculateBbox } from '../_utils/mapRoute.calc';
 
 interface UseMapRouteDataProps {
@@ -26,15 +29,19 @@ interface UseMapRouteDataReturn {
   albumList: AlbumWithPhotosResponse[];
   address: string | null;
   albumDetail: AlbumWithPhotosResponse | undefined | null;
-  albumMapInfo: {
-    centerLongitude?: number;
-    centerLatitude?: number;
-  } | undefined;
+  albumMapInfo:
+    | {
+        centerLongitude?: number;
+        centerLatitude?: number;
+      }
+    | undefined;
   mapPins: ReturnType<typeof useMapPhotos>['mapPins'];
   clusterLocationData: LocationInfoResponse | undefined;
-  clusterPhotosData: {
-    totalElements?: number;
-  } | undefined;
+  clusterPhotosData:
+    | {
+        totalElements?: number;
+      }
+    | undefined;
 }
 
 /**
@@ -70,13 +77,11 @@ export const useMapRouteData = ({
 
   // 클러스터의 위치 정보 조회
   const clusterLatitude =
-    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
-    'latitude' in sheetContext
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL && 'latitude' in sheetContext
       ? sheetContext.latitude
       : null;
   const clusterLongitude =
-    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
-    'longitude' in sheetContext
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL && 'longitude' in sheetContext
       ? sheetContext.longitude
       : null;
 
@@ -94,8 +99,7 @@ export const useMapRouteData = ({
 
   // 클러스터의 사진 정보 조회
   const clusterId =
-    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
-    'clusterId' in sheetContext
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL && 'clusterId' in sheetContext
       ? sheetContext.clusterId
       : null;
 

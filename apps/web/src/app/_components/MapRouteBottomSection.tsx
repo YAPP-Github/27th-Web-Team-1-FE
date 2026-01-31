@@ -2,7 +2,7 @@
 
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
-import { SHEET_CONTEXT_TYPE, type SheetContext } from '@/components/bottomSheet/constants';
+import { type SheetContext } from '@/components/bottomSheet/constants';
 import type { AlbumWithPhotosResponse } from '@repo/api-client';
 import * as S from '../page.styles';
 

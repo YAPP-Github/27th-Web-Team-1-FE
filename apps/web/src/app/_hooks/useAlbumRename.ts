@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { useUpdateTitle, getGetSelectableAlbumsQueryKey, getGetPhotosQueryKey } from '@repo/api-client';
+import {
+  useUpdateTitle,
+  getGetSelectableAlbumsQueryKey,
+  getGetPhotosQueryKey,
+} from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 

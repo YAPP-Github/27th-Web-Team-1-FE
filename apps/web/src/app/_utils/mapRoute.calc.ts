@@ -38,7 +38,7 @@ export const extractAlbumIdFromPath = (pathname: string): number | null => {
  */
 export const getSelectedAlbumId = (
   albumIdFromPath: number | null,
-  sheetContext: SheetContext
+  sheetContext: SheetContext,
 ): number | null => {
   if (albumIdFromPath !== null) {
     return albumIdFromPath;
@@ -67,7 +67,7 @@ export const calculatePhotoCount = (
   sheetContext: SheetContext,
   albumDetail: AlbumWithPhotosResponse | undefined | null,
   clusterPhotosTotal: number | undefined,
-  mapPinsCount: number
+  mapPinsCount: number,
 ): number => {
   if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
     return albumDetail?.photoCount ?? 0;

@@ -1,7 +1,10 @@
 'use client';
 
 import { ExploreHeader, MenuHeader } from '@/components/header';
-import { SHEET_CONTEXT_TYPE, type SheetContext } from '@/components/bottomSheet/constants';
+import {
+  SHEET_CONTEXT_TYPE,
+  type SheetContext,
+} from '@/components/bottomSheet/constants';
 import type { LocationInfoResponse } from '@repo/api-client';
 
 interface MapRouteHeaderProps {
@@ -33,14 +36,9 @@ export const MapRouteHeader = ({
 }: MapRouteHeaderProps) => {
   if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
     return (
-      <MenuHeader
-        title={selectedAlbumTitle ?? '앨범'}
-        onClickBack={onCloseAlbumDetail}
-      >
+      <MenuHeader title={selectedAlbumTitle ?? '앨범'} onClickBack={onCloseAlbumDetail}>
         <MenuHeader.Menu>
-          <MenuHeader.Item onClick={onOpenAlbumRename}>
-            앨범 이름 변경
-          </MenuHeader.Item>
+          <MenuHeader.Item onClick={onOpenAlbumRename}>앨범 이름 변경</MenuHeader.Item>
           <MenuHeader.Item variant="danger" onClick={onOpenAlbumDelete}>
             앨범 삭제
           </MenuHeader.Item>
