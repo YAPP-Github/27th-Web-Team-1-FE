@@ -86,12 +86,15 @@ export default function PhotoCapturePage() {
 
   useEffect(() => {
     startCamera();
-    getCurrentLocation();
 
     return () => {
       stopCamera();
     };
-  }, [startCamera, getCurrentLocation, stopCamera]);
+  }, [startCamera, stopCamera]);
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, [getCurrentLocation]);
 
   const handleBack = useCallback(() => {
     stopCamera();
