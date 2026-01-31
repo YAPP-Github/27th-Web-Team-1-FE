@@ -23,22 +23,22 @@ export const Default: Story = {
     <AlbumGridContainer>
       <AlbumContainer
         title="우리의 추억"
-        thumbnailUrl="https://picsum.photos/200/200?random=1"
+        thumbnailUrls={['https://picsum.photos/200/200?random=1']}
         photoCount={6}
       />
       <AlbumContainer
         title="여름 휴가"
-        thumbnailUrl="https://picsum.photos/200/200?random=2"
+        thumbnailUrls={['https://picsum.photos/200/200?random=1']}
         photoCount={4}
       />
       <AlbumContainer
         title="겨울 여행"
-        thumbnailUrl="https://picsum.photos/200/200?random=3"
+        thumbnailUrls={['https://picsum.photos/200/200?random=1']}
         photoCount={2}
       />
       <AlbumContainer
         title="봄 소풍"
-        thumbnailUrl="https://picsum.photos/200/200?random=4"
+        thumbnailUrls={['https://picsum.photos/200/200?random=1']}
         photoCount={10}
       />
     </AlbumGridContainer>
