@@ -35,7 +35,7 @@ export default function MapRoute() {
   const [sheetContext, setSheetContext] = useState<SheetContext>({
     type: SHEET_CONTEXT_TYPE.HOME,
   });
-  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isLocationDeniedModalOpen, setIsLocationDeniedModalOpen] = useState(false);
   const {
     permissionState,
     isLoading: isPermissionLoading,
@@ -87,42 +87,36 @@ export default function MapRoute() {
     if (isPermissionLoading) return;
 
     const initLocation = async () => {
-      if (permissionState === 'granted') {
-        const position = await requestPermission();
-        if (position) {
-          setViewState({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            zoom: DEFAULT_ZOOM,
-          });
-        } else {
-          setViewState(DEFAULT_LOCATION);
-        }
-      } else if (permissionState === 'prompt') {
-        setIsLocationModalOpen(true);
+      if (permissionState === 'unsupported') {
         setViewState(DEFAULT_LOCATION);
-      } else {
-        setViewState(DEFAULT_LOCATION);
+        return;
       }
-    };
 
-    initLocation();
-  }, [isPermissionLoading, permissionState, requestPermission]);
+      if (permissionState === 'denied') {
+        setIsLocationDeniedModalOpen(true);
+        setViewState(DEFAULT_LOCATION);
+        return;
+      }
 
-  const handleAllowLocation = async () => {
-    setIsLocationModalOpen(false);
-    const position = await requestPermission();
-    if (position) {
+      const position = await requestPermission();
+      if (!position) {
+        setIsLocationDeniedModalOpen(true);
+        setViewState(DEFAULT_LOCATION);
+        return;
+      }
+
       setViewState({
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         zoom: DEFAULT_ZOOM,
       });
-    }
-  };
+    };
 
-  const handleCloseLocationModal = () => {
-    setIsLocationModalOpen(false);
+    initLocation();
+  }, [isPermissionLoading, permissionState, requestPermission]);
+
+  const handleCloseLocationDeniedModal = () => {
+    setIsLocationDeniedModalOpen(false);
   };
 
   useEffect(() => {
@@ -229,9 +223,8 @@ export default function MapRoute() {
         onConfirm={handleConfirmAlbumRename}
       />
       <LocationPermissionModal
-        isOpen={isLocationModalOpen}
-        onClose={handleCloseLocationModal}
-        onAllow={handleAllowLocation}
+        isOpen={isLocationDeniedModalOpen}
+        onClose={handleCloseLocationDeniedModal}
       />
     </S.Wrapper>
   );

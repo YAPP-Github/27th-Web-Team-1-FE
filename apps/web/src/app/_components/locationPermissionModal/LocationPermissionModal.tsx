@@ -7,33 +7,22 @@ import * as S from './LocationPermissionModal.styles';
 interface LocationPermissionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAllow: () => void;
 }
 
-const LocationPermissionModal = ({
-  isOpen,
-  onClose,
-  onAllow,
-}: LocationPermissionModalProps) => {
+const LocationPermissionModal = ({ isOpen, onClose }: LocationPermissionModalProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Content>
         <S.TextWrapper>
-          <S.Title>위치 정보 사용</S.Title>
+          <S.Title>위치 권한 필요</S.Title>
           <S.Description>
-            내 위치 기반으로 지도를 보여드려요.
+            위치 권한이 차단되어 있어요.
             <br />
-            위치 정보 사용을 허용해 주세요.
+            브라우저 설정에서 위치 권한을 허용해 주세요.
           </S.Description>
         </S.TextWrapper>
         <Modal.Footer>
-          <TextButton text="다음에" onClick={onClose} style={{ flex: 1 }} />
-          <TextButton
-            text="허용하기"
-            variant="primary"
-            onClick={onAllow}
-            style={{ flex: 1 }}
-          />
+          <TextButton text="확인" onClick={onClose} style={{ flex: 1 }} />
         </Modal.Footer>
       </Modal.Content>
     </Modal>
