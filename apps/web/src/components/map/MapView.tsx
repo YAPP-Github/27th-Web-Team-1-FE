@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Map, GeolocateControl, Marker } from 'react-map-gl/mapbox';
 import type { GeolocateControl as GeolocateControlInstance } from 'mapbox-gl';
 import type { MapRef } from 'react-map-gl/mapbox';
@@ -49,27 +49,12 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
       [],
     );
 
-    // locationState 변경 시 지도 이동
-    useEffect(() => {
-      if (locationState && mapRef.current) {
-        mapRef.current.flyTo({
-          center: [locationState.longitude, locationState.latitude],
-          zoom: locationState.zoom,
-          duration: FLY_TO_DURATION,
-        });
-      }
-    }, [locationState]);
-
     return (
       <S.Wrapper>
         <Map
           ref={mapRef}
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-          initialViewState={{
-            latitude: locationState.latitude,
-            longitude: locationState.longitude,
-            zoom: locationState.zoom,
-          }}
+          {...locationState}
           onMove={(evt) => {
             if (onViewStateChange) {
               onViewStateChange({
