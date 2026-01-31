@@ -13,7 +13,7 @@ interface ApiErrorLike {
  * API 에러를 센트리로 캡쳐하는 함수
  * @param error - ApiError
  */
-const captureSentryError = (error: ApiErrorLike) => {
+export const captureApiError = (error: ApiErrorLike) => {
   Sentry.withScope((scope: Sentry.Scope) => {
     scope.setTag(SENTRY_TAGS.TYPE, SENTRY_TAG_VALUES.TYPE_API);
     scope.setTag(SENTRY_TAGS.ERROR_CODE, String(error.code));
@@ -29,13 +29,4 @@ const captureSentryError = (error: ApiErrorLike) => {
 
     Sentry.captureException(error);
   });
-};
-
-/**
- * API 에러를 센트리로 캡쳐하는 함수
- * - 비동기로 캡쳐 수행
- * @param error - ApiError
- */
-export const captureApiError = (error: ApiErrorLike) => {
-  setTimeout(() => captureSentryError(error), 0);
 };
