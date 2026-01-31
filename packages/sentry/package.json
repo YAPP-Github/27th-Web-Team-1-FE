@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api-client",
+  "name": "@repo/sentry",
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
@@ -9,13 +9,14 @@
     "lint": "eslint src --ext .ts",
     "build": "tsc --emitDeclarationOnly"
   },
-  "peerDependencies": {
-    "@repo/sentry": "workspace:*",
-    "@tanstack/react-query": "^5.0.0"
+  "exports": {
+    "./captureApiError": {
+      "import": "./src/captureApiError.ts",
+      "types": "./src/captureApiError.ts"
+    }
   },
   "dependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "msw": "^2.7.0"
+    "@sentry/nextjs": "^9.0.0"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

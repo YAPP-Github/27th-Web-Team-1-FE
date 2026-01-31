@@ -1,3 +1,5 @@
+import { captureApiError } from '@repo/sentry/captureApiError';
+
 export type ApiErrorData = {
   errorCode: string;
   detail: string;
@@ -213,7 +215,9 @@ export async function customFetcher<TResponse>(
         },
       };
     }
-    throw new ApiError(errorResponse);
+    const apiError = new ApiError(errorResponse);
+    captureApiError(apiError);
+    throw apiError;
   }
 
   if (response.status === 204) {
