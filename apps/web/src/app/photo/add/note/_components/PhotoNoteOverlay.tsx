@@ -134,7 +134,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
           latitude,
           longitude,
           photoUrl: selectedPhoto.uri,
-        })
+        }),
       );
       router.push(ROUTES.PHOTO.PREVIEW);
     }

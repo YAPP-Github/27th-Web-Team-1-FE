@@ -91,7 +91,7 @@ export default function PhotoEditOverlay({
           latitude,
           longitude,
           photoUrl: photoDetail.url || '',
-        })
+        }),
       );
       router.push(ROUTES.PHOTO.PREVIEW);
     }
