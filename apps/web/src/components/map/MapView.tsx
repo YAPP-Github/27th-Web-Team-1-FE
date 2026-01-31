@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Map, GeolocateControl, Marker } from 'react-map-gl/mapbox';
 import type { GeolocateControl as GeolocateControlInstance } from 'mapbox-gl';
 import type { MapRef } from 'react-map-gl/mapbox';
@@ -49,12 +49,27 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
       [],
     );
 
+    // locationState 변경 시 지도 이동 (외부에서 프로그래밍으로 이동할 때)
+    useEffect(() => {
+      if (locationState && mapRef.current) {
+        mapRef.current.flyTo({
+          center: [locationState.longitude, locationState.latitude],
+          zoom: locationState.zoom,
+          duration: FLY_TO_DURATION,
+        });
+      }
+    }, [locationState]);
+
     return (
       <S.Wrapper>
         <Map
           ref={mapRef}
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-          {...locationState}
+          initialViewState={{
+            latitude: locationState.latitude,
+            longitude: locationState.longitude,
+            zoom: locationState.zoom,
+          }}
           onMove={(evt) => {
             if (onViewStateChange) {
               onViewStateChange({
@@ -97,4 +112,4 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
 // 디버깅을 위한 용도
 MapView.displayName = 'MapView';
 
-export default MapView;
+export default React.memo(MapView);
