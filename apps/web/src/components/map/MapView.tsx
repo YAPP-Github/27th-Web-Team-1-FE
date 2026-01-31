@@ -21,6 +21,8 @@ export interface MapViewHandle {
   flyTo: (options: { longitude: number; latitude: number; zoom: number }) => void;
 }
 
+const FLY_TO_DURATION = 1000;
+
 const MapView = forwardRef<MapViewHandle, MapViewProps>(
   ({ locationState, pins, onPinClick, onViewStateChange }, ref) => {
     const geolocateControlRef = useRef<GeolocateControlInstance>(null);
@@ -39,7 +41,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
             mapRef.current.flyTo({
               center: [options.longitude, options.latitude],
               zoom: options.zoom,
-              duration: 1000,
+              duration: FLY_TO_DURATION,
             });
           }
         },
@@ -53,7 +55,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
         mapRef.current.flyTo({
           center: [locationState.longitude, locationState.latitude],
           zoom: locationState.zoom,
-          duration: 1000,
+          duration: FLY_TO_DURATION,
         });
       }
     }, [locationState]);
