@@ -1,18 +1,27 @@
 'use client';
 import { ExploreHeader, MenuHeader } from '@/components/header';
-import MapView from '@/components/map/MapView';
+import MapView, { type MapViewHandle } from '@/components/map/MapView';
+import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import * as S from '../page.styles';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { getCurrentPosition } from '@/utils/getCurrentPosition';
-import { LocationState } from '@/types/map.type';
+import { LocationState, MapPin } from '@/types/map.type';
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
+import { ROUTES } from '@/constants/routes';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
 import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
 import { useMapHomeAlbums } from '@/hooks/queries/useMapHomeAlbums';
 import { useAlbumPhotos } from '@/hooks/queries/useAlbumPhotos';
 import { useMapPhotos } from '@/hooks/queries/useMapPhotos';
-import { useGetAlbumMapInfo, type AlbumWithPhotosResponse } from '@repo/api-client';
+import {
+  useGetAlbumMapInfo,
+  useGetClusterPhotos,
+  customFetcher,
+  type AlbumWithPhotosResponse,
+  type LocationInfoResponse,
+} from '@repo/api-client';
 import AlbumRenameModal from './albumRenameModal/AlbumRenameModal';
 import useDeleteAlbum from '../_hooks/useDeleteAlbum';
 import useAlbumRename from '../_hooks/useAlbumRename';
@@ -34,6 +43,7 @@ export default function MapRoute() {
   const [sheetContext, setSheetContext] = useState<SheetContext>({
     type: SHEET_CONTEXT_TYPE.HOME,
   });
+  const mapViewRef = useRef<MapViewHandle>(null);
   const {
     isModalOpen: isAlbumDeleteOpen,
     isDeleting: isAlbumDeleting,
@@ -79,6 +89,37 @@ export default function MapRoute() {
     return { [albumDetail.id]: albumDetail };
   }, [albumDetail]);
 
+  // 클러스터 위치의 주소 조회
+  const clusterLatitude =
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
+      ? sheetContext.latitude
+      : null;
+  const clusterLongitude =
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
+      ? sheetContext.longitude
+      : null;
+
+  const { data: clusterLocationData } = useQuery({
+    queryKey: ['clusterLocation', clusterLatitude, clusterLongitude],
+    queryFn: ({ signal }: { signal: AbortSignal }) =>
+      customFetcher<LocationInfoResponse>({
+        url: '/map/location',
+        method: 'GET',
+        params: { longitude: clusterLongitude!, latitude: clusterLatitude! },
+        signal,
+      }),
+    enabled: !!clusterLatitude && !!clusterLongitude,
+  });
+
+  const clusterId =
+    sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
+      ? sheetContext.clusterId
+      : null;
+  const { data: clusterPhotosData } = useGetClusterPhotos(clusterId ?? '', {
+    page: 0,
+    size: 1,
+  });
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -98,6 +139,21 @@ export default function MapRoute() {
     init();
   }, []);
 
+  // 앨범이 선택되었을 때 앨범의 centerLongitude, centerLatitude로 이동
+  useEffect(() => {
+    if (
+      selectedAlbumId &&
+      albumMapInfo?.centerLongitude &&
+      albumMapInfo?.centerLatitude
+    ) {
+      setViewState((prev) => ({
+        longitude: albumMapInfo.centerLongitude!,
+        latitude: albumMapInfo.centerLatitude!,
+        zoom: prev?.zoom ?? DEFAULT_ZOOM,
+      }));
+    }
+  }, [selectedAlbumId, albumMapInfo]);
+
   useEffect(() => {
     if (albumIdFromPath) {
       setSheetContext({
@@ -110,20 +166,44 @@ export default function MapRoute() {
     setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
   }, [albumIdFromPath]);
 
-  useEffect(() => {
-    if (
-      albumMapInfo?.centerLongitude !== undefined &&
-      albumMapInfo?.centerLatitude !== undefined
-    ) {
-      setViewState((prev) => ({
-        longitude: albumMapInfo.centerLongitude!,
-        latitude: albumMapInfo.centerLatitude!,
-        zoom: prev?.zoom ?? DEFAULT_ZOOM,
-      }));
-    }
-  }, [albumMapInfo?.centerLongitude, albumMapInfo?.centerLatitude]);
-
   const selectedAlbumTitle = albumDetail?.title;
+
+  // 지도 이동시 debounce (500ms)를 적용하여 API 호출 빈도 제한
+  const viewStateChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleViewStateChange = useCallback((newViewState: LocationState) => {
+    // 기존 타이머 취소
+    if (viewStateChangeTimerRef.current) {
+      clearTimeout(viewStateChangeTimerRef.current);
+    }
+
+    // 새로운 타이머 설정 (500ms 후에 viewState 업데이트)
+    viewStateChangeTimerRef.current = setTimeout(() => {
+      setViewState(newViewState);
+    }, 500);
+  }, []);
+
+  // 컴포넌트 언마운트시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (viewStateChangeTimerRef.current) {
+        clearTimeout(viewStateChangeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handlePinClick = (pin: MapPin) => {
+    if (pin.isCluster) {
+      setSheetContext({
+        type: SHEET_CONTEXT_TYPE.CLUSTER_DETAIL,
+        clusterId: pin.clusterId!,
+        latitude: pin.latitude,
+        longitude: pin.longitude,
+      });
+    } else {
+      router.push(ROUTES.PHOTO.VIEW(pin.id));
+    }
+  };
 
   const handleSelectAlbum = (albumId: number) => {
     setSheetContext({ type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL, albumId });
@@ -132,6 +212,10 @@ export default function MapRoute() {
 
   const handleCloseAlbumDetail = () => {
     router.back();
+  };
+
+  const handleGoToCurrentLocation = () => {
+    mapViewRef.current?.goToCurrentLocation();
   };
 
   const handleOpenAlbumRename = () => {
@@ -147,6 +231,22 @@ export default function MapRoute() {
     if (!selectedAlbumId) return;
     confirmAlbumDelete(selectedAlbumId);
   };
+
+  // 사진 개수 계산
+  const photoCount = useMemo(() => {
+    if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
+      return albumDetail?.photoCount ?? 0;
+    }
+    if (sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL) {
+      return clusterPhotosData?.totalElements ?? 0;
+    }
+    return mapPins.length;
+  }, [
+    sheetContext,
+    albumDetail?.photoCount,
+    clusterPhotosData?.totalElements,
+    mapPins.length,
+  ]);
 
   return (
     <S.Wrapper>
@@ -165,6 +265,12 @@ export default function MapRoute() {
               </MenuHeader.Item>
             </MenuHeader.Menu>
           </MenuHeader>
+        ) : sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL ? (
+          <MenuHeader
+            title={clusterLocationData?.address ?? '위치 로딩 중...'}
+            onClickBack={() => setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME })}
+            showMenu={false}
+          />
         ) : (
           <ExploreHeader
             title={address || '위치 정보 로딩 중'}
@@ -175,9 +281,11 @@ export default function MapRoute() {
       </S.HeaderContainer>
       {viewState && (
         <MapView
+          ref={mapViewRef}
           locationState={viewState}
           pins={mapPins}
-          selectedAlbumId={selectedAlbumId}
+          onPinClick={handlePinClick}
+          onViewStateChange={handleViewStateChange}
         />
       )}
       <BottomSheet
@@ -186,6 +294,7 @@ export default function MapRoute() {
         albumDetailById={albumDetailById}
         onChangeContext={setSheetContext}
         onSelectAlbum={handleSelectAlbum}
+        onGoToCurrentLocation={handleGoToCurrentLocation}
       />
       <AlbumDeleteModal
         isOpen={isAlbumDeleteOpen}
@@ -201,6 +310,10 @@ export default function MapRoute() {
         onClose={closeAlbumRenameModal}
         onConfirm={handleConfirmAlbumRename}
       />
+
+      <S.FloatingButtonWrapper>
+        <FloatingButton text={`기록 ${photoCount}개`} />
+      </S.FloatingButtonWrapper>
     </S.Wrapper>
   );
 }
