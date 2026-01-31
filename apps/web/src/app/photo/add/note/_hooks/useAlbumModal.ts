@@ -40,6 +40,10 @@ const useAlbumModal = () => {
     setIsOpen(false);
   };
 
+  const resetAlbum = () => {
+    setSelectedAlbum(null);
+  };
+
   const submitAlbum = () => {
     if (tempSelectedAlbumId && data?.albums) {
       const album = data.albums.find((a) => a.id === tempSelectedAlbumId);
@@ -61,6 +65,7 @@ const useAlbumModal = () => {
     isOpen,
     openModal,
     closeModal,
+    resetAlbum,
     submitAlbum,
   };
 };

@@ -37,6 +37,7 @@ import * as S from './PhotoNoteOverlay.styles';
 import AlbumIcon from '@/assets/images/album.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
+import CloseSmallIcon from '@/assets/images/closeSmall.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
 import WarningIcon from '@/assets/images/warning.svg';
@@ -71,6 +72,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     isOpen: isAlbumModalOpen,
     openModal: handleAlbumSelect,
     closeModal: handleAlbumModalClose,
+    resetAlbum: handleAlbumReset,
     submitAlbum: handleAlbumSubmit,
   } = useAlbumModal();
 
@@ -278,12 +280,23 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
             </S.MemoButton>
 
             <S.AlbumButtonWrapper>
-              <S.AlbumButton type="button" onClick={handleAlbumSelect}>
+              <S.AlbumChip onClick={handleAlbumSelect}>
                 <S.AlbumIcon>
                   <AlbumIcon width={22} height={22} />
                 </S.AlbumIcon>
                 <S.AlbumText>{selectedAlbum?.title || '앨범 선택...'}</S.AlbumText>
-              </S.AlbumButton>
+                {selectedAlbum && (
+                  <S.AlbumResetButton
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAlbumReset();
+                    }}
+                  >
+                    <CloseSmallIcon />
+                  </S.AlbumResetButton>
+                )}
+              </S.AlbumChip>
             </S.AlbumButtonWrapper>
           </S.MemoAlbumOverlay>
         </S.PhotoSection>
