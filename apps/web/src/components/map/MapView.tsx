@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef, forwardRef, useImperativeHandle } from 'react';
+import { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Map, GeolocateControl, Marker } from 'react-map-gl/mapbox';
 import type { GeolocateControl as GeolocateControlInstance } from 'mapbox-gl';
+import type { MapRef } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { LocationState, MapPin } from '@/types/map.type';
 import * as S from './MapView.styels';
@@ -17,11 +18,13 @@ interface MapViewProps {
 
 export interface MapViewHandle {
   goToCurrentLocation: () => void;
+  flyTo: (options: { longitude: number; latitude: number; zoom: number }) => void;
 }
 
 const MapView = forwardRef<MapViewHandle, MapViewProps>(
   ({ locationState, pins, onPinClick, onViewStateChange }, ref) => {
     const geolocateControlRef = useRef<GeolocateControlInstance>(null);
+    const mapRef = useRef<MapRef>(null);
 
     useImperativeHandle(
       ref,
@@ -31,13 +34,34 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
             geolocateControlRef.current.trigger();
           }
         },
+        flyTo: (options) => {
+          if (mapRef.current) {
+            mapRef.current.flyTo({
+              center: [options.longitude, options.latitude],
+              zoom: options.zoom,
+              duration: 1000,
+            });
+          }
+        },
       }),
       [],
     );
 
+    // locationState 변경 시 지도 이동
+    useEffect(() => {
+      if (locationState && mapRef.current) {
+        mapRef.current.flyTo({
+          center: [locationState.longitude, locationState.latitude],
+          zoom: locationState.zoom,
+          duration: 1000,
+        });
+      }
+    }, [locationState]);
+
     return (
       <S.Wrapper>
         <Map
+          ref={mapRef}
           mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
           initialViewState={{
             latitude: locationState.latitude,
