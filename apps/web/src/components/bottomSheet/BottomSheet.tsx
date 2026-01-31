@@ -1,20 +1,20 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import AddIcon from '@/assets/images/add.svg';
 import CrossHairIcon from '@/assets/images/crossHair.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
-import * as S from './BottomSheet.styles';
+import { ROUTES } from '@/constants/routes';
+import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
+import { useRouter } from 'next/navigation';
+import React, { useRef, useState } from 'react';
 import MenuButton from '../buttons/menuButton/MenuButton';
 import TextButton from '../buttons/textButton/TextButton';
-import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
+import * as S from './BottomSheet.styles';
 import BottomSheetContent from './bottomSheetContent/BottomSheetContent';
-import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
-import { ROUTES } from '@/constants/routes';
+import { SHEET_CONTEXT_TYPE, SheetContext } from './constants';
 
 interface BottomSheetProps {
   context: SheetContext;
@@ -111,7 +111,11 @@ const BottomSheet = ({
           )}
           placement="top"
         >
-          <TextButton text="사진 촬영" onClick={() => {}} textAlign="left" />
+          <TextButton
+            text="사진 촬영"
+            onClick={() => router.push(ROUTES.PHOTO.CAPTURE)}
+            textAlign="left"
+          />
           <TextButton
             text="사진 추가"
             onClick={() => router.push(ROUTES.PHOTO.ADD)}
