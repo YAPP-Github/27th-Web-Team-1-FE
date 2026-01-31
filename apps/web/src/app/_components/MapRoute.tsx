@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import MapView from '@/components/map/MapView';
 import { MapPin } from '@/types/map.type';
 import { ROUTES } from '@/constants/routes';
@@ -16,9 +16,9 @@ import { calculatePhotoCount } from '../_utils/mapRoute.calc';
 
 import { MapRouteHeader } from './MapRouteHeader';
 import { MapRouteBottomSection } from './MapRouteBottomSection';
-import { AlbumAddModalContainer, type AlbumAddModalContainerHandle } from './albumAddModal/AlbumAddModalContainer';
-import { AlbumRenameModalContainer, type AlbumRenameModalContainerHandle } from './albumRenameModal/AlbumRenameModalContainer';
-import { AlbumDeleteModalContainer, type AlbumDeleteModalContainerHandle } from './albumDeleteModal/AlbumDeleteModalContainer';
+import { AlbumAddModalContainer } from './albumAddModal/AlbumAddModalContainer';
+import { AlbumRenameModalContainer } from './albumRenameModal/AlbumRenameModalContainer';
+import { AlbumDeleteModalContainer } from './albumDeleteModal/AlbumDeleteModalContainer';
 
 export default function MapRoute() {
   const router = useRouter();
@@ -44,10 +44,10 @@ export default function MapRoute() {
     selectedAlbumId,
   });
 
-  // 모달 ref
-  const albumAddModalRef = useRef<AlbumAddModalContainerHandle>(null);
-  const albumRenameModalRef = useRef<AlbumRenameModalContainerHandle>(null);
-  const albumDeleteModalRef = useRef<AlbumDeleteModalContainerHandle>(null);
+  // 모달 상태 관리
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // 앨범이 선택되었을 때 앨범의 중심 위치로 지도 이동
   useEffect(() => {
@@ -106,11 +106,11 @@ export default function MapRoute() {
   };
 
   const handleOpenAlbumRename = () => {
-    albumRenameModalRef.current?.open(selectedAlbumTitle ?? '');
+    setIsRenameModalOpen(true);
   };
 
   const handleOpenAlbumDelete = () => {
-    albumDeleteModalRef.current?.open();
+    setIsDeleteModalOpen(true);
   };
 
   const handleCloseClusterDetail = () => {
@@ -150,12 +150,24 @@ export default function MapRoute() {
         onChangeContext={setSheetContext}
         onSelectAlbum={handleSelectAlbum}
         onGoToCurrentLocation={handleGoToCurrentLocation}
-        onOpenAddAlbumModal={() => albumAddModalRef.current?.open()}
+        onOpenAddAlbumModal={() => setIsAddModalOpen(true)}
       />
 
-      <AlbumAddModalContainer ref={albumAddModalRef} />
-      <AlbumRenameModalContainer ref={albumRenameModalRef} selectedAlbumId={selectedAlbumId ?? undefined} />
-      <AlbumDeleteModalContainer ref={albumDeleteModalRef} selectedAlbumId={selectedAlbumId ?? undefined} />
+      <AlbumAddModalContainer
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
+      <AlbumRenameModalContainer
+        isOpen={isRenameModalOpen}
+        onClose={() => setIsRenameModalOpen(false)}
+        selectedAlbumId={selectedAlbumId ?? undefined}
+        initialTitle={selectedAlbumTitle}
+      />
+      <AlbumDeleteModalContainer
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        selectedAlbumId={selectedAlbumId ?? undefined}
+      />
     </S.Wrapper>
   );
 }

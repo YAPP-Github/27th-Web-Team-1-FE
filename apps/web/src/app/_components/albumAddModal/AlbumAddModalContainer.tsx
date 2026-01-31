@@ -1,38 +1,24 @@
 'use client';
 
-import { forwardRef, useImperativeHandle } from 'react';
 import useAlbumAdd from '../../_hooks/useAlbumAdd';
 import AlbumAddModal from './AlbumAddModal';
 
-export interface AlbumAddModalContainerHandle {
-  open: () => void;
+interface AlbumAddModalContainerProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const AlbumAddModalContainer = forwardRef<AlbumAddModalContainerHandle>((_, ref) => {
-  const {
-    isModalOpen,
-    isCreating,
-    albumName,
-    setAlbumName,
-    openAddModal,
-    closeAddModal,
-    confirmAdd,
-  } = useAlbumAdd();
-
-  useImperativeHandle(ref, () => ({
-    open: () => {
-      openAddModal();
-    },
-  }));
+export function AlbumAddModalContainer({ isOpen, onClose }: AlbumAddModalContainerProps) {
+  const { isCreating, albumName, setAlbumName, confirmAdd } = useAlbumAdd(onClose);
 
   return (
     <AlbumAddModal
-      isOpen={isModalOpen}
+      isOpen={isOpen}
       isCreating={isCreating}
       albumName={albumName}
       onChangeAlbumName={setAlbumName}
-      onClose={closeAddModal}
+      onClose={onClose}
       onConfirm={confirmAdd}
     />
   );
-});
+}

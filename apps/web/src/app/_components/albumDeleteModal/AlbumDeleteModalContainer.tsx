@@ -1,34 +1,20 @@
 'use client';
 
-import { forwardRef, useImperativeHandle } from 'react';
 import useDeleteAlbum from '../../_hooks/useDeleteAlbum';
 import AlbumDeleteModal from './AlbumDeleteModal';
 
 interface AlbumDeleteModalContainerProps {
   selectedAlbumId?: number;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export interface AlbumDeleteModalContainerHandle {
-  open: () => void;
-}
-
-export const AlbumDeleteModalContainer = forwardRef<
-  AlbumDeleteModalContainerHandle,
-  AlbumDeleteModalContainerProps
->(({ selectedAlbumId }, ref) => {
-  const {
-    isModalOpen,
-    isDeleting,
-    openDeleteModal,
-    closeDeleteModal,
-    confirmDelete,
-  } = useDeleteAlbum();
-
-  useImperativeHandle(ref, () => ({
-    open: () => {
-      openDeleteModal();
-    },
-  }));
+export function AlbumDeleteModalContainer({
+  selectedAlbumId,
+  isOpen,
+  onClose,
+}: AlbumDeleteModalContainerProps) {
+  const { isDeleting, confirmDelete } = useDeleteAlbum(onClose);
 
   const handleConfirm = () => {
     if (!selectedAlbumId) return;
@@ -37,10 +23,10 @@ export const AlbumDeleteModalContainer = forwardRef<
 
   return (
     <AlbumDeleteModal
-      isOpen={isModalOpen}
+      isOpen={isOpen}
       isDeleting={isDeleting}
-      onClose={closeDeleteModal}
+      onClose={onClose}
       onConfirm={handleConfirm}
     />
   );
-});
+}

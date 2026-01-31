@@ -1,36 +1,30 @@
 'use client';
 
-import { forwardRef, useImperativeHandle } from 'react';
+import { useEffect } from 'react';
 import useAlbumRename from '../../_hooks/useAlbumRename';
 import AlbumRenameModal from './AlbumRenameModal';
 
 interface AlbumRenameModalContainerProps {
   selectedAlbumId?: number;
+  isOpen: boolean;
+  onClose: () => void;
+  initialTitle?: string;
 }
 
-export interface AlbumRenameModalContainerHandle {
-  open: (title: string) => void;
-}
+export function AlbumRenameModalContainer({
+  selectedAlbumId,
+  isOpen,
+  onClose,
+  initialTitle = '',
+}: AlbumRenameModalContainerProps) {
+  const { isUpdating, albumName, setAlbumName, confirmRename } = useAlbumRename(onClose);
 
-export const AlbumRenameModalContainer = forwardRef<
-  AlbumRenameModalContainerHandle,
-  AlbumRenameModalContainerProps
->(({ selectedAlbumId }, ref) => {
-  const {
-    isModalOpen,
-    isUpdating,
-    albumName,
-    setAlbumName,
-    openRenameModal,
-    closeRenameModal,
-    confirmRename,
-  } = useAlbumRename();
-
-  useImperativeHandle(ref, () => ({
-    open: (title: string) => {
-      openRenameModal(title);
-    },
-  }));
+  // 모달이 열릴 때 초기 제목 설정
+  useEffect(() => {
+    if (isOpen && initialTitle) {
+      setAlbumName(initialTitle);
+    }
+  }, [isOpen, initialTitle, setAlbumName]);
 
   const handleConfirm = () => {
     if (!selectedAlbumId) return;
@@ -39,12 +33,12 @@ export const AlbumRenameModalContainer = forwardRef<
 
   return (
     <AlbumRenameModal
-      isOpen={isModalOpen}
+      isOpen={isOpen}
       isUpdating={isUpdating}
       albumName={albumName}
       onChangeAlbumName={setAlbumName}
-      onClose={closeRenameModal}
+      onClose={onClose}
       onConfirm={handleConfirm}
     />
   );
-});
+}

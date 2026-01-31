@@ -5,34 +5,24 @@ import { useCreate2, getGetSelectableAlbumsQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 
-const useAlbumAdd = () => {
+const useAlbumAdd = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [albumName, setAlbumName] = useState('');
 
   const { mutate: create, isPending: isCreating } = useCreate2();
-
-  const openAddModal = () => {
-    setAlbumName('');
-    setIsModalOpen(true);
-  };
-
-  const closeAddModal = () => {
-    setIsModalOpen(false);
-  };
 
   const confirmAdd = () => {
     const nextTitle = albumName.trim();
     if (!nextTitle) return;
 
     create(
-      { data: { title: nextTitle } },
+      { data: { title: nextTitle, workspaceId: 1 } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
           showToast('앨범이 생성되었어요');
-          closeAddModal();
+          onSuccess?.();
         },
         onError: () => {
           showToast('앨범 생성에 실패했어요');
@@ -42,12 +32,9 @@ const useAlbumAdd = () => {
   };
 
   return {
-    isModalOpen,
     isCreating,
     albumName,
     setAlbumName,
-    openAddModal,
-    closeAddModal,
     confirmAdd,
   };
 };
