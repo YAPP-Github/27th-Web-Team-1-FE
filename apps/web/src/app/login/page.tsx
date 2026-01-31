@@ -41,7 +41,7 @@ export default function LoginPage() {
       const receivedUserId = await requestLogin(email.trim());
       setUserIdCookie(receivedUserId);
       setUserId(receivedUserId);
-      router.push('/map');
+      router.push('/');
     } catch (error) {
       const message = error instanceof Error ? error.message : '로그인에 실패했습니다.';
       setErrorMessage(message);
