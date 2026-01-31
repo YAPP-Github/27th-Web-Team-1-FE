@@ -111,7 +111,11 @@ const BottomSheet = ({
           )}
           placement="top"
         >
-          <TextButton text="사진 촬영" onClick={() => {}} textAlign="left" />
+          <TextButton
+            text="사진 촬영"
+            onClick={() => router.push(ROUTES.PHOTO.CAPTURE)}
+            textAlign="left"
+          />
           <TextButton
             text="사진 추가"
             onClick={() => router.push(ROUTES.PHOTO.ADD)}

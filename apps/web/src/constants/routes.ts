@@ -5,6 +5,7 @@ export const ROUTES = {
   },
   PHOTO: {
     ADD: '/photo/add',
+    CAPTURE: '/photo/capture',
     NOTE: {
       ADD: '/photo/add/note',
     },
