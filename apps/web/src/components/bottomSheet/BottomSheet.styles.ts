@@ -6,7 +6,6 @@ interface SheetWrapperProps {
 
 export const SheetWrapper = styled.div<SheetWrapperProps>`
   width: 100%;
-  /* max-width: ${({ theme }) => theme.layout.maxWidth}; */
   position: absolute;
   bottom: 0;
   background-color: ${({ theme }) => theme.colors.blueWhite.bg8};
@@ -57,4 +56,20 @@ export const Content = styled.div<{ $noPadding?: boolean }>`
   padding: ${({ $noPadding }) => ($noPadding ? '0' : '0px 20px')};
   flex: 1;
   overflow: hidden;
+`;
+
+export const FloatingButtonWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 100px;
+  background: ${({ theme }) => theme.colors.gradient.black2};
+  z-index: 1002;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

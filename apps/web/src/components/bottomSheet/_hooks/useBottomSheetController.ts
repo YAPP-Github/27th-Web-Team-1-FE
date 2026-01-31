@@ -37,6 +37,12 @@ export function useBottomSheetController(context: SheetContext) {
     return { type: SHEET_CONTEXT_TYPE.ALBUM_LIST };
   };
 
+  const isMaxHeight = Math.abs(height - getMaxHeight()) < 10;
+  const showFloatingButton =
+    isMaxHeight &&
+    (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ||
+      context.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL);
+
   return {
     height,
     setHeight,
@@ -44,5 +50,6 @@ export function useBottomSheetController(context: SheetContext) {
     snapHeightOnly,
     deriveContextFromHeight,
     MID_HEIGHT,
+    showFloatingButton,
   };
 }
