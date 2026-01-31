@@ -6,7 +6,7 @@ import Input from '@/components/input/Input';
 import { ROUTES } from '@/constants/routes';
 import { login } from '@repo/api-client';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import * as S from './page.styles';
 
 const requestLogin = async (email: string) => {
@@ -25,7 +25,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [userId, setUserId] = useState<number | null>(() => getUserIdFromCookie());
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    setUserId(getUserIdFromCookie());
+  }, []);
 
   const isReady = email.trim().length > 0 && !isSubmitting;
 
