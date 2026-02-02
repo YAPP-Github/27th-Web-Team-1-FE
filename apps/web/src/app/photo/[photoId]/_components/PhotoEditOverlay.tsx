@@ -27,7 +27,7 @@ interface PhotoEditOverlayProps {
   onSave: (data: {
     photoId: number;
     memo?: string;
-    albumId: number;
+    albumId?: number;
     location: PhotoLocation;
   }) => void;
   isSaving?: boolean;
@@ -102,16 +102,15 @@ export default function PhotoEditOverlay({
     const latitude = selectedLocation?.latitude;
     const longitude = selectedLocation?.longitude;
     const hasValidLocation = latitude != null && longitude != null;
-    const albumId = selectedAlbum?.id;
 
-    if (albumId == null || !hasValidLocation) {
+    if (!hasValidLocation) {
       return;
     }
 
     onSave({
       photoId,
       memo: memo || undefined,
-      albumId,
+      albumId: selectedAlbum?.id,
       location: { latitude, longitude },
     });
   };
@@ -240,7 +239,11 @@ export default function PhotoEditOverlay({
               <S.MapPreviewText>지도뷰 미리보기</S.MapPreviewText>
             </S.MapPreviewButton>
 
-            <S.SaveButton type="button" onClick={handleSave} disabled={isSaving}>
+            <S.SaveButton
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving || !selectedLocation}
+            >
               <S.SaveIcon>
                 <ArrowRightIcon width={24} height={24} />
               </S.SaveIcon>
