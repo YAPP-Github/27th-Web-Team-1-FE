@@ -16,13 +16,13 @@ export interface CreatePhotoRequest {
    */
   url: string;
   /** 앨범 ID */
-  albumId?: number;
+  albumId: number;
   /** 경도 */
-  longitude?: number;
+  longitude: number;
   /** 위도 */
-  latitude?: number;
+  latitude: number;
   /** 촬영일시 (EXIF 데이터) */
-  takenAt?: string;
+  takenAt: string;
   /** 사진 설명 */
   description?: string;
 }

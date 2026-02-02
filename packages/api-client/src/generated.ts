@@ -20,12 +20,10 @@ import type {
   AlbumRequest,
   ApiResponseErrorDetail,
   CreatePhotoRequest,
-  CreateWorkspaceRequest,
   GetClusterPhotosParams,
   GetLocationInfoParams,
   GetPhotos1Params,
   HomeParams,
-  JoinWorkspaceRequest,
   LoginRequest,
   PresignedUrlRequest,
   RefreshTokenRequest,
@@ -46,7 +44,6 @@ import type {
   IdResponse,
   JwtTokenResponse,
   LocationInfoResponse,
-  LoginResponse,
   MapPhotosResponse,
   PhotoDetailResponse,
   PhotoListResponse,
@@ -286,36 +283,33 @@ export const useDelete = <
 };
 
 /**
- * 새로운 워크스페이스를 생성합니다.
- * @summary 워크스페이스 생성
+ * S3에 업로드된 사진 정보를 저장합니다.
+ * @summary 사진 생성
  */
-export const create = (
-  createWorkspaceRequest: CreateWorkspaceRequest,
-  signal?: AbortSignal,
-) => {
+export const create = (createPhotoRequest: CreatePhotoRequest, signal?: AbortSignal) => {
   return customFetcher<IdResponse>({
-    url: `/workspaces`,
+    url: `/photos`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    data: createWorkspaceRequest,
+    data: createPhotoRequest,
     signal,
   });
 };
 
 export const getCreateMutationOptions = <
-  TError = void | ApiResponseErrorDetail,
+  TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create>>,
     TError,
-    { data: CreateWorkspaceRequest },
+    { data: CreatePhotoRequest },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof create>>,
   TError,
-  { data: CreateWorkspaceRequest },
+  { data: CreatePhotoRequest },
   TContext
 > => {
   const mutationKey = ['create'];
@@ -329,7 +323,7 @@ export const getCreateMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof create>>,
-    { data: CreateWorkspaceRequest }
+    { data: CreatePhotoRequest }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -340,192 +334,29 @@ export const getCreateMutationOptions = <
 };
 
 export type CreateMutationResult = NonNullable<Awaited<ReturnType<typeof create>>>;
-export type CreateMutationBody = CreateWorkspaceRequest;
-export type CreateMutationError = void | ApiResponseErrorDetail;
+export type CreateMutationBody = CreatePhotoRequest;
+export type CreateMutationError = ApiResponseErrorDetail | IdResponse;
 
 /**
- * @summary 워크스페이스 생성
+ * @summary 사진 생성
  */
 export const useCreate = <
-  TError = void | ApiResponseErrorDetail,
+  TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof create>>,
     TError,
-    { data: CreateWorkspaceRequest },
+    { data: CreatePhotoRequest },
     TContext
   >;
 }): UseMutationResult<
   Awaited<ReturnType<typeof create>>,
   TError,
-  { data: CreateWorkspaceRequest },
+  { data: CreatePhotoRequest },
   TContext
 > => {
   const mutationOptions = getCreateMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
- * 초대 코드를 통해 워크스페이스에 합류합니다.
- * @summary 초대 코드로 워크스페이스 합류
- */
-export const joinByInviteCode = (
-  joinWorkspaceRequest: JoinWorkspaceRequest,
-  signal?: AbortSignal,
-) => {
-  return customFetcher<IdResponse>({
-    url: `/workspaces/join`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: joinWorkspaceRequest,
-    signal,
-  });
-};
-
-export const getJoinByInviteCodeMutationOptions = <
-  TError = ApiResponseErrorDetail | IdResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof joinByInviteCode>>,
-    TError,
-    { data: JoinWorkspaceRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof joinByInviteCode>>,
-  TError,
-  { data: JoinWorkspaceRequest },
-  TContext
-> => {
-  const mutationKey = ['joinByInviteCode'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof joinByInviteCode>>,
-    { data: JoinWorkspaceRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return joinByInviteCode(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type JoinByInviteCodeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof joinByInviteCode>>
->;
-export type JoinByInviteCodeMutationBody = JoinWorkspaceRequest;
-export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | IdResponse;
-
-/**
- * @summary 초대 코드로 워크스페이스 합류
- */
-export const useJoinByInviteCode = <
-  TError = ApiResponseErrorDetail | IdResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof joinByInviteCode>>,
-    TError,
-    { data: JoinWorkspaceRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof joinByInviteCode>>,
-  TError,
-  { data: JoinWorkspaceRequest },
-  TContext
-> => {
-  const mutationOptions = getJoinByInviteCodeMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
- * S3에 업로드된 사진 정보를 저장합니다.
- * @summary 사진 생성
- */
-export const create1 = (createPhotoRequest: CreatePhotoRequest, signal?: AbortSignal) => {
-  return customFetcher<IdResponse>({
-    url: `/photos`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: createPhotoRequest,
-    signal,
-  });
-};
-
-export const getCreate1MutationOptions = <
-  TError = ApiResponseErrorDetail | IdResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create1>>,
-    TError,
-    { data: CreatePhotoRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof create1>>,
-  TError,
-  { data: CreatePhotoRequest },
-  TContext
-> => {
-  const mutationKey = ['create1'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof create1>>,
-    { data: CreatePhotoRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return create1(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>;
-export type Create1MutationBody = CreatePhotoRequest;
-export type Create1MutationError = ApiResponseErrorDetail | IdResponse;
-
-/**
- * @summary 사진 생성
- */
-export const useCreate1 = <
-  TError = ApiResponseErrorDetail | IdResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create1>>,
-    TError,
-    { data: CreatePhotoRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof create1>>,
-  TError,
-  { data: CreatePhotoRequest },
-  TContext
-> => {
-  const mutationOptions = getCreate1MutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -701,7 +532,7 @@ export const useRefresh = <
  * @summary 회원가입/로그인
  */
 export const login = (loginRequest: LoginRequest, signal?: AbortSignal) => {
-  return customFetcher<LoginResponse>({
+  return customFetcher<IdResponse | IdResponse>({
     url: `/auth/login`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -776,7 +607,7 @@ export const useLogin = <TError = ApiResponseErrorDetail, TContext = unknown>(op
  * 새로운 앨범을 생성합니다.
  * @summary 앨범 생성
  */
-export const create2 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
+export const create1 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
   return customFetcher<IdResponse>({
     url: `/albums`,
     method: 'POST',
@@ -786,23 +617,23 @@ export const create2 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
   });
 };
 
-export const getCreate2MutationOptions = <
+export const getCreate1MutationOptions = <
   TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     TError,
     { data: AlbumRequest },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof create2>>,
+  Awaited<ReturnType<typeof create1>>,
   TError,
   { data: AlbumRequest },
   TContext
 > => {
-  const mutationKey = ['create2'];
+  const mutationKey = ['create1'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -812,41 +643,41 @@ export const getCreate2MutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     { data: AlbumRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return create2(data);
+    return create1(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type Create2MutationResult = NonNullable<Awaited<ReturnType<typeof create2>>>;
-export type Create2MutationBody = AlbumRequest;
-export type Create2MutationError = ApiResponseErrorDetail | IdResponse;
+export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>;
+export type Create1MutationBody = AlbumRequest;
+export type Create1MutationError = ApiResponseErrorDetail | IdResponse;
 
 /**
  * @summary 앨범 생성
  */
-export const useCreate2 = <
+export const useCreate1 = <
   TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     TError,
     { data: AlbumRequest },
     TContext
   >;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof create2>>,
+  Awaited<ReturnType<typeof create1>>,
   TError,
   { data: AlbumRequest },
   TContext
 > => {
-  const mutationOptions = getCreate2MutationOptions(options);
+  const mutationOptions = getCreate1MutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -1152,7 +983,7 @@ export function useSearchPlaces<
  * 
             줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
 
-            - **줌 레벨 < 15**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
+            - **줌 레벨 < 16**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
             - clusterId: 줌 레벨 + 그리드 셀 인덱스 (예: z14_130234_38456)
             - count: 클러스터 내 사진 개수
             - thumbnailUrl: 클러스터 내 가장 최근 생성된 사진의 URL
@@ -1519,6 +1350,65 @@ export function useGetAlbumMapInfo<
 }
 
 /**
+ * 카카오 OAuth 인증 페이지로 리다이렉트합니다. 프론트엔드에서 이 URL로 이동하면 카카오 로그인 화면이 표시됩니다.
+ * @summary 카카오 로그인 페이지로 리다이렉트
+ */
+export const kakaoAuthorize = (signal?: AbortSignal) => {
+  return customFetcher<unknown>({ url: `/auth/kakao/authorize`, method: 'GET', signal });
+};
+
+export const getKakaoAuthorizeQueryKey = () => {
+  return [`/auth/kakao/authorize`] as const;
+};
+
+export const getKakaoAuthorizeQueryOptions = <
+  TData = Awaited<ReturnType<typeof kakaoAuthorize>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getKakaoAuthorizeQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof kakaoAuthorize>>> = ({
+    signal,
+  }) => kakaoAuthorize(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof kakaoAuthorize>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type KakaoAuthorizeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof kakaoAuthorize>>
+>;
+export type KakaoAuthorizeQueryError = ApiResponseErrorDetail;
+
+/**
+ * @summary 카카오 로그인 페이지로 리다이렉트
+ */
+
+export function useKakaoAuthorize<
+  TData = Awaited<ReturnType<typeof kakaoAuthorize>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getKakaoAuthorizeQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
  * 사용자가 선택할 수 있는 앨범 목록을 조회합니다.
  * @summary 선택 가능한 앨범 조회
  */
@@ -1635,26 +1525,6 @@ export const getCreateResponseMock = (
   ...overrideResponse,
 });
 
-export const getJoinByInviteCodeResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getCreate1ResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
 export const getGetPresignedUrlResponseMock = (
   overrideResponse: Partial<PresignedUrl> = {},
 ): PresignedUrl => ({
@@ -1684,89 +1554,26 @@ export const getRefreshResponseMock = (
 });
 
 export const getLoginResponseMock = (
-  overrideResponse: Partial<LoginResponse> = {},
-): LoginResponse => ({
-  userId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  workspaceId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  albumId: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  photos: faker.helpers.arrayElement([
-    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
-      () => ({
-        photoId: faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          undefined,
-        ]),
-        url: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        longitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        latitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        description: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-      }),
-    ),
-    undefined,
-  ]),
-  albumLocation: faker.helpers.arrayElement([
+  overrideResponse: Partial<IdResponse | IdResponse> = {},
+): IdResponse | IdResponse =>
+  faker.helpers.arrayElement([
     {
-      albumId: faker.helpers.arrayElement([
+      id: faker.helpers.arrayElement([
         faker.number.int({ min: undefined, max: undefined }),
         undefined,
       ]),
-      centerLongitude: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-      centerLatitude: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-      boundingBox: faker.helpers.arrayElement([
-        {
-          west: faker.helpers.arrayElement([
-            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-            undefined,
-          ]),
-          south: faker.helpers.arrayElement([
-            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-            undefined,
-          ]),
-          east: faker.helpers.arrayElement([
-            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-            undefined,
-          ]),
-          north: faker.helpers.arrayElement([
-            faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-            undefined,
-          ]),
-        },
-        undefined,
-      ]),
+      ...overrideResponse,
     },
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+    {
+      id: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      ...overrideResponse,
+    },
+  ]);
 
-export const getCreate2ResponseMock = (
+export const getCreate1ResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
   id: faker.helpers.arrayElement([
@@ -2247,62 +2054,6 @@ export const getCreateMockHandler = (
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
-    '*/workspaces',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getCreateResponseMock(),
-        ),
-        { status: 201, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getJoinByInviteCodeMockHandler = (
-  overrideResponse?:
-    | IdResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/workspaces/join',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getJoinByInviteCodeResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getCreate1MockHandler = (
-  overrideResponse?:
-    | IdResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
     '*/photos',
     async (info) => {
       await delay(1000);
@@ -2313,7 +2064,7 @@ export const getCreate1MockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getCreate1ResponseMock(),
+            : getCreateResponseMock(),
         ),
         { status: 201, headers: { 'Content-Type': 'application/json' } },
       );
@@ -2380,10 +2131,11 @@ export const getRefreshMockHandler = (
 
 export const getLoginMockHandler = (
   overrideResponse?:
-    | LoginResponse
+    | IdResponse
+    | IdResponse
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<LoginResponse> | LoginResponse),
+      ) => Promise<IdResponse | IdResponse> | IdResponse | IdResponse),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
@@ -2399,14 +2151,14 @@ export const getLoginMockHandler = (
               : overrideResponse
             : getLoginResponseMock(),
         ),
-        { status: 201, headers: { 'Content-Type': 'application/json' } },
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
     },
     options,
   );
 };
 
-export const getCreate2MockHandler = (
+export const getCreate1MockHandler = (
   overrideResponse?:
     | IdResponse
     | ((
@@ -2425,7 +2177,7 @@ export const getCreate2MockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getCreate2ResponseMock(),
+            : getCreate1ResponseMock(),
         ),
         { status: 201, headers: { 'Content-Type': 'application/json' } },
       );
@@ -2677,6 +2429,27 @@ export const getGetAlbumMapInfoMockHandler = (
   );
 };
 
+export const getKakaoAuthorizeMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/auth/kakao/authorize',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 200 });
+    },
+    options,
+  );
+};
+
 export const getGetSelectableAlbumsMockHandler = (
   overrideResponse?:
     | SelectableAlbumResponse
@@ -2709,12 +2482,10 @@ export const getLokitAPIMock = () => [
   getUpdateMockHandler(),
   getDeleteMockHandler(),
   getCreateMockHandler(),
-  getJoinByInviteCodeMockHandler(),
-  getCreate1MockHandler(),
   getGetPresignedUrlMockHandler(),
   getRefreshMockHandler(),
   getLoginMockHandler(),
-  getCreate2MockHandler(),
+  getCreate1MockHandler(),
   getDelete1MockHandler(),
   getUpdateTitleMockHandler(),
   getGetPhotosMockHandler(),
@@ -2724,5 +2495,6 @@ export const getLokitAPIMock = () => [
   getHomeMockHandler(),
   getGetClusterPhotosMockHandler(),
   getGetAlbumMapInfoMockHandler(),
+  getKakaoAuthorizeMockHandler(),
   getGetSelectableAlbumsMockHandler(),
 ];
