@@ -5,6 +5,7 @@ export const LocationWrapper = styled.div`
   align-items: center;
   gap: 6px;
   max-width: 100%;
+  min-width: 0;
   overflow: hidden;
 `;
 
@@ -24,6 +25,7 @@ export const LocationText = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
   width: 100%;
 `;
 

@@ -40,4 +40,5 @@ export const Title = styled.h1`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 `;
