@@ -1,13 +1,14 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { useGetPresignedUrl, useCreate1 } from '@repo/api-client';
-import type { SelectedPhoto } from '../../../add/_types/photo';
+import { useGetPresignedUrl, useCreate } from '@repo/api-client';
+import type { SelectedPhoto, PhotoLocation } from '../../../add/_types/photo';
 
 interface UploadPhotoParams {
   photo: SelectedPhoto;
   description?: string;
   albumId?: number;
+  location?: PhotoLocation;
 }
 
 const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
@@ -17,10 +18,10 @@ const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
 
 export const usePhotoUpload = () => {
   const { mutateAsync: getPresignedUrl } = useGetPresignedUrl();
-  const { mutateAsync: createPhoto } = useCreate1();
+  const { mutateAsync: createPhoto } = useCreate();
 
   return useMutation({
-    mutationFn: async ({ photo, description, albumId }: UploadPhotoParams) => {
+    mutationFn: async ({ photo, description, albumId, location }: UploadPhotoParams) => {
       // 1. Data URL을 Blob으로 변환
       const blob = await dataUrlToBlob(photo.uri);
       const contentType = blob.type || 'image/jpeg';
@@ -51,12 +52,20 @@ export const usePhotoUpload = () => {
       }
 
       // 4. POST /photos로 메타데이터 저장
+      // location 파라미터가 있으면 우선 사용 (사용자가 수동으로 선택한 위치)
+      const finalLocation: PhotoLocation | undefined = location ?? photo.location;
+
+      if (!finalLocation) {
+        throw new Error('Location is required');
+      }
+
       const createResponse = await createPhoto({
         data: {
           url: presignedUrlResponse.objectUrl,
-          albumId,
-          longitude: photo.location?.longitude,
-          latitude: photo.location?.latitude,
+          albumId: albumId ?? 0,
+          longitude: finalLocation.longitude,
+          latitude: finalLocation.latitude,
+          takenAt: photo.createdAt,
           description,
         },
       });

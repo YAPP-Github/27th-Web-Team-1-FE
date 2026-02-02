@@ -11,7 +11,7 @@ import * as S from './page.styles';
 
 const requestLogin = async (email: string) => {
   const response = await login({ email: email.trim() });
-  const userId = response.userId;
+  const userId = response.id;
 
   if (userId === undefined || userId === null) {
     throw new Error('응답에서 userId를 찾을 수 없습니다.');

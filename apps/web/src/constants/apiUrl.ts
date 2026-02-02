@@ -11,6 +11,7 @@ export const API_URL = {
   },
   MAP: {
     PLACES_SEARCH: '/map/places/search',
+    LOCATION: '/map/location',
   },
   PHOTOS: {
     BASE: '/photos',

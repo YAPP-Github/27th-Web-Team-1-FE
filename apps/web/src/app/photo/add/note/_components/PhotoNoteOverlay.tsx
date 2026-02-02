@@ -105,6 +105,13 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         photo: selectedPhoto,
         description: memo || undefined,
         albumId: selectedAlbum?.id,
+        location:
+          selectedLocation?.latitude != null && selectedLocation?.longitude != null
+            ? {
+                latitude: selectedLocation.latitude,
+                longitude: selectedLocation.longitude,
+              }
+            : undefined,
       },
       {
         onSuccess: () => {

@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast/ToastProvider';
+import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 
 interface EditData {
   photoId: number;
   memo?: string;
-  albumId?: number;
-  location?: { latitude: number; longitude: number };
+  albumId: number;
+  location: PhotoLocation;
 }
 
 const usePhotoEdit = () => {
@@ -49,8 +50,8 @@ const usePhotoEdit = () => {
       data: {
         description: data.memo,
         albumId: data.albumId,
-        latitude: data.location?.latitude,
-        longitude: data.location?.longitude,
+        latitude: data.location.latitude,
+        longitude: data.location.longitude,
       },
     });
   };

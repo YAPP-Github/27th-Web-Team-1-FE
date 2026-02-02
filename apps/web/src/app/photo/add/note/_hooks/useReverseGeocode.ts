@@ -1,46 +1,22 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { buildUrlWithQueryParams } from '@repo/api-client';
-import { API_URL } from '@/constants';
+import { skipToken, useQuery } from '@tanstack/react-query';
+import {
+  getLocationInfo,
+  getGetLocationInfoQueryKey,
+  GetLocationInfoParams,
+} from '@repo/api-client';
 
-interface AddressResponse {
-  address: string;
-  placeName: string;
-}
-
-const fetchAddress = async (
-  latitude: number,
-  longitude: number,
-): Promise<AddressResponse> => {
-  const url = buildUrlWithQueryParams(`/api${API_URL.LOCATION.ADDRESS}`, {
-    latitude,
-    longitude,
-  });
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch address');
-  }
-
-  return response.json();
-};
-
-interface UseReverseGeocodeParams {
-  latitude?: number;
-  longitude?: number;
-}
-
-export const useReverseGeocode = ({ latitude, longitude }: UseReverseGeocodeParams) => {
-  const queryKey = buildUrlWithQueryParams(API_URL.LOCATION.ADDRESS, {
-    latitude,
-    longitude,
-  });
+export const useReverseGeocode = ({
+  latitude,
+  longitude,
+}: Partial<GetLocationInfoParams>) => {
+  const enabled = latitude !== undefined && longitude !== undefined;
 
   return useQuery({
-    queryKey: [queryKey],
-    queryFn: () => fetchAddress(latitude!, longitude!),
-    enabled: latitude !== undefined && longitude !== undefined,
+    queryKey: getGetLocationInfoQueryKey(
+      enabled ? { latitude, longitude } : { latitude: 0, longitude: 0 },
+    ),
+    queryFn: enabled ? () => getLocationInfo({ latitude, longitude }) : skipToken,
   });
 };

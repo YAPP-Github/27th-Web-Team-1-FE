@@ -19,6 +19,7 @@ import SuccessIcon from '@/assets/images/success.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import AlbumIcon from '@/assets/images/album.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
+import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 
 interface PhotoEditOverlayProps {
   photoId: number;
@@ -26,8 +27,8 @@ interface PhotoEditOverlayProps {
   onSave: (data: {
     photoId: number;
     memo?: string;
-    albumId?: number;
-    location?: { latitude: number; longitude: number };
+    albumId: number;
+    location: PhotoLocation;
   }) => void;
   isSaving?: boolean;
 }
@@ -101,12 +102,17 @@ export default function PhotoEditOverlay({
     const latitude = selectedLocation?.latitude;
     const longitude = selectedLocation?.longitude;
     const hasValidLocation = latitude != null && longitude != null;
+    const albumId = selectedAlbum?.id;
+
+    if (albumId == null || !hasValidLocation) {
+      return;
+    }
 
     onSave({
       photoId,
       memo: memo || undefined,
-      albumId: selectedAlbum?.id,
-      location: hasValidLocation ? { latitude, longitude } : undefined,
+      albumId,
+      location: { latitude, longitude },
     });
   };
 

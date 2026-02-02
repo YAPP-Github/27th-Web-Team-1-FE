@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCreate2, getGetSelectableAlbumsQueryKey } from '@repo/api-client';
+import { useCreate1, getGetSelectableAlbumsQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 
@@ -10,14 +10,14 @@ const useAlbumAdd = (onSuccess?: () => void) => {
   const { showToast } = useToast();
   const [albumName, setAlbumName] = useState('');
 
-  const { mutate: create, isPending: isCreating } = useCreate2();
+  const { mutate: create, isPending: isCreating } = useCreate1();
 
   const confirmAdd = () => {
     const nextTitle = albumName.trim();
     if (!nextTitle) return;
 
     create(
-      { data: { title: nextTitle, workspaceId: 1 } },
+      { data: { title: nextTitle } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
