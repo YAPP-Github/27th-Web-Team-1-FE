@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast/ToastProvider';
+import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 
 interface EditData {
   photoId: number;
   memo?: string;
   albumId?: number;
-  location?: { latitude: number; longitude: number };
+  location: PhotoLocation;
 }
 
 const usePhotoEdit = () => {
@@ -44,13 +45,14 @@ const usePhotoEdit = () => {
   };
 
   const saveEdit = (data: EditData) => {
+    // TODO: API 스펙 변경 후 타입 단언 제거 (albumId optional 지원 예정)
     updatePhoto({
       id: data.photoId,
       data: {
         description: data.memo,
-        albumId: data.albumId,
-        latitude: data.location?.latitude,
-        longitude: data.location?.longitude,
+        albumId: data.albumId as number,
+        latitude: data.location.latitude,
+        longitude: data.location.longitude,
       },
     });
   };

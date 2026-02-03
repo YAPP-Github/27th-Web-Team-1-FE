@@ -50,7 +50,6 @@ export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
   authHeaderProvider = provider;
 };
 
-
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
@@ -149,7 +148,7 @@ const subscribeTokenRefresh = (cb: () => void) => {
 };
 
 const onRefreshed = () => {
-  refreshSubscribers.forEach(cb => cb());
+  refreshSubscribers.forEach((cb) => cb());
   refreshSubscribers = [];
 };
 

@@ -19,6 +19,7 @@ import SuccessIcon from '@/assets/images/success.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import AlbumIcon from '@/assets/images/album.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
+import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 
 interface PhotoEditOverlayProps {
   photoId: number;
@@ -27,7 +28,7 @@ interface PhotoEditOverlayProps {
     photoId: number;
     memo?: string;
     albumId?: number;
-    location?: { latitude: number; longitude: number };
+    location: PhotoLocation;
   }) => void;
   isSaving?: boolean;
 }
@@ -102,11 +103,15 @@ export default function PhotoEditOverlay({
     const longitude = selectedLocation?.longitude;
     const hasValidLocation = latitude != null && longitude != null;
 
+    if (!hasValidLocation) {
+      return;
+    }
+
     onSave({
       photoId,
       memo: memo || undefined,
       albumId: selectedAlbum?.id,
-      location: hasValidLocation ? { latitude, longitude } : undefined,
+      location: { latitude, longitude },
     });
   };
 
@@ -234,7 +239,11 @@ export default function PhotoEditOverlay({
               <S.MapPreviewText>지도뷰 미리보기</S.MapPreviewText>
             </S.MapPreviewButton>
 
-            <S.SaveButton type="button" onClick={handleSave} disabled={isSaving}>
+            <S.SaveButton
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving || !selectedLocation}
+            >
               <S.SaveIcon>
                 <ArrowRightIcon width={24} height={24} />
               </S.SaveIcon>

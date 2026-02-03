@@ -1,3 +1,9 @@
+/** 위치 정보 (위도, 경도) */
+export interface PhotoLocation {
+  latitude: number;
+  longitude: number;
+}
+
 /** 로컬에서 선택한 사진 정보 */
 export interface SelectedPhoto {
   /** 임시 ID */
@@ -13,8 +19,5 @@ export interface SelectedPhoto {
   /** 높이 */
   height: number;
   /** 위치 정보 */
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
+  location?: PhotoLocation;
 }

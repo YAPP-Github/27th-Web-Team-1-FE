@@ -1,9 +1,10 @@
+import type { LocationInfoResponse } from '@repo/api-client';
 import { API_URL } from '@/constants';
 import type { MockApiResponse } from '@/mocks/types';
-import { type AddressResponse, 주소_조회_성공 } from './mockData';
+import { 주소_조회_성공 } from './mockData';
 
 export const mockGetAddress = {
-  url: API_URL.LOCATION.ADDRESS,
+  url: API_URL.MAP.LOCATION,
   description: '위치 주소 조회 (역지오코딩)',
   method: 'get',
   response: {
@@ -21,7 +22,7 @@ export const mockGetAddress = {
         data: {
           errorCode: 'LOCATION_001',
           detail: '위도/경도 값이 누락되었습니다',
-          instance: '/location/address',
+          instance: '/map/location',
           errors: {
             latitude: 'required',
             longitude: 'required',
@@ -30,4 +31,4 @@ export const mockGetAddress = {
       },
     },
   },
-} satisfies MockApiResponse<'주소_조회_성공' | '좌표_누락', AddressResponse>;
+} satisfies MockApiResponse<'주소_조회_성공' | '좌표_누락', LocationInfoResponse>;

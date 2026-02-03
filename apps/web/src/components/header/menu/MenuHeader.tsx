@@ -5,7 +5,9 @@ import MenuIcon from '@/assets/images/menu.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import { BUTTON_SIZE, ICON_SIZE } from '../base/Header.constants';
 import HeaderBase from '../base/HeaderBase';
+import * as B from '../base/Header.styles';
 import * as S from './MenuHeader.styles';
+import * as E from '../explore/ExploreHeader.styles';
 
 interface MenuContextValue {
   isOpen: boolean;
@@ -65,14 +67,14 @@ const MenuHeaderMain = ({
             </CircleButton>
           }
           center={
-            <S.CenterWrapper>
+            <B.CenterSection>
               {showLocation && (
-                <S.LocationIconWrapper>
+                <E.LocationIconWrapper>
                   <LocationIcon width={16} height={16} />
-                </S.LocationIconWrapper>
+                </E.LocationIconWrapper>
               )}
-              {title && <S.Title>{title}</S.Title>}
-            </S.CenterWrapper>
+              {title && <B.Title>{title}</B.Title>}
+            </B.CenterSection>
           }
           right={
             showMenu ? (

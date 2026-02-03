@@ -7,5 +7,5 @@
  */
 
 export type KakaoCallbackParams = {
-code: string;
+  code: string;
 };

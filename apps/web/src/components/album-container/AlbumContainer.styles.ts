@@ -101,6 +101,7 @@ export const Title = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 `;
 
 export const PhotoCount = styled.span`

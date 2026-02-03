@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import * as B from '../base/Header.styles';
+import * as E from '../explore/ExploreHeader.styles';
 import * as S from './PhotoAddHeader.styles';
 import LocationIcon from '@/assets/images/location.svg';
 
@@ -26,12 +28,12 @@ const PhotoAddHeader = ({
 
     if (hasLocation && locationText) {
       return (
-        <>
-          <S.LocationIcon>
+        <E.LocationWrapper>
+          <E.LocationIconWrapper>
             <LocationIcon width={16} height={16} />
-          </S.LocationIcon>
-          <S.LocationText>{locationText}</S.LocationText>
-        </>
+          </E.LocationIconWrapper>
+          <E.LocationText>{locationText}</E.LocationText>
+        </E.LocationWrapper>
       );
     }
 
@@ -40,9 +42,9 @@ const PhotoAddHeader = ({
 
   return (
     <S.Container>
-      <S.LeftSection>{left}</S.LeftSection>
-      <S.CenterSection>{renderLocationDisplay()}</S.CenterSection>
-      <S.RightSection />
+      <B.LeftSection>{left}</B.LeftSection>
+      <B.CenterSection>{renderLocationDisplay()}</B.CenterSection>
+      <B.RightSection />
     </S.Container>
   );
 };

@@ -4,6 +4,9 @@ export const LocationWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 export const LocationIconWrapper = styled.div`
@@ -12,12 +15,18 @@ export const LocationIconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   color: ${({ theme }) => theme.colors.gray[200]};
 `;
 
 export const LocationText = styled.span`
   ${({ theme }) => theme.typography.heading18Bold}
   color: ${({ theme }) => theme.colors.gray[100]};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  width: 100%;
 `;
 
 export const ProfileImage = styled.img`

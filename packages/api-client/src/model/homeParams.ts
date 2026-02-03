@@ -7,6 +7,6 @@
  */
 
 export type HomeParams = {
-longitude: number;
-latitude: number;
+  longitude: number;
+  latitude: number;
 };

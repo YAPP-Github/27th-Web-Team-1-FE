@@ -11,5 +11,5 @@
  */
 export interface LoginRequest {
   /** 사용자 이메일 */
-  email?: string;
+  email: string;
 }
