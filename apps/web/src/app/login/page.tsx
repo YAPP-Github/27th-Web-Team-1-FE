@@ -1,12 +1,13 @@
 'use client';
 
 import Button from '@/components/buttons/button/Button';
+import { API_URL } from '@/constants/apiUrl';
 import * as S from './page.styles';
 
 export default function LoginPage() {
   const handleKakaoLogin = () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    window.location.href = `${apiBaseUrl}/auth/kakao`;
+    window.location.href = `${apiBaseUrl}${API_URL.AUTH.KAKAO}`;
   };
 
   return (
