@@ -23,7 +23,7 @@ const PhotoAddHeader = ({
 }: PhotoAddHeaderProps) => {
   const renderLocationDisplay = () => {
     if (isLoading) {
-      return <S.LocationPlaceholder>위치 정보 불러오는 중...</S.LocationPlaceholder>;
+      return <E.LocationText>위치 정보 불러오는 중...</E.LocationText>;
     }
 
     if (hasLocation && locationText) {
@@ -37,7 +37,7 @@ const PhotoAddHeader = ({
       );
     }
 
-    return <S.LocationPlaceholder>위치 추가...</S.LocationPlaceholder>;
+    return <E.LocationText>위치 추가...</E.LocationText>;
   };
 
   return (

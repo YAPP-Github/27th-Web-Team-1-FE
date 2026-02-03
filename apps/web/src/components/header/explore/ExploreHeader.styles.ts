@@ -27,6 +27,7 @@ export const LocationText = styled.span`
   text-overflow: ellipsis;
   min-width: 0;
   width: 100%;
+  text-align: center;
 `;
 
 export const ProfileImage = styled.img`

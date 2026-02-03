@@ -8,11 +8,6 @@ export const Container = styled.header`
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
 `;
 
-export const LocationPlaceholder = styled.span`
-  ${({ theme }) => theme.typography.heading18Bold}
-  color: ${({ theme }) => theme.colors.gray[100]};
-`;
-
 export const CloseButton = styled.button`
   display: flex;
   justify-content: center;
