@@ -48,7 +48,7 @@ export const ActionColumn = styled.div<ActionColumnProps>`
   bottom: ${({ $sheetHeight }) => `${$sheetHeight + 12}px`};
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   z-index: 1001;
 `;
 
