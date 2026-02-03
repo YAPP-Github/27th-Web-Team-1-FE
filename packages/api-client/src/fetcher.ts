@@ -222,6 +222,8 @@ export async function customFetcher<TResponse>(
       throw apiError;
     }
 
+    // TODO: 이미 재시도한 요청이면 무한 루프 방지
+
     // 이미 refresh 중인지 확인
     if (isRefreshing) {
       return new Promise<TResponse>((resolve, reject) => {
