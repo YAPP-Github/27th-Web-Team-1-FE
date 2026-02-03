@@ -9,8 +9,6 @@ import { theme } from '@/theme';
 import { MSWProvider } from '@/mocks/MSWProvider';
 import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider } from '@repo/api-client';
-import { getAuthorizationHeader } from '@/auth/cookies';
-import { API_URL } from '@/constants/apiUrl';
 import { ToastProvider } from '@/components/toast';
 
 export type AppProvidersProps = PropsWithChildren<{
@@ -39,12 +37,9 @@ export function AppProviders({
   const cache = useMemo(() => createCache({ key: 'web', prepend: true }), []);
 
   useEffect(() => {
-    setAuthHeaderProvider((config) => {
-      if (config.url.includes(API_URL.AUTH.LOGIN)) {
-        return undefined;
-      }
-      return getAuthorizationHeader();
-    });
+    // 쿠키 기반 인증에서는 Authorization 헤더가 필요하지 않음
+    // 모든 요청에서 브라우저가 자동으로 쿠키 전송
+    setAuthHeaderProvider(null);
 
     return () => {
       setAuthHeaderProvider(null);

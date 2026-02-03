@@ -111,9 +111,6 @@ importers:
       '@repo/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
-      '@repo/sentry':
-        specifier: workspace:*
-        version: link:../../packages/sentry
       '@tanstack/react-query':
         specifier: ^5.64.0
         version: 5.90.12(react@18.2.0)

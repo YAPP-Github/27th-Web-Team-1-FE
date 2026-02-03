@@ -1,6 +1,10 @@
 export const API_URL = {
   AUTH: {
     LOGIN: '/auth/login',
+    KAKAO: '/auth/kakao',
+    REFRESH: '/auth/refresh',
+    // TODO: 추후 로그아웃 API 도입 이후 활성화
+    // LOGOUT: '/auth/logout',
   },
   ALBUMS: {
     SELECTABLE: '/albums/selectable',
