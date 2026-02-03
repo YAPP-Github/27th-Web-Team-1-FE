@@ -6,9 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SearchPlacesParams = {
 /**
- * 검색 키워드
+ * 카카오 로그인 요청 (Authorization Code)
  */
-query: string;
-};
+export interface KakaoLoginRequest {
+  /** 카카오 인가 코드 */
+  code?: string;
+}

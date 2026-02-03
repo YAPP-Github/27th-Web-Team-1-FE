@@ -11,11 +11,11 @@
  */
 export interface UpdatePhotoRequest {
   /** 앨범 ID */
-  albumId?: number;
+  albumId: number;
   /** 경도 */
-  longitude?: number;
+  longitude: number;
   /** 위도 */
-  latitude?: number;
+  latitude: number;
   /** 사진 설명 */
   description?: string;
 }

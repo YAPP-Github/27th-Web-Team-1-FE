@@ -7,12 +7,12 @@
  */
 
 export type GetLocationInfoParams = {
-  /**
-   * 경도
-   */
-  longitude: number;
-  /**
-   * 위도
-   */
-  latitude: number;
+/**
+ * 경도
+ */
+longitude: number;
+/**
+ * 위도
+ */
+latitude: number;
 };

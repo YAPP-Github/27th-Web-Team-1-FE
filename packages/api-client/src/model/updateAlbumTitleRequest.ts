@@ -15,5 +15,5 @@ export interface UpdateAlbumTitleRequest {
    * @minLength 0
    * @maxLength 10
    */
-  title?: string;
+  title: string;
 }
