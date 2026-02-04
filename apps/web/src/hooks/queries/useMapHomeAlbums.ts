@@ -1,5 +1,5 @@
 import { useHome, type AlbumThumbnails } from '@repo/api-client';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 interface UseMapHomeAlbumsParams {
   longitude?: number;
@@ -8,6 +8,7 @@ interface UseMapHomeAlbumsParams {
 
 export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams) => {
   const isValid = longitude !== undefined && latitude !== undefined;
+  const prevAddressRef = useRef<string>('');
 
   const response = useHome({
     longitude: longitude ?? 0,
@@ -20,7 +21,13 @@ export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams
     return response.data?.albums ?? [];
   }, [response.data?.albums, isValid]);
 
-  const address = isValid ? (response.data?.location?.address ?? '') : '';
+  // 새 주소가 있으면 캐싱, 로딩 중에는 이전 주소 유지
+  const newAddress = response.data?.location?.address;
+  if (newAddress) {
+    prevAddressRef.current = newAddress;
+  }
+
+  const address = isValid ? (newAddress ?? prevAddressRef.current) : '';
 
   return {
     albumList,

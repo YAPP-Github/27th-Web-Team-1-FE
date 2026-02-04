@@ -10,6 +10,7 @@ export const API_URL = {
     ADDRESS: '/location/address',
   },
   MAP: {
+    HOME: '/map/home',
     PLACES_SEARCH: '/map/places/search',
     LOCATION: '/map/location',
   },
