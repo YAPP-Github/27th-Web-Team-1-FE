@@ -15,8 +15,28 @@ import * as S from './page.styles';
 export default function PhotoAddPage() {
   const router = useRouter();
   const { photos, addPhotos, setSelectedPhoto, setSelectedPhotoRect } = usePhotoContext();
+
+  /**
+   * 웹 브라우저 환경에서는 보안 정책상 사용자의 전체 갤러리에 접근할 수 없음.
+   * 따라서 파일 선택 시 바로 정보 기입 화면으로 이동하는 방식으로 구현.
+   *
+   * 네이티브 앱(React Native)에서는 갤러리 접근 권한을 받아 전체 사진 목록을
+   * 표시할 수 있으므로, 앱 버전에서는 사진 선택 UI를 사용할 예정.
+   */
+  const handlePhotosSelected = useCallback(
+    (newPhotos: SelectedPhoto[]) => {
+      addPhotos(newPhotos);
+      // 첫 번째 사진을 선택하고 바로 정보 기입 화면으로 이동
+      if (newPhotos.length > 0) {
+        setSelectedPhoto(newPhotos[0]);
+        router.push(ROUTES.PHOTO.NOTE.ADD);
+      }
+    },
+    [addPhotos, setSelectedPhoto, router],
+  );
+
   const { isLoading, selectPhotosFromFile } = usePhotoSelect({
-    onPhotosSelected: addPhotos,
+    onPhotosSelected: handlePhotosSelected,
   });
 
   const handleBack = useCallback(() => {

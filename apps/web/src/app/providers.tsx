@@ -12,6 +12,7 @@ import { setAuthHeaderProvider } from '@repo/api-client';
 import { getAuthorizationHeader } from '@/auth/cookies';
 import { API_URL } from '@/constants/apiUrl';
 import { ToastProvider } from '@/components/toast';
+import { PhotoProvider } from './photo/_contexts/PhotoContext';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
@@ -56,7 +57,9 @@ export function AppProviders({
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <QueryClientProvider client={queryClient}>
-          <ToastProvider>{children}</ToastProvider>
+          <PhotoProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </PhotoProvider>
           {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
         </QueryClientProvider>
       </ThemeProvider>
