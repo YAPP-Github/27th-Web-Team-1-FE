@@ -12,6 +12,8 @@
 export interface LocationInfoResponse {
   /** 주소 */
   address?: string;
+  /** 도로명 */
+  roadName?: string;
   /** 장소명 */
   placeName?: string;
   /** 지역명 */
