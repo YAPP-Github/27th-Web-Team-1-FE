@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { searchPlaces, getSearchPlacesQueryKey, PlaceResponse } from '@repo/api-client';
 import { useDebounce } from '@/hooks/useDebounce';
 
-const DEBOUNCE_DELAY = 100;
+const DEBOUNCE_DELAY = 500;
 
 const useLocationModal = () => {
   const [selectedLocation, setSelectedLocation] = useState<PlaceResponse | null>(null);
