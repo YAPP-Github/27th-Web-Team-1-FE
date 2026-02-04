@@ -24,27 +24,25 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import PhotoNoteOverlay from '../../note/_components/PhotoNoteOverlay';
 
 export default function PhotoNoteModal() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
 
-  const handleClose = () => {
-    // 1. 닫기 애니메이션 시작
+  const handleClose = useCallback(() => {
     setIsOpen(false);
-    // 2. 애니메이션 완료 후 이전 페이지로 이동
-    setTimeout(() => {
-      router.back();
-    }, PHOTO_NOTE_OVERLAY_ANIMATION_DURATION);
-  };
+  }, []);
+
+  const handleExitComplete = useCallback(() => {
+    router.back();
+  }, [router]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={handleExitComplete}>
       {isOpen && <PhotoNoteOverlay onClose={handleClose} />}
     </AnimatePresence>
   );

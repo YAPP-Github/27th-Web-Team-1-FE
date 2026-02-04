@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../../_contexts/PhotoContext';
-import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../_constants';
 import PhotoNoteOverlay from './_components/PhotoNoteOverlay';
 
 export default function PhotoNoteAddPage() {
@@ -28,9 +27,10 @@ export default function PhotoNoteAddPage() {
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
-    setTimeout(() => {
-      router.push(ROUTES.HOME);
-    }, PHOTO_NOTE_OVERLAY_ANIMATION_DURATION);
+  }, []);
+
+  const handleExitComplete = useCallback(() => {
+    router.push(ROUTES.HOME);
   }, [router]);
 
   // selectedPhoto가 없으면 렌더링하지 않음
@@ -39,7 +39,7 @@ export default function PhotoNoteAddPage() {
   }
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={handleExitComplete}>
       {isOpen && <PhotoNoteOverlay onClose={handleClose} />}
     </AnimatePresence>
   );
