@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:mock": "NEXT_PUBLIC_ENABLE_MOCK=true next dev",
+    "dev:https": "next dev --experimental-https -H local.lokit.co.kr",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx,js,jsx",

@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
 
     return config;
   },
+  allowedDevOrigins: ['local.lokit.co.kr'],
   async rewrites() {
     return [
       {
