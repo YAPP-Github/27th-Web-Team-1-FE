@@ -1,3 +1,4 @@
+import AlbumIcon from '@/assets/images/album.svg';
 import * as S from './AlbumRow.styles';
 
 interface AlbumRowProps {
@@ -23,7 +24,13 @@ const AlbumRow = ({
   return (
     <S.Container onClick={onClick}>
       <S.InfoContainer>
-        {thumbnail && <S.Thumbnail src={thumbnail} alt={title} />}
+        {thumbnail ? (
+          <S.Thumbnail src={thumbnail} alt={title} />
+        ) : (
+          <S.ThumbnailFallback>
+            <AlbumIcon />
+          </S.ThumbnailFallback>
+        )}
         <S.TextSection>
           <S.Title>{title}</S.Title>
           <S.PhotoCount>{photoCount}</S.PhotoCount>

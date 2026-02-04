@@ -28,6 +28,22 @@ export const Thumbnail = styled.img`
   flex-shrink: 0;
 `;
 
+export const ThumbnailFallback = styled.div`
+  width: 64px;
+  height: 64px;
+  border-radius: 12px 0 0 12px;
+  background: ${({ theme }) => theme.colors.blueWhite.bg8};
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
 export const TextSection = styled.div`
   display: flex;
   flex-direction: column;
