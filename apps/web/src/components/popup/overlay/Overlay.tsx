@@ -14,6 +14,7 @@ interface OverlayProps {
 
 interface OverlayContentProps {
   children: React.ReactNode;
+  height?: number;
 }
 
 type OverlayComponent = ((props: OverlayProps) => ReactElement | null) & {
@@ -32,9 +33,9 @@ const Overlay: OverlayComponent = ({ isOpen, onClose, children }: OverlayProps) 
   );
 };
 
-const OverlayContent = ({ children }: OverlayContentProps) => {
+const OverlayContent = ({ children, height }: OverlayContentProps) => {
   return (
-    <S.Content role="dialog" aria-modal="true">
+    <S.Content role="dialog" aria-modal="true" height={height}>
       {children}
     </S.Content>
   );

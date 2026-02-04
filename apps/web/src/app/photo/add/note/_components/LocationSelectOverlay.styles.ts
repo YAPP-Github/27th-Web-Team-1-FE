@@ -4,13 +4,17 @@ export const SearchLocationWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 `;
 
 export const LocationListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-height: 300px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -69,11 +73,17 @@ export const LocationDetail = styled.span`
 export const LoadingText = styled.p`
   ${({ theme }) => theme.typography.body16Medium};
   color: ${({ theme }) => theme.colors.gray[300]};
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const EmptyText = styled.p`
   ${({ theme }) => theme.typography.body15Medium};
   color: ${({ theme }) => theme.colors.gray[400]};
-  text-align: center;
-  padding: 24px 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

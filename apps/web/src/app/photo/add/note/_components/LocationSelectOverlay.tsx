@@ -36,7 +36,7 @@ const LocationSelectOverlay = ({
 
   return (
     <Overlay isOpen={isOpen} onClose={onClose}>
-      <Overlay.Content>
+      <Overlay.Content height={517}>
         <S.SearchLocationWrapper>
           <Input
             type={INPUT_TYPE.SEARCH}
