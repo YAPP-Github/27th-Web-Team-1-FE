@@ -62,7 +62,7 @@ export const usePhotoUpload = () => {
       const createResponse = await createPhoto({
         data: {
           url: presignedUrlResponse.objectUrl,
-          albumId: albumId ?? 0,
+          albumId,
           longitude: finalLocation.longitude,
           latitude: finalLocation.latitude,
           takenAt: photo.createdAt,
