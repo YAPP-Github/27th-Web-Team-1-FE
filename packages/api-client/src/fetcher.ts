@@ -196,6 +196,7 @@ export async function customFetcher<TResponse>(
     body: body ? JSON.stringify(body) : undefined,
     signal: config.signal,
     headers,
+    credentials: 'include',
     ...options,
   });
 
