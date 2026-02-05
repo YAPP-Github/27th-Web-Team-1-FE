@@ -16,7 +16,13 @@ interface UseMapMeParams {
  * - albums: useMapMeAlbums로 별도 관리됨
  * - photos/clusters: 이 훅에서 mapPins로 변환
  */
-export const useMapMe = ({ longitude, latitude, zoom, bbox, albumId }: UseMapMeParams) => {
+export const useMapMe = ({
+  longitude,
+  latitude,
+  zoom,
+  bbox,
+  albumId,
+}: UseMapMeParams) => {
   const isValid = !!(longitude !== undefined && latitude !== undefined && bbox);
   const roundedZoom = Math.round(zoom);
 
@@ -70,6 +76,7 @@ export const useMapMe = ({ longitude, latitude, zoom, bbox, albumId }: UseMapMeP
   return {
     address,
     mapPins,
+    totalHistoryCount: response.data?.totalHistoryCount,
     clusters: response.data?.clusters ?? [],
     photos: response.data?.photos ?? [],
     isLoading: response.isLoading,
