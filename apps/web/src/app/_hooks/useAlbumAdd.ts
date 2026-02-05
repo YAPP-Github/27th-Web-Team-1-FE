@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useCreate2, getGetSelectableAlbumsQueryKey } from '@repo/api-client';
+import { useCreate2 } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
+import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
 
 const useAlbumAdd = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
@@ -20,7 +21,7 @@ const useAlbumAdd = (onSuccess?: () => void) => {
       { data: { title: nextTitle } },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getGetSelectableAlbumsQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
           showToast('앨범이 생성되었어요');
           onSuccess?.();
         },
