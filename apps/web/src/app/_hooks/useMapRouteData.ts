@@ -13,6 +13,7 @@ import {
   type AlbumWithPhotosResponse,
   type LocationInfoResponse,
   type AlbumThumbnails,
+  type AlbumMapInfoResponse,
 } from '@repo/api-client';
 import {
   SHEET_CONTEXT_TYPE,
@@ -30,13 +31,9 @@ interface UseMapRouteDataReturn {
   albumList: AlbumThumbnails[];
   address: string;
   albumDetail: AlbumWithPhotosResponse | undefined | null;
-  albumMapInfo:
-    | {
-        centerLongitude?: number;
-        centerLatitude?: number;
-      }
-    | undefined;
+  albumMapInfo: AlbumMapInfoResponse | undefined;
   mapPins: ReturnType<typeof useMapMe>['mapPins'];
+  totalHistoryCount: number | undefined;
   clusterLocationData: LocationInfoResponse | undefined;
   clusterPhotosData:
     | {
@@ -68,7 +65,7 @@ export const useMapRouteData = ({
   });
 
   // 사진 핀 조회 (/map/me에서 photos/clusters 처리)
-  const { address, mapPins } = useMapMe({
+  const { address, mapPins, totalHistoryCount } = useMapMe({
     longitude: viewState?.longitude,
     latitude: viewState?.latitude,
     zoom: viewState?.zoom ?? DEFAULT_ZOOM,
@@ -117,6 +114,7 @@ export const useMapRouteData = ({
     albumDetail,
     albumMapInfo,
     mapPins,
+    totalHistoryCount,
     clusterLocationData,
     clusterPhotosData,
   };
