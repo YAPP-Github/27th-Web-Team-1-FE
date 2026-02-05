@@ -79,7 +79,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
               });
             }
           }}
-          mapStyle="mapbox://styles/hongju/cmkruslij000k01sfb7c48qju"
+          mapStyle="mapbox://styles/lokit1220/cml27lu9f000q01rbhwde42se"
         >
           <GeolocateControl
             ref={geolocateControlRef}
