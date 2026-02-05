@@ -24,9 +24,7 @@ import type {
   GetLocationInfoParams,
   GetPhotos1Params,
   HomeParams,
-  LoginRequest,
   PresignedUrlRequest,
-  RefreshTokenRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
   UpdatePhotoRequest,
@@ -42,7 +40,6 @@ import type {
   ClusterPhotosPageResponse,
   HomeResponse,
   IdResponse,
-  JwtTokenResponse,
   LocationInfoResponse,
   MapPhotosResponse,
   PhotoDetailResponse,
@@ -441,164 +438,6 @@ export const useGetPresignedUrl = <
   TContext
 > => {
   const mutationOptions = getGetPresignedUrlMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
- * Refresh Token으로 새로운 Access Token을 발급받습니다.
- * @summary 토큰 갱신
- */
-export const refresh = (
-  refreshTokenRequest: RefreshTokenRequest,
-  signal?: AbortSignal,
-) => {
-  return customFetcher<JwtTokenResponse>({
-    url: `/auth/refresh`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: refreshTokenRequest,
-    signal,
-  });
-};
-
-export const getRefreshMutationOptions = <
-  TError = ApiResponseErrorDetail | void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof refresh>>,
-    TError,
-    { data: RefreshTokenRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof refresh>>,
-  TError,
-  { data: RefreshTokenRequest },
-  TContext
-> => {
-  const mutationKey = ['refresh'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof refresh>>,
-    { data: RefreshTokenRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return refresh(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type RefreshMutationResult = NonNullable<Awaited<ReturnType<typeof refresh>>>;
-export type RefreshMutationBody = RefreshTokenRequest;
-export type RefreshMutationError = ApiResponseErrorDetail | void;
-
-/**
- * @summary 토큰 갱신
- */
-export const useRefresh = <
-  TError = ApiResponseErrorDetail | void,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof refresh>>,
-    TError,
-    { data: RefreshTokenRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof refresh>>,
-  TError,
-  { data: RefreshTokenRequest },
-  TContext
-> => {
-  const mutationOptions = getRefreshMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
- * 이메일과 이름으로 신규 사용자를 등록하고 개발환경 임시 인증용 헤더에 사용할 회원 ID를 발급합니다.
- * @summary 회원가입/로그인
- */
-export const login = (loginRequest: LoginRequest, signal?: AbortSignal) => {
-  return customFetcher<IdResponse | IdResponse>({
-    url: `/auth/login`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: loginRequest,
-    signal,
-  });
-};
-
-export const getLoginMutationOptions = <
-  TError = ApiResponseErrorDetail,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof login>>,
-    TError,
-    { data: LoginRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof login>>,
-  TError,
-  { data: LoginRequest },
-  TContext
-> => {
-  const mutationKey = ['login'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof login>>,
-    { data: LoginRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return login(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type LoginMutationResult = NonNullable<Awaited<ReturnType<typeof login>>>;
-export type LoginMutationBody = LoginRequest;
-export type LoginMutationError = ApiResponseErrorDetail;
-
-/**
- * @summary 회원가입/로그인
- */
-export const useLogin = <TError = ApiResponseErrorDetail, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof login>>,
-    TError,
-    { data: LoginRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof login>>,
-  TError,
-  { data: LoginRequest },
-  TContext
-> => {
-  const mutationOptions = getLoginMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -1354,11 +1193,11 @@ export function useGetAlbumMapInfo<
  * @summary 카카오 로그인 페이지로 리다이렉트
  */
 export const kakaoAuthorize = (signal?: AbortSignal) => {
-  return customFetcher<unknown>({ url: `/auth/kakao/authorize`, method: 'GET', signal });
+  return customFetcher<unknown>({ url: `/auth/kakao`, method: 'GET', signal });
 };
 
 export const getKakaoAuthorizeQueryKey = () => {
-  return [`/auth/kakao/authorize`] as const;
+  return [`/auth/kakao`] as const;
 };
 
 export const getKakaoAuthorizeQueryOptions = <
@@ -1538,40 +1377,6 @@ export const getGetPresignedUrlResponseMock = (
   ]),
   ...overrideResponse,
 });
-
-export const getRefreshResponseMock = (
-  overrideResponse: Partial<JwtTokenResponse> = {},
-): JwtTokenResponse => ({
-  accessToken: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  refreshToken: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getLoginResponseMock = (
-  overrideResponse: Partial<IdResponse | IdResponse> = {},
-): IdResponse | IdResponse =>
-  faker.helpers.arrayElement([
-    {
-      id: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        undefined,
-      ]),
-      ...overrideResponse,
-    },
-    {
-      id: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        undefined,
-      ]),
-      ...overrideResponse,
-    },
-  ]);
 
 export const getCreate1ResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
@@ -2101,63 +1906,6 @@ export const getGetPresignedUrlMockHandler = (
   );
 };
 
-export const getRefreshMockHandler = (
-  overrideResponse?:
-    | JwtTokenResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<JwtTokenResponse> | JwtTokenResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/auth/refresh',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getRefreshResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getLoginMockHandler = (
-  overrideResponse?:
-    | IdResponse
-    | IdResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse | IdResponse> | IdResponse | IdResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/auth/login',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getLoginResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
 export const getCreate1MockHandler = (
   overrideResponse?:
     | IdResponse
@@ -2438,7 +2186,7 @@ export const getKakaoAuthorizeMockHandler = (
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
-    '*/auth/kakao/authorize',
+    '*/auth/kakao',
     async (info) => {
       await delay(1000);
       if (typeof overrideResponse === 'function') {
@@ -2483,8 +2231,6 @@ export const getLokitAPIMock = () => [
   getDeleteMockHandler(),
   getCreateMockHandler(),
   getGetPresignedUrlMockHandler(),
-  getRefreshMockHandler(),
-  getLoginMockHandler(),
   getCreate1MockHandler(),
   getDelete1MockHandler(),
   getUpdateTitleMockHandler(),

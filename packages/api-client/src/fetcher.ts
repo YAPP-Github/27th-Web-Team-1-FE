@@ -50,16 +50,6 @@ export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
   authHeaderProvider = provider;
 };
 
-/**
- * 브라우저 쿠키에서 userId 읽기
- * SSR 환경에서는 null 반환
- */
-const getUserIdFromCookie = (): string | null => {
-  if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/lokit_user_id=(\d+)/);
-  return match ? match[1] : null;
-};
-
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 };
@@ -149,6 +139,19 @@ export function buildUrlWithQueryParams(
   return url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`;
 }
 
+// Token refresh 관련 변수 및 함수
+let isRefreshing = false;
+let refreshSubscribers: Array<() => void> = [];
+
+const subscribeTokenRefresh = (cb: () => void) => {
+  refreshSubscribers.push(cb);
+};
+
+const onRefreshed = () => {
+  refreshSubscribers.forEach((cb) => cb());
+  refreshSubscribers = [];
+};
+
 function mergeHeaders(...sources: (HeadersInit | undefined)[]): Headers {
   const merged = new Headers();
 
@@ -178,16 +181,11 @@ export async function customFetcher<TResponse>(
   const body = config.body ?? config.data;
   const headers = mergeHeaders(DEFAULT_HEADERS, config.headers, options.headers);
 
-  // Authorization 헤더 설정 (우선순위: 기존 헤더 > authHeaderProvider > 쿠키 userId)
+  // Authorization 헤더 설정 (authHeaderProvider 사용)
   if (!headers.has('Authorization')) {
     const authHeader = authHeaderProvider?.(config);
     if (authHeader) {
       headers.set('Authorization', authHeader);
-    } else {
-      const userId = getUserIdFromCookie();
-      if (userId) {
-        headers.set('Authorization', `Bearer ${userId}`);
-      }
     }
   }
 
@@ -196,8 +194,77 @@ export async function customFetcher<TResponse>(
     body: body ? JSON.stringify(body) : undefined,
     signal: config.signal,
     headers,
+    credentials: 'include',
     ...options,
   });
+
+  // 토큰 만료 시 자동 갱신 및 재시도
+  if (response.status === 401) {
+    // /auth/ 엔드포인트 자체는 갱신하지 않음
+    if (config.url.includes('/auth/')) {
+      let errorResponse: ApiErrorResponse;
+      try {
+        errorResponse = (await response.json()) as ApiErrorResponse;
+      } catch {
+        errorResponse = {
+          code: 401,
+          message: 'Unauthorized',
+          data: {
+            errorCode: 'UNAUTHORIZED',
+            detail: '',
+            instance: '',
+            errors: {},
+          },
+        };
+      }
+      const apiError = new ApiError(errorResponse);
+      captureApiError(apiError);
+      throw apiError;
+    }
+
+    // TODO: 이미 재시도한 요청이면 무한 루프 방지
+
+    // 이미 refresh 중인지 확인
+    if (isRefreshing) {
+      return new Promise<TResponse>((resolve, reject) => {
+        subscribeTokenRefresh(() => {
+          customFetcher<TResponse>(config, options).then(resolve).catch(reject);
+        });
+      });
+    }
+
+    isRefreshing = true;
+
+    try {
+      // Refresh API 호출 (refreshToken은 쿠키로 자동 전송)
+      const refreshResponse = await fetch(joinUrl('/auth/refresh', baseUrl), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!refreshResponse.ok) {
+        throw new Error('Token refresh failed');
+      }
+
+      // 새 토큰이 쿠키에 설정됨
+      isRefreshing = false;
+      onRefreshed();
+
+      // 원래 요청 재시도
+      return customFetcher<TResponse>(config, options);
+    } catch (error) {
+      isRefreshing = false;
+      refreshSubscribers = [];
+
+      // Refresh 실패 시 로그인 페이지로
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+
+      throw error;
+    }
+  }
 
   if (!response.ok) {
     let errorResponse: ApiErrorResponse;
