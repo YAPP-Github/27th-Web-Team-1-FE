@@ -6,5 +6,5 @@ export const CAMERA = {
   /** 이미지 MIME 타입 */
   IMAGE_TYPE: 'image/jpeg',
   /** JPEG 이미지 품질 (0.0 ~ 1.0) */
-  JPEG_QUALITY: 0.9,
+  JPEG_QUALITY: 0.75,
 } as const;
