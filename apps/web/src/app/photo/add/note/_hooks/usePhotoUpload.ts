@@ -1,7 +1,8 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useGetPresignedUrl, useCreate } from '@repo/api-client';
+import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
 import type { SelectedPhoto, PhotoLocation } from '../../../add/_types/photo';
 
 interface UploadPhotoParams {
@@ -17,6 +18,7 @@ const dataUrlToBlob = async (dataUrl: string): Promise<Blob> => {
 };
 
 export const usePhotoUpload = () => {
+  const queryClient = useQueryClient();
   const { mutateAsync: getPresignedUrl } = useGetPresignedUrl();
   const { mutateAsync: createPhoto } = useCreate();
 
@@ -71,6 +73,9 @@ export const usePhotoUpload = () => {
       });
 
       return createResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
     },
   });
 };
