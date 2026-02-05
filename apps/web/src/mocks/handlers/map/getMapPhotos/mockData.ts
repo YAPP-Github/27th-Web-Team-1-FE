@@ -14,7 +14,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1018/300/300',
     latitude: center.latitude + 0.003,
     longitude: center.longitude + 0.008,
-    date: '2024.01.15',
+    takenAt: '2024-01-15T00:00:00',
   },
   {
     id: 102,
@@ -22,7 +22,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1020/300/300',
     latitude: center.latitude + 0.006,
     longitude: center.longitude + 0.004,
-    date: '2024.01.16',
+    takenAt: '2024-01-16T00:00:00',
   },
   {
     id: 103,
@@ -30,7 +30,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1024/300/300',
     latitude: center.latitude - 0.004,
     longitude: center.longitude + 0.002,
-    date: '2024.01.17',
+    takenAt: '2024-01-17T00:00:00',
   },
   {
     id: 104,
@@ -38,7 +38,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1027/300/300',
     latitude: center.latitude - 0.002,
     longitude: center.longitude - 0.006,
-    date: '2024.01.18',
+    takenAt: '2024-01-18T00:00:00',
   },
   {
     id: 105,
@@ -46,7 +46,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1035/300/300',
     latitude: center.latitude + 0.004,
     longitude: center.longitude - 0.004,
-    date: '2024.01.19',
+    takenAt: '2024-01-19T00:00:00',
   },
   // 앨범 2: 카페 투어 (id: 201-204)
   {
@@ -55,7 +55,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1043/300/300',
     latitude: center.latitude + 0.012,
     longitude: center.longitude - 0.002,
-    date: '2024.02.01',
+    takenAt: '2024-02-01T00:00:00',
   },
   {
     id: 202,
@@ -63,7 +63,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1050/300/300',
     latitude: center.latitude + 0.009,
     longitude: center.longitude - 0.007,
-    date: '2024.02.02',
+    takenAt: '2024-02-02T00:00:00',
   },
   {
     id: 203,
@@ -71,7 +71,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1052/300/300',
     latitude: center.latitude + 0.007,
     longitude: center.longitude - 0.011,
-    date: '2024.02.03',
+    takenAt: '2024-02-03T00:00:00',
   },
   {
     id: 204,
@@ -79,7 +79,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1060/300/300',
     latitude: center.latitude + 0.011,
     longitude: center.longitude - 0.009,
-    date: '2024.02.04',
+    takenAt: '2024-02-04T00:00:00',
   },
   // 앨범 3: 야경 산책 (id: 301-306)
   {
@@ -88,7 +88,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1063/300/300',
     latitude: center.latitude - 0.008,
     longitude: center.longitude + 0.01,
-    date: '2024.03.01',
+    takenAt: '2024-03-01T00:00:00',
   },
   {
     id: 302,
@@ -96,7 +96,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1067/300/300',
     latitude: center.latitude - 0.01,
     longitude: center.longitude + 0.014,
-    date: '2024.03.02',
+    takenAt: '2024-03-02T00:00:00',
   },
   {
     id: 303,
@@ -104,7 +104,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1070/300/300',
     latitude: center.latitude - 0.012,
     longitude: center.longitude + 0.008,
-    date: '2024.03.03',
+    takenAt: '2024-03-03T00:00:00',
   },
   {
     id: 304,
@@ -112,7 +112,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1074/300/300',
     latitude: center.latitude - 0.006,
     longitude: center.longitude + 0.004,
-    date: '2024.03.04',
+    takenAt: '2024-03-04T00:00:00',
   },
   {
     id: 305,
@@ -120,7 +120,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1080/300/300',
     latitude: center.latitude - 0.009,
     longitude: center.longitude + 0.001,
-    date: '2024.03.05',
+    takenAt: '2024-03-05T00:00:00',
   },
   {
     id: 306,
@@ -128,7 +128,7 @@ export const allMapPhotos: MockMapPhoto[] = [
     thumbnailUrl: 'https://picsum.photos/id/1084/300/300',
     latitude: center.latitude - 0.004,
     longitude: center.longitude + 0.013,
-    date: '2024.03.06',
+    takenAt: '2024-03-06T00:00:00',
   },
 ];
 

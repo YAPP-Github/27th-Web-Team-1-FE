@@ -14,7 +14,7 @@ export interface PhotoDetailResponse {
   id?: number;
   /** 사진 URL */
   url?: string;
-  /** 촬영일 (yyyy.MM.dd 형식) */
+  /** 촬영일시 (ISO 8601 형식) */
   takenAt?: string;
   /** 앨범명 */
   albumName?: string;

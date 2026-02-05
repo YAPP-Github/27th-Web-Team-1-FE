@@ -14,10 +14,18 @@ export interface ClusterPhotoResponse {
   id?: number;
   /** 사진 URL */
   url?: string;
-  /** 경도 */
-  longitude?: number;
-  /** 위도 */
-  latitude?: number;
-  /** 촬영일 (yyyy.MM.dd 형식) */
-  date?: string;
+  /**
+   * 사진 경도
+   * @minimum 124
+   * @maximum 132
+   */
+  longitude: number;
+  /**
+   * 사진 위도
+   * @minimum 33
+   * @maximum 39
+   */
+  latitude: number;
+  /** 촬영일시 (ISO 8601 형식) */
+  takenAt?: string;
 }

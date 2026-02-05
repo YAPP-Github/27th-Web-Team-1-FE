@@ -23,6 +23,7 @@ import type {
   CreatePhotoRequest,
   GetClusterPhotosParams,
   GetLocationInfoParams,
+  GetMeParams,
   GetPhotos1Params,
   HomeParams,
   JoinCoupleRequest,
@@ -43,6 +44,7 @@ import type {
   HomeResponse,
   IdResponse,
   LocationInfoResponse,
+  MapMeResponse,
   MapPhotosResponse,
   PhotoDetailResponse,
   PhotoListResponse,
@@ -990,7 +992,7 @@ export function useSearchPlaces<
  * 
             줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
 
-            - **줌 레벨 < 16**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
+            - **줌 레벨 < 15**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
             - clusterId: 줌 레벨 + 그리드 셀 인덱스 (예: z14_130234_38456)
             - count: 클러스터 내 사진 개수
             - thumbnailUrl: 클러스터 내 가장 최근 생성된 사진의 URL
@@ -1052,6 +1054,70 @@ export function useGetPhotos1<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetPhotos1QueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * 
+            홈 정보와 지도 사진을 한 번에 조회합니다.
+            
+            - 위치 정보, 앨범 목록, 바운딩 박스 (map/home 응답)
+            - 줌 레벨과 바운딩 박스 기반 사진/클러스터 (map/photos 응답)
+            - 두 API를 하나로 통합하여 네트워크 요청을 줄입니다.
+        
+ * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
+ */
+export const getMe = (params: GetMeParams, signal?: AbortSignal) => {
+  return customFetcher<MapMeResponse>({ url: `/map/me`, method: 'GET', params, signal });
+};
+
+export const getGetMeQueryKey = (params?: GetMeParams) => {
+  return [`/map/me`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMe>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetMeParams,
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData> },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({ signal }) =>
+    getMe(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMe>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>;
+export type GetMeQueryError = ApiResponseErrorDetail;
+
+/**
+ * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
+ */
+
+export function useGetMe<
+  TData = Awaited<ReturnType<typeof getMe>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetMeParams,
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData> },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMeQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1490,7 +1556,7 @@ export const getGetPhotoDetailResponseMock = (
     undefined,
   ]),
   takenAt: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
     undefined,
   ]),
   albumName: faker.helpers.arrayElement([
@@ -1678,14 +1744,8 @@ export const getSearchPlacesResponseMock = (
           faker.string.alpha({ length: { min: 10, max: 20 } }),
           undefined,
         ]),
-        longitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        latitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
         category: faker.helpers.arrayElement([
           faker.string.alpha({ length: { min: 10, max: 20 } }),
           undefined,
@@ -1715,14 +1775,8 @@ export const getGetPhotos1ResponseMock = (
           faker.string.alpha({ length: { min: 10, max: 20 } }),
           undefined,
         ]),
-        longitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        latitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
       }),
     ),
     undefined,
@@ -1738,16 +1792,130 @@ export const getGetPhotos1ResponseMock = (
           faker.string.alpha({ length: { min: 10, max: 20 } }),
           undefined,
         ]),
-        longitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+        takenAt: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
           undefined,
         ]),
-        latitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetMeResponseMock = (
+  overrideResponse: Partial<MapMeResponse> = {},
+): MapMeResponse => ({
+  location: faker.helpers.arrayElement([
+    {
+      address: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      roadName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      placeName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      regionName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  boundingBox: faker.helpers.arrayElement([
+    {
+      west: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      south: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      east: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      north: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  totalHistoryCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  albums: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
           undefined,
         ]),
-        date: faker.helpers.arrayElement([
+        title: faker.helpers.arrayElement([
           faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        photoCount: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrls: faker.helpers.arrayElement([
+          Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1,
+          ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+          undefined,
+        ]),
+      }),
+    ),
+    undefined,
+  ]),
+  clusters: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        clusterId: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        count: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+      }),
+    ),
+    undefined,
+  ]),
+  photos: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+        takenAt: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
           undefined,
         ]),
       }),
@@ -1867,16 +2035,10 @@ export const getGetClusterPhotosResponseMock = (
           faker.string.alpha({ length: { min: 10, max: 20 } }),
           undefined,
         ]),
-        longitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        latitude: faker.helpers.arrayElement([
-          faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-          undefined,
-        ]),
-        date: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+        takenAt: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
           undefined,
         ]),
       }),
@@ -2317,6 +2479,34 @@ export const getGetPhotos1MockHandler = (
   );
 };
 
+export const getGetMeMockHandler = (
+  overrideResponse?:
+    | MapMeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<MapMeResponse> | MapMeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/me',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetMeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
 export const getGetLocationInfoMockHandler = (
   overrideResponse?:
     | LocationInfoResponse
@@ -2491,6 +2681,7 @@ export const getLokitAPIMock = () => [
   getGetPhotosMockHandler(),
   getSearchPlacesMockHandler(),
   getGetPhotos1MockHandler(),
+  getGetMeMockHandler(),
   getGetLocationInfoMockHandler(),
   getHomeMockHandler(),
   getGetClusterPhotosMockHandler(),

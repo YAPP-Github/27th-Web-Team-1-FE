@@ -1,6 +1,9 @@
 export const API_URL = {
   AUTH: {
     LOGIN: '/auth/login',
+    KAKAO: '/auth/kakao',
+    REFRESH: '/auth/refresh',
+    LOGOUT: '/auth/logout',
   },
   ALBUMS: {
     SELECTABLE: '/albums/selectable',

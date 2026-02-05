@@ -16,10 +16,18 @@ export interface PlaceResponse {
   address?: string;
   /** 도로명 주소 */
   roadAddress?: string;
-  /** 경도 */
-  longitude?: number;
-  /** 위도 */
-  latitude?: number;
+  /**
+   * 클러스터 중심 경도
+   * @minimum 124
+   * @maximum 132
+   */
+  longitude: number;
+  /**
+   * 클러스터 중심 위도
+   * @minimum 33
+   * @maximum 39
+   */
+  latitude: number;
   /** 카테고리 */
   category?: string;
 }

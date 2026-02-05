@@ -16,8 +16,16 @@ export interface ClusterResponse {
   count?: number;
   /** 대표 썸네일 URL (가장 최근 생성된 사진) */
   thumbnailUrl?: string;
-  /** 클러스터 중심 경도 */
-  longitude?: number;
-  /** 클러스터 중심 위도 */
-  latitude?: number;
+  /**
+   * 클러스터 중심 경도
+   * @minimum 124
+   * @maximum 132
+   */
+  longitude: number;
+  /**
+   * 클러스터 중심 위도
+   * @minimum 33
+   * @maximum 39
+   */
+  latitude: number;
 }

@@ -23,16 +23,17 @@ const ClusterDetail = ({ clusterId }: ClusterDetailProps) => {
 
     // 날짜순으로 정렬 (최신순)
     const sortedPhotos = [...data.photos].sort((a, b) => {
-      const dateA = a.date ? new Date(a.date.replace(/\./g, '-')).getTime() : 0;
-      const dateB = b.date ? new Date(b.date.replace(/\./g, '-')).getTime() : 0;
+      const dateA = a.takenAt ? new Date(a.takenAt).getTime() : 0;
+      const dateB = b.takenAt ? new Date(b.takenAt).getTime() : 0;
       return dateB - dateA;
     });
 
     // 각 날짜의 첫 번째 사진에만 showDate: true 설정
     const seenDates = new Set<string>();
     return sortedPhotos.map((photo) => {
-      if (photo.date && !seenDates.has(photo.date)) {
-        seenDates.add(photo.date);
+      const dateKey = photo.takenAt?.slice(0, 10);
+      if (dateKey && !seenDates.has(dateKey)) {
+        seenDates.add(dateKey);
         return { ...photo, showDate: true };
       }
       return { ...photo, showDate: false };
@@ -53,7 +54,7 @@ const ClusterDetail = ({ clusterId }: ClusterDetailProps) => {
           key={photo.id}
           src={photo.url ?? ''}
           alt={`cluster-photo-${photo.id}`}
-          date={(photo as any).showDate ? photo.date : undefined}
+          date={(photo as any).showDate ? photo.takenAt : undefined}
           onClick={() => handlePhotoClick(photo.id ?? 0)}
         />
       ))}
