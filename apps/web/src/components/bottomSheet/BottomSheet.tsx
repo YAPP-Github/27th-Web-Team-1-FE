@@ -76,30 +76,8 @@ const BottomSheet = ({
 
   const startY = useRef(0);
   const startHeight = useRef(0);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
-
-    startY.current = e.clientY;
-    startHeight.current = height;
-    setIsDragging(true);
-  };
-
-  const handleContentPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!contentRef.current) return;
-
-    const isAtTop = contentRef.current.scrollTop === 0;
-
-    const canDrag =
-      !contentRef.current.scrollHeight ||
-      (e.clientY > contentRef.current.getBoundingClientRect().top && isAtTop);
-
-    if (!canDrag && contentRef.current.scrollHeight > contentRef.current.clientHeight) {
-      return;
-    }
-
     e.stopPropagation();
     e.currentTarget.setPointerCapture(e.pointerId);
 
@@ -193,7 +171,6 @@ const BottomSheet = ({
         </S.HandleBar>
 
         <S.Content
-          ref={contentRef}
           $noPadding={
             context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ||
             context.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL
@@ -202,10 +179,6 @@ const BottomSheet = ({
             height >= (typeof window !== 'undefined' ? window.innerHeight : 800) - 10
           }
           $isHomeContext={context.type === SHEET_CONTEXT_TYPE.HOME}
-          onPointerDown={handleContentPointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
         >
           <BottomSheetContent
             context={context}

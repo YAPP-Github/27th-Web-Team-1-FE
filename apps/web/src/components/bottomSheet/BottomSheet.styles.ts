@@ -57,7 +57,6 @@ export const Content = styled.div<{ $noPadding?: boolean; $isMaxHeight?: boolean
   flex: 1;
   overflow-x: ${({ $isHomeContext }) => ($isHomeContext ? 'visible' : 'hidden')};
   overflow-y: ${({ $isMaxHeight }) => ($isMaxHeight ? 'auto' : 'hidden')};
-  touch-action: none;
 `;
 
 export const FloatingButtonWrapper = styled.div`
