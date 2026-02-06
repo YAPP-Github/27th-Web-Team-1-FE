@@ -117,9 +117,9 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         onSuccess: () => {
           showToast('사진이 추가되었습니다');
           if (selectedAlbum) {
-            router.push(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
+            router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
           } else {
-            router.push(ROUTES.HOME);
+            router.replace(ROUTES.HOME);
           }
         },
         onError: (error) => {
