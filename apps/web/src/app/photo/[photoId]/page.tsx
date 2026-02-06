@@ -5,6 +5,7 @@ import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import { formatDate } from '@/utils/formatDate';
 import { useGetPhotoDetail, getGetPhotoDetailQueryOptions } from '@repo/api-client';
 import { AnimatePresence } from 'framer-motion';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -171,7 +172,7 @@ export default function PhotoViewPage() {
 
             <S.ContainerB>
               <Chip
-                text={photoDetail.takenAt || '날짜 없음'}
+                text={formatDate(currentDisplayPhotoDetail?.takenAt)}
                 variant="white"
                 size="small"
                 icon={<DateIcon width={14} height={14} />}
