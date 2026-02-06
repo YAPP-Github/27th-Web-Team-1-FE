@@ -1,4 +1,4 @@
-import { useHome, type AlbumThumbnails } from '@repo/api-client';
+import { useGetMe, type AlbumThumbnails } from '@repo/api-client';
 import { useMemo, useRef } from 'react';
 
 interface UseMapHomeAlbumsParams {
@@ -10,9 +10,10 @@ export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams
   const isValid = longitude !== undefined && latitude !== undefined;
   const prevAddressRef = useRef<string>('');
 
-  const response = useHome({
+  const response = useGetMe({
     longitude: longitude ?? 0,
     latitude: latitude ?? 0,
+    zoom: 0,
   });
 
   const albumList: AlbumThumbnails[] = useMemo(() => {
