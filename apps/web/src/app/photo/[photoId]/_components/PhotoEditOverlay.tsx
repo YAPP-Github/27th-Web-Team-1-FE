@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useGetPhotoDetail } from '@repo/api-client';
@@ -67,6 +68,7 @@ export default function PhotoEditOverlay({
 
   const {
     selectedLocation,
+    setSelectedLocation,
     tempSelectedLocationId,
     setTempSelectedLocationId,
     searchQuery: locationSearchQuery,
@@ -78,6 +80,21 @@ export default function PhotoEditOverlay({
     closeModal: handleLocationModalClose,
     submitLocation: handleLocationSubmit,
   } = useLocationModal();
+
+  // photoDetail이 로드되면 기존 좌표값으로 초기화
+  useEffect(() => {
+    if (
+      photoDetail?.latitude != null &&
+      photoDetail?.longitude != null &&
+      !selectedLocation
+    ) {
+      setSelectedLocation({
+        latitude: photoDetail.latitude,
+        longitude: photoDetail.longitude,
+        address: photoDetail.address,
+      });
+    }
+  }, [photoDetail, selectedLocation, setSelectedLocation]);
 
   const handleMapPreview = () => {
     if (!photoDetail || !selectedLocation) return;

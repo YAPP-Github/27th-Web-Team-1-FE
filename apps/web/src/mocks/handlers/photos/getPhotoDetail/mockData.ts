@@ -10,6 +10,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 영등포구 여의도동',
     description: '한강 라이딩 시작!',
+    latitude: 37.5219,
+    longitude: 126.9245,
   },
   102: {
     id: 102,
@@ -19,6 +21,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 마포구 망원동',
     description: '망원한강공원 도착',
+    latitude: 37.5566,
+    longitude: 126.9015,
   },
   103: {
     id: 103,
@@ -28,6 +32,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 강서구 마곡동',
     description: '잠시 휴식',
+    latitude: 37.5665,
+    longitude: 126.8312,
   },
   104: {
     id: 104,
@@ -37,6 +43,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 양천구 목동',
     description: '노을이 예뻤어요',
+    latitude: 37.5262,
+    longitude: 126.872,
   },
   105: {
     id: 105,
@@ -46,6 +54,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 영등포구 당산동',
     description: '라이딩 완료!',
+    latitude: 37.5346,
+    longitude: 126.9013,
   },
   // 앨범 2: 카페 투어 (ID 201-205)
   201: {
@@ -56,6 +66,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 강남구 신사동',
     description: '첫 번째 카페',
+    latitude: 37.516,
+    longitude: 127.0208,
   },
   202: {
     id: 202,
@@ -65,6 +77,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 강남구 청담동',
     description: '두 번째 카페에서',
+    latitude: 37.5253,
+    longitude: 127.0471,
   },
   203: {
     id: 203,
@@ -74,6 +88,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 서초구 반포동',
     description: '디저트 맛집!',
+    latitude: 37.5066,
+    longitude: 127.0063,
   },
   204: {
     id: 204,
@@ -83,6 +99,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 용산구 이태원동',
     description: '분위기 좋은 곳',
+    latitude: 37.5346,
+    longitude: 126.9952,
   },
   205: {
     id: 205,
@@ -92,6 +110,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 종로구 삼청동',
     description: '마지막 카페',
+    latitude: 37.5879,
+    longitude: 126.9817,
   },
   // 앨범 3: 야경 산책 (ID 301-306)
   301: {
@@ -102,6 +122,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 중구 남산동',
     description: '남산타워 야경',
+    latitude: 37.5511,
+    longitude: 126.9882,
   },
   302: {
     id: 302,
@@ -111,6 +133,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 중구 명동',
     description: '명동 거리',
+    latitude: 37.5636,
+    longitude: 126.9859,
   },
   303: {
     id: 303,
@@ -120,6 +144,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 중구 을지로',
     description: '을지로 골목',
+    latitude: 37.5665,
+    longitude: 126.9895,
   },
   304: {
     id: 304,
@@ -129,6 +155,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 종로구 광화문',
     description: '광화문 야경',
+    latitude: 37.576,
+    longitude: 126.9769,
   },
   305: {
     id: 305,
@@ -138,6 +166,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 영등포구 여의도동',
     description: '여의도 불꽃',
+    latitude: 37.5219,
+    longitude: 126.9245,
   },
   306: {
     id: 306,
@@ -147,6 +177,8 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     uploaderName: '김민수',
     address: '서울특별시 송파구 잠실동',
     description: '롯데타워 야경',
+    latitude: 37.5145,
+    longitude: 127.101,
   },
 };
 

@@ -7,8 +7,22 @@ import { useDebounce } from '@/hooks/useDebounce';
 
 const DEBOUNCE_DELAY = 500;
 
-const useLocationModal = () => {
-  const [selectedLocation, setSelectedLocation] = useState<PlaceResponse | null>(null);
+interface UseLocationModalOptions {
+  initialLocation?: Pick<PlaceResponse, 'latitude' | 'longitude' | 'address'> | null;
+}
+
+const useLocationModal = (options?: UseLocationModalOptions) => {
+  const initialLocationState: PlaceResponse | null = options?.initialLocation
+    ? {
+        latitude: options.initialLocation.latitude,
+        longitude: options.initialLocation.longitude,
+        address: options.initialLocation.address,
+      }
+    : null;
+
+  const [selectedLocation, setSelectedLocation] = useState<PlaceResponse | null>(
+    initialLocationState,
+  );
   const [tempSelectedLocationId, setTempSelectedLocationId] = useState<string | null>(
     null,
   );
@@ -53,6 +67,7 @@ const useLocationModal = () => {
 
   return {
     selectedLocation,
+    setSelectedLocation,
     tempSelectedLocationId,
     setTempSelectedLocationId,
     searchQuery,
