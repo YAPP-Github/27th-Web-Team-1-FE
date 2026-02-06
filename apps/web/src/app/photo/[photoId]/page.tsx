@@ -44,7 +44,12 @@ export default function PhotoViewPage() {
     handlePrevPhoto,
     handleNextPhoto,
     handleThumbnailClick,
-  } = usePhotoSlider({ photos, initialPhotoId: photoId });
+  } = usePhotoSlider({
+    photos,
+    initialPhotoId: photoId,
+    albumIdFromQuery,
+    clusterIdFromQuery,
+  });
 
   // 슬라이더에서 현재 선택된 사진의 상세 정보 조회
   const currentPhotoIdForDetail = currentPhoto?.id ?? photoId;
