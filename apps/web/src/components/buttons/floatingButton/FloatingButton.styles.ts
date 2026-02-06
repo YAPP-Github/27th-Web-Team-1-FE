@@ -6,7 +6,7 @@ export const Wrapper = styled.button`
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 16px;
+  padding: 6px 14px;
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
   background: ${({ theme }) => theme.colors.blueWhite.bg5};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[25]};
@@ -20,7 +20,7 @@ export const Wrapper = styled.button`
 
 export const TextContainer = styled.p`
   margin: 0;
-  ${({ theme }) => theme.typography.body16Semibold}
+  ${({ theme }) => theme.typography.body14Semibold}
   color: ${({ theme }) => theme.colors.text.primary};
   justify-content: center;
   align-items: center;
