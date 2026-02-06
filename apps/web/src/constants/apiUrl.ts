@@ -14,6 +14,8 @@ export const API_URL = {
   },
   MAP: {
     HOME: '/map/home',
+    ME: '/map/me',
+    ALBUMS: (albumId: number | string) => `/map/albums/${albumId}`,
     PLACES_SEARCH: '/map/places/search',
     LOCATION: '/map/location',
   },
