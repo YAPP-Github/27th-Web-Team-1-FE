@@ -37,6 +37,7 @@ export * from './joinByInviteCodeParams';
 export * from './joinCoupleRequest';
 export * from './joinWorkspaceRequest';
 export * from './jwtTokenResponse';
+export * from './kakaoAuthorizeParams';
 export * from './kakaoCallbackParams';
 export * from './kakaoLoginRequest';
 export * from './locationInfoResponse';

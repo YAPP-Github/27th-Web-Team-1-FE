@@ -28,4 +28,6 @@ export interface ClusterPhotoResponse {
   latitude: number;
   /** 촬영일시 (ISO 8601 형식) */
   takenAt?: string;
+  /** 주소 */
+  address?: string;
 }

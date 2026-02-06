@@ -17,9 +17,9 @@ export interface CreatePhotoRequest {
   url: string;
   /** 앨범 ID */
   albumId?: number;
-  /** 경도 */
+  /** 사진 경도 */
   longitude: number;
-  /** 위도 */
+  /** 사진 위도 */
   latitude: number;
   /** 촬영일시 (EXIF 데이터) */
   takenAt: string;

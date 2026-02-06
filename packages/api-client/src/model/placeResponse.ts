@@ -12,7 +12,7 @@
 export interface PlaceResponse {
   /** 장소명 */
   placeName?: string;
-  /** 지번 주소 */
+  /** 주소 */
   address?: string;
   /** 도로명 주소 */
   roadAddress?: string;

@@ -10,11 +10,8 @@
  * Presigned URL 요청
  */
 export interface PresignedUrlRequest {
-  /**
-   * 파일명
-   * @minLength 1
-   */
-  fileName: string;
+  /** 파일명(deprecated, nullable) */
+  fileName?: string;
   /**
    * 파일 MIME 타입
    * @minLength 1

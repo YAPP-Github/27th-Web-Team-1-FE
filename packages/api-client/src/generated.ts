@@ -24,12 +24,12 @@ import type {
   ApiResponseErrorDetail,
   CreateCoupleRequest,
   CreatePhotoRequest,
-  GetClusterPhotosParams,
   GetLocationInfoParams,
   GetMeParams,
   GetPhotos1Params,
   HomeParams,
   JoinCoupleRequest,
+  KakaoAuthorizeParams,
   PresignedUrlRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
@@ -51,7 +51,7 @@ import type {
 
 import type {
   AlbumMapInfoResponse,
-  ClusterPhotosPageResponse,
+  ClusterPhotoResponse,
   HomeResponse,
   IdResponse,
   LocationInfoResponse,
@@ -965,7 +965,7 @@ export function useGetPhotos1<TData = Awaited<ReturnType<typeof getPhotos1>>, TE
 /**
  * 
             홈 정보와 지도 사진을 한 번에 조회합니다.
-            
+
             - 위치 정보, 앨범 목록, 바운딩 박스 (map/home 응답)
             - 줌 레벨과 바운딩 박스 기반 사진/클러스터 (map/photos 응답)
             - 두 API를 하나로 통합하여 네트워크 요청을 줄입니다.
@@ -1199,14 +1199,12 @@ export function useHome<TData = Awaited<ReturnType<typeof home>>, TError = ApiRe
  */
 export const getClusterPhotos = (
     clusterId: string,
-    params?: GetClusterPhotosParams,
  signal?: AbortSignal
 ) => {
       
       
-      return customFetcher<ClusterPhotosPageResponse>(
-      {url: `/map/clusters/${clusterId}/photos`, method: 'GET',
-        params, signal
+      return customFetcher<ClusterPhotoResponse>(
+      {url: `/map/clusters/${clusterId}/photos`, method: 'GET', signal
     },
       );
     }
@@ -1214,25 +1212,23 @@ export const getClusterPhotos = (
 
 
 
-export const getGetClusterPhotosQueryKey = (clusterId?: string,
-    params?: GetClusterPhotosParams,) => {
+export const getGetClusterPhotosQueryKey = (clusterId?: string,) => {
     return [
-    `/map/clusters/${clusterId}/photos`, ...(params ? [params]: [])
+    `/map/clusters/${clusterId}/photos`
     ] as const;
     }
 
     
-export const getGetClusterPhotosQueryOptions = <TData = Awaited<ReturnType<typeof getClusterPhotos>>, TError = ApiResponseErrorDetail>(clusterId: string,
-    params?: GetClusterPhotosParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
+export const getGetClusterPhotosQueryOptions = <TData = Awaited<ReturnType<typeof getClusterPhotos>>, TError = ApiResponseErrorDetail>(clusterId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetClusterPhotosQueryKey(clusterId,params);
+  const queryKey =  queryOptions?.queryKey ?? getGetClusterPhotosQueryKey(clusterId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClusterPhotos>>> = ({ signal }) => getClusterPhotos(clusterId,params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClusterPhotos>>> = ({ signal }) => getClusterPhotos(clusterId, signal);
 
       
 
@@ -1250,12 +1246,11 @@ export type GetClusterPhotosQueryError = ApiResponseErrorDetail
  */
 
 export function useGetClusterPhotos<TData = Awaited<ReturnType<typeof getClusterPhotos>>, TError = ApiResponseErrorDetail>(
- clusterId: string,
-    params?: GetClusterPhotosParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
+ clusterId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
   
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetClusterPhotosQueryOptions(clusterId,params,options)
+  const queryOptions = getGetClusterPhotosQueryOptions(clusterId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1344,17 +1339,18 @@ export function useGetAlbumMapInfo<TData = Awaited<ReturnType<typeof getAlbumMap
 
 
 /**
- * 카카오 OAuth 인증 페이지로 리다이렉트합니다. 프론트엔드에서 이 URL로 이동하면 카카오 로그인 화면이 표시됩니다.
+ * 카카오 OAuth 인증 페이지로 리다이렉트합니다. redirect 파라미터로 로그인 후 돌아갈 프론트엔드 URL을 지정할 수 있습니다.
  * @summary 카카오 로그인 페이지로 리다이렉트
  */
 export const kakaoAuthorize = (
-    
+    params?: KakaoAuthorizeParams,
  signal?: AbortSignal
 ) => {
       
       
       return customFetcher<unknown>(
-      {url: `/auth/kakao`, method: 'GET', signal
+      {url: `/auth/kakao`, method: 'GET',
+        params, signal
     },
       );
     }
@@ -1362,23 +1358,23 @@ export const kakaoAuthorize = (
 
 
 
-export const getKakaoAuthorizeQueryKey = () => {
+export const getKakaoAuthorizeQueryKey = (params?: KakaoAuthorizeParams,) => {
     return [
-    `/auth/kakao`
+    `/auth/kakao`, ...(params ? [params]: [])
     ] as const;
     }
 
     
-export const getKakaoAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof kakaoAuthorize>>, TError = ApiResponseErrorDetail>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
+export const getKakaoAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof kakaoAuthorize>>, TError = ApiResponseErrorDetail>(params?: KakaoAuthorizeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getKakaoAuthorizeQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getKakaoAuthorizeQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof kakaoAuthorize>>> = ({ signal }) => kakaoAuthorize(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof kakaoAuthorize>>> = ({ signal }) => kakaoAuthorize(params, signal);
 
       
 
@@ -1396,11 +1392,11 @@ export type KakaoAuthorizeQueryError = ApiResponseErrorDetail
  */
 
 export function useKakaoAuthorize<TData = Awaited<ReturnType<typeof kakaoAuthorize>>, TError = ApiResponseErrorDetail>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
+ params?: KakaoAuthorizeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
   
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getKakaoAuthorizeQueryOptions(options)
+  const queryOptions = getKakaoAuthorizeQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1480,6 +1476,132 @@ export function useGetSelectableAlbums<TData = Awaited<ReturnType<typeof getSele
 }
 
 
+
+
+
+export const deleteUser = (
+    email: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<unknown>(
+      {url: `/admin/delete/${email}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getDeleteUserQueryKey = (email?: string,) => {
+    return [
+    `/admin/delete/${email}`
+    ] as const;
+    }
+
+    
+export const getDeleteUserQueryOptions = <TData = Awaited<ReturnType<typeof deleteUser>>, TError = ApiResponseErrorDetail>(email: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof deleteUser>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeleteUserQueryKey(email);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteUser>>> = ({ signal }) => deleteUser(email, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(email), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deleteUser>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type DeleteUserQueryResult = NonNullable<Awaited<ReturnType<typeof deleteUser>>>
+export type DeleteUserQueryError = ApiResponseErrorDetail
+
+
+
+export function useDeleteUser<TData = Awaited<ReturnType<typeof deleteUser>>, TError = ApiResponseErrorDetail>(
+ email: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof deleteUser>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getDeleteUserQueryOptions(email,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+
+export const clearAllCaches = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<unknown>(
+      {url: `/admin/cache/clear`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getClearAllCachesQueryKey = () => {
+    return [
+    `/admin/cache/clear`
+    ] as const;
+    }
+
+    
+export const getClearAllCachesQueryOptions = <TData = Awaited<ReturnType<typeof clearAllCaches>>, TError = ApiResponseErrorDetail>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError, TData>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getClearAllCachesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof clearAllCaches>>> = ({ signal }) => clearAllCaches(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ClearAllCachesQueryResult = NonNullable<Awaited<ReturnType<typeof clearAllCaches>>>
+export type ClearAllCachesQueryError = ApiResponseErrorDetail
+
+
+
+export function useClearAllCaches<TData = Awaited<ReturnType<typeof clearAllCaches>>, TError = ApiResponseErrorDetail>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError, TData>, }
+  
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getClearAllCachesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
 export const getGetPhotoDetailResponseMock = (overrideResponse: Partial< PhotoDetailResponse > = {}): PhotoDetailResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), albumName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 export const getUpdateResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
@@ -1508,7 +1630,7 @@ export const getGetLocationInfoResponseMock = (overrideResponse: Partial< Locati
 
 export const getHomeResponseMock = (overrideResponse: Partial< HomeResponse > = {}): HomeResponse => ({location: faker.helpers.arrayElement([{address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), regionName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), boundingBox: faker.helpers.arrayElement([{west: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), south: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), east: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), north: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), albums: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), title: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrls: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), undefined])})), undefined]), ...overrideResponse})
 
-export const getGetClusterPhotosResponseMock = (overrideResponse: Partial< ClusterPhotosPageResponse > = {}): ClusterPhotosPageResponse => ({photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2}), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined])})), undefined]), page: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), size: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalElements: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), totalPages: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), last: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
+export const getGetClusterPhotosResponseMock = (overrideResponse: Partial< ClusterPhotoResponse > = {}): ClusterPhotoResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2}), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 export const getGetAlbumMapInfoResponseMock = (overrideResponse: Partial< AlbumMapInfoResponse > = {}): AlbumMapInfoResponse => ({albumId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), centerLongitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), centerLatitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), boundingBox: faker.helpers.arrayElement([{west: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), south: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), east: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), north: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), ...overrideResponse})
 
@@ -1703,7 +1825,7 @@ export const getHomeMockHandler = (overrideResponse?: HomeResponse | ((info: Par
   }, options)
 }
 
-export const getGetClusterPhotosMockHandler = (overrideResponse?: ClusterPhotosPageResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ClusterPhotosPageResponse> | ClusterPhotosPageResponse), options?: RequestHandlerOptions) => {
+export const getGetClusterPhotosMockHandler = (overrideResponse?: ClusterPhotoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ClusterPhotoResponse> | ClusterPhotoResponse), options?: RequestHandlerOptions) => {
   return http.get('*/map/clusters/:clusterId/photos', async (info) => {await delay(1000);
   
     return new HttpResponse(JSON.stringify(overrideResponse !== undefined
@@ -1748,6 +1870,26 @@ export const getGetSelectableAlbumsMockHandler = (overrideResponse?: SelectableA
       })
   }, options)
 }
+
+export const getDeleteUserMockHandler = (overrideResponse?: unknown | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown), options?: RequestHandlerOptions) => {
+  return http.get('*/admin/delete/:email', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
+
+export const getClearAllCachesMockHandler = (overrideResponse?: unknown | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown), options?: RequestHandlerOptions) => {
+  return http.get('*/admin/cache/clear', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 200,
+        
+      })
+  }, options)
+}
 export const getLokitAPIMock = () => [
   getGetPhotoDetailMockHandler(),
   getUpdateMockHandler(),
@@ -1768,5 +1910,7 @@ export const getLokitAPIMock = () => [
   getGetClusterPhotosMockHandler(),
   getGetAlbumMapInfoMockHandler(),
   getKakaoAuthorizeMockHandler(),
-  getGetSelectableAlbumsMockHandler()
+  getGetSelectableAlbumsMockHandler(),
+  getDeleteUserMockHandler(),
+  getClearAllCachesMockHandler()
 ]
