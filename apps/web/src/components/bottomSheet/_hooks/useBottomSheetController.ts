@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { MID_HEIGHT, MIN_HEIGHT, SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
+import {
+  LOW_HEIGHT,
+  MID_HEIGHT,
+  MIN_HEIGHT,
+  SHEET_CONTEXT_TYPE,
+  SheetContext,
+} from '../constants';
 
 export function useBottomSheetController(context: SheetContext) {
   const getMaxHeight = () => (typeof window !== 'undefined' ? window.innerHeight : 800);
@@ -7,9 +13,6 @@ export function useBottomSheetController(context: SheetContext) {
   const [height, setHeight] = useState(MIN_HEIGHT);
 
   useEffect(() => {
-    if (context.type === SHEET_CONTEXT_TYPE.HOME) {
-      setHeight(MIN_HEIGHT);
-    }
     if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       setHeight(MID_HEIGHT);
     }
@@ -17,16 +20,17 @@ export function useBottomSheetController(context: SheetContext) {
   }, [context]);
 
   const clampHeight = (nextHeight: number) => {
-    return Math.min(Math.max(nextHeight, MIN_HEIGHT), getMaxHeight());
+    return Math.min(Math.max(nextHeight, LOW_HEIGHT), getMaxHeight());
   };
 
   const snapHeightOnly = (currentHeight: number) => {
     const MAX_HEIGHT = getMaxHeight();
-    const points = [MIN_HEIGHT, MID_HEIGHT, MAX_HEIGHT];
+    const points = [LOW_HEIGHT, MIN_HEIGHT, MID_HEIGHT, MAX_HEIGHT];
     const closest = points.reduce((prev, curr) =>
       Math.abs(curr - currentHeight) < Math.abs(prev - currentHeight) ? curr : prev,
     );
     setHeight(closest);
+    return closest;
   };
 
   const deriveContextFromHeight = (height: number): SheetContext => {

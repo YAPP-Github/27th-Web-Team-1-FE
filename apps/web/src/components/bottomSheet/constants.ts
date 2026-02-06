@@ -16,5 +16,6 @@ export type SheetContext =
       longitude: number;
     };
 
+export const LOW_HEIGHT = 64;
 export const MIN_HEIGHT = 160;
 export const MID_HEIGHT = 394;

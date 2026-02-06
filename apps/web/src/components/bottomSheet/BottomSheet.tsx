@@ -106,12 +106,13 @@ const BottomSheet = ({
       return;
     }
 
-    if (height > MID_HEIGHT && context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
-      snapHeightOnly(height);
+    const snappedHeight = snapHeightOnly(height);
+
+    if (snappedHeight > MID_HEIGHT && context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       return;
     }
 
-    onChangeContext(deriveContextFromHeight(height));
+    onChangeContext(deriveContextFromHeight(snappedHeight));
   };
 
   const handleFloatingButtonClick = () => {
