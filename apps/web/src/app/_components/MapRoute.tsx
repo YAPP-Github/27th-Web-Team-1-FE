@@ -91,7 +91,7 @@ export default function MapRoute() {
   }, [albumDetail]);
 
   const photoCount = useMemo(() => {
-    const clusterPhotoCount = clusterPhotosData?.totalElements ?? 0;
+    const clusterPhotoCount = clusterPhotosData?.length ?? 0;
     return calculatePhotoCount(
       sheetContext,
       albumDetail,
@@ -104,6 +104,19 @@ export default function MapRoute() {
 
   const handlePinClick = (pin: MapPin) => {
     if (pin.isCluster) {
+      // 같은 클러스터 Detail을 이미 보고 있는 경우 슬라이드 뷰로 전환
+      if (
+        sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
+        sheetContext.clusterId === pin.clusterId
+      ) {
+        const firstPhotoId = clusterPhotosData?.[0]?.id;
+        if (firstPhotoId) {
+          router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, pin.clusterId));
+        }
+        return;
+      }
+
+      // 새로운 클러스터 Detail 열기
       setSheetContext({
         type: SHEET_CONTEXT_TYPE.CLUSTER_DETAIL,
         clusterId: pin.clusterId!,

@@ -14,6 +14,7 @@ import {
   type LocationInfoResponse,
   type AlbumThumbnails,
   type AlbumMapInfoResponse,
+  type ClusterPhotoResponse,
 } from '@repo/api-client';
 import {
   SHEET_CONTEXT_TYPE,
@@ -35,11 +36,7 @@ interface UseMapRouteDataReturn {
   mapPins: ReturnType<typeof useMapMe>['mapPins'];
   totalHistoryCount: number | undefined;
   clusterLocationData: LocationInfoResponse | undefined;
-  clusterPhotosData:
-    | {
-        totalElements?: number;
-      }
-    | undefined;
+  clusterPhotosData: ClusterPhotoResponse[] | undefined;
 }
 
 /**
@@ -103,10 +100,7 @@ export const useMapRouteData = ({
       ? sheetContext.clusterId
       : null;
 
-  const { data: clusterPhotosData } = useGetClusterPhotos(clusterId ?? '', {
-    page: 0,
-    size: 1,
-  });
+  const { data: clusterPhotosData } = useGetClusterPhotos(clusterId ?? '');
 
   return {
     albumList,

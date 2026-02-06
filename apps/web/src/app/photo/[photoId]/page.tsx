@@ -5,6 +5,7 @@ import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import { useGetPhotoDetail, getGetPhotoDetailQueryOptions } from '@repo/api-client';
 import { AnimatePresence } from 'framer-motion';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -28,10 +29,12 @@ export default function PhotoViewPage() {
   const albumIdFromQuery = searchParams.get('albumId')
     ? Number(searchParams.get('albumId'))
     : undefined;
+  const clusterIdFromQuery = searchParams.get('clusterId') || undefined;
 
   const { photoDetail, photos, isPhotoLoading } = usePhotoData({
     photoId,
     albumIdFromQuery,
+    clusterIdFromQuery,
   });
 
   const {
@@ -42,6 +45,12 @@ export default function PhotoViewPage() {
     handleNextPhoto,
     handleThumbnailClick,
   } = usePhotoSlider({ photos, initialPhotoId: photoId });
+
+  // 슬라이더에서 현재 선택된 사진의 상세 정보 조회
+  const currentPhotoIdForDetail = currentPhoto?.id ?? photoId;
+  const { data: displayPhotoDetail } = useGetPhotoDetail(currentPhotoIdForDetail, {
+    query: getGetPhotoDetailQueryOptions(currentPhotoIdForDetail),
+  });
 
   const { isOverlayVisible, longPressHandlers } = useLongPress();
 
@@ -74,12 +83,14 @@ export default function PhotoViewPage() {
       const height = memoRef.current.scrollHeight;
       setShowMoreButton(height > lineHeight * 2);
     }
-  }, [photoDetail?.description]);
+  }, [displayPhotoDetail?.description]);
 
-  // 현재 표시할 사진 결정 (currentPhoto 우선, 없으면 photoDetail)
+  // 현재 표시할 사진 결정
   const displayPhoto = currentPhoto ?? photoDetail;
   const displayPhotoUrl = displayPhoto?.url;
   const displayPhotoId = displayPhoto?.id ?? photoId;
+  // fetch 중이면 이전 데이터 표시
+  const currentDisplayPhotoDetail = displayPhotoDetail || photoDetail;
 
   const handleBack = () => {
     router.back();
@@ -93,7 +104,7 @@ export default function PhotoViewPage() {
     );
   }
 
-  if (!photoDetail) {
+  if (!photoDetail || photos.length === 0) {
     return (
       <S.Container>
         <S.LoadingContainer>사진을 찾을 수 없습니다.</S.LoadingContainer>
@@ -112,9 +123,13 @@ export default function PhotoViewPage() {
         <>
           <S.HeaderWrapper>
             <MenuHeader
-              title={photoDetail.address || ''}
+              title={
+                (displayPhoto as any)?.address || currentDisplayPhotoDetail?.address || ''
+              }
               onClickBack={handleBack}
-              showLocation={!!photoDetail.address}
+              showLocation={
+                !!(displayPhoto as any)?.address || !!currentDisplayPhotoDetail?.address
+              }
             >
               <MenuHeader.Menu>
                 <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
@@ -132,13 +147,13 @@ export default function PhotoViewPage() {
               <S.UploaderInfo>
                 <S.ProfileImage />
                 <S.UploaderName>
-                  {photoDetail.uploaderName || '알 수 없음'}
+                  {currentDisplayPhotoDetail?.uploaderName || '알 수 없음'}
                 </S.UploaderName>
               </S.UploaderInfo>
-              {photoDetail.description && (
+              {currentDisplayPhotoDetail?.description && (
                 <S.MemoWrapper>
                   <S.Memo ref={memoRef} $isExpanded={isMemoExpanded}>
-                    {photoDetail.description}
+                    {currentDisplayPhotoDetail.description}
                   </S.Memo>
                   {showMoreButton && !isMemoExpanded && (
                     <S.MoreButton onClick={() => setIsMemoExpanded(true)}>
@@ -157,7 +172,7 @@ export default function PhotoViewPage() {
                 icon={<DateIcon width={14} height={14} />}
               />
               <Chip
-                text={photoDetail.albumName || '앨범 없음'}
+                text={currentDisplayPhotoDetail?.albumName || '앨범 없음'}
                 variant="white"
                 size="small"
                 icon={<AlbumIcon width={14} height={14} />}

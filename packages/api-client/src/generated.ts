@@ -1203,7 +1203,7 @@ export const getClusterPhotos = (
 ) => {
       
       
-      return customFetcher<ClusterPhotoResponse>(
+      return customFetcher<ClusterPhotoResponse[]>(
       {url: `/map/clusters/${clusterId}/photos`, method: 'GET', signal
     },
       );

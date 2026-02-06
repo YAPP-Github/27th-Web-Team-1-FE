@@ -13,16 +13,13 @@ interface ClusterDetailProps {
 
 const ClusterDetail = ({ clusterId }: ClusterDetailProps) => {
   const router = useRouter();
-  const { data, isLoading, isError } = useGetClusterPhotos(clusterId, {
-    page: 0,
-    size: 100,
-  });
+  const { data, isLoading, isError } = useGetClusterPhotos(clusterId);
 
   const processedPhotos = useMemo(() => {
-    if (!data?.photos) return [];
+    if (!data) return [];
 
     // 날짜순으로 정렬 (최신순)
-    const sortedPhotos = [...data.photos].sort((a, b) => {
+    const sortedPhotos = [...data].sort((a, b) => {
       const dateA = a.takenAt ? new Date(a.takenAt).getTime() : 0;
       const dateB = b.takenAt ? new Date(b.takenAt).getTime() : 0;
       return dateB - dateA;
@@ -44,7 +41,7 @@ const ClusterDetail = ({ clusterId }: ClusterDetailProps) => {
   if (isError) return <div>사진을 불러올 수 없어요.</div>;
 
   const handlePhotoClick = (photoId: number) => {
-    router.push(ROUTES.PHOTO.VIEW(photoId));
+    router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(photoId, clusterId));
   };
 
   return (
