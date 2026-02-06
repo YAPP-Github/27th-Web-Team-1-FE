@@ -20,9 +20,9 @@ export type GetMeParams = {
    */
   zoom: number;
   /**
-   * 바운딩 박스 (west,south,east,north 형식의 경도/위도)
+   * 앨범 ID (선택). 지정 시 해당 앨범의 사진만 조회
    */
-  albumId: number;
+  albumId?: number;
   /**
    * 이전 응답의 dataVersion. 일치하면 사진 데이터를 생략하여 응답 최적화
    */
