@@ -1,7 +1,8 @@
 'use client';
 
 import AlbumIcon from '@/assets/images/album.svg';
-import CommentIcon from '@/assets/images/comment.svg';
+// TODO: 2차 MVP에서 반영 예정
+// import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
@@ -183,6 +184,7 @@ export default function PhotoViewPage() {
                 size="small"
                 icon={<AlbumIcon width={14} height={14} />}
               />
+              {/* TODO: 2차 MVP에서 반영 예정
               <Chip
                 text="댓글 추가..."
                 variant="white"
@@ -190,6 +192,7 @@ export default function PhotoViewPage() {
                 icon={<CommentIcon width={14} height={14} />}
                 onClick={() => {}}
               />
+              */}
             </S.ContainerB>
 
             {photos.length > 1 && (
