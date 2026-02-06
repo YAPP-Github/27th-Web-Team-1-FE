@@ -137,11 +137,12 @@ const BottomSheet = ({
           )}
           placement="top"
         >
-          <TextButton
+          {/* TODO: 웹에서 사진 촬영 기능 임시 제거 - 추후 앱에서 촬영 기능 구현 시 복구 예정 */}
+          {/* <TextButton
             text="사진 촬영"
             onClick={() => router.push(ROUTES.PHOTO.CAPTURE)}
             textAlign="left"
-          />
+          /> */}
           <TextButton
             text="사진 추가"
             onClick={() => selectPhotosFromFile()}
