@@ -52,10 +52,12 @@ export const ActionColumn = styled.div<ActionColumnProps>`
   z-index: 1001;
 `;
 
-export const Content = styled.div<{ $noPadding?: boolean }>`
+export const Content = styled.div<{ $noPadding?: boolean; $isMaxHeight?: boolean; $isHomeContext?: boolean }>`
   padding: ${({ $noPadding }) => ($noPadding ? '0' : '0px 20px')};
   flex: 1;
-  overflow: hidden;
+  overflow-x: ${({ $isHomeContext }) => ($isHomeContext ? 'visible' : 'hidden')};
+  overflow-y: ${({ $isMaxHeight }) => ($isMaxHeight ? 'auto' : 'hidden')};
+  touch-action: none;
 `;
 
 export const FloatingButtonWrapper = styled.div`
