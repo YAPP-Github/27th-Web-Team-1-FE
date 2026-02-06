@@ -1137,7 +1137,7 @@ export function useGetLocationInfo<
  * @summary 클러스터 내 사진 목록 조회
  */
 export const getClusterPhotos = (clusterId: string, signal?: AbortSignal) => {
-  return customFetcher<ClusterPhotoResponse>({
+  return customFetcher<ClusterPhotoResponse[]>({
     url: `/map/clusters/${clusterId}/photos`,
     method: 'GET',
     signal,
@@ -1947,29 +1947,29 @@ export const getGetLocationInfoResponseMock = (
   ...overrideResponse,
 });
 
-export const getGetClusterPhotosResponseMock = (
-  overrideResponse: Partial<ClusterPhotoResponse> = {},
-): ClusterPhotoResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  url: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
-  latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
-  takenAt: faker.helpers.arrayElement([
-    `${faker.date.past().toISOString().split('.')[0]}Z`,
-    undefined,
-  ]),
-  address: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
+export const getGetClusterPhotosResponseMock = (): ClusterPhotoResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+    () => ({
+      id: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      url: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+      latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+      takenAt: faker.helpers.arrayElement([
+        `${faker.date.past().toISOString().split('.')[0]}Z`,
+        undefined,
+      ]),
+      address: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    }),
+  );
 
 export const getGetAlbumMapInfoResponseMock = (
   overrideResponse: Partial<AlbumMapInfoResponse> = {},
@@ -2433,10 +2433,10 @@ export const getGetLocationInfoMockHandler = (
 
 export const getGetClusterPhotosMockHandler = (
   overrideResponse?:
-    | ClusterPhotoResponse
+    | ClusterPhotoResponse[]
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<ClusterPhotoResponse> | ClusterPhotoResponse),
+      ) => Promise<ClusterPhotoResponse[]> | ClusterPhotoResponse[]),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
