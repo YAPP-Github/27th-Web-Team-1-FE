@@ -24,4 +24,8 @@ export interface PhotoDetailResponse {
   address?: string;
   /** 사진 설명 */
   description?: string;
+  /** 경도 */
+  longitude?: number;
+  /** 위도 */
+  latitude?: number;
 }

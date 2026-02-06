@@ -48,6 +48,7 @@ export * from './loginResponse';
 export * from './mapMeResponse';
 export * from './mapPhotoResponse';
 export * from './mapPhotosResponse';
+export * from './pairLongString';
 export * from './photoDetailResponse';
 export * from './photoListResponse';
 export * from './photoResponse';

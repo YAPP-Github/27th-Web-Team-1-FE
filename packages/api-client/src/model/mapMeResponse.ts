@@ -23,8 +23,10 @@ export interface MapMeResponse {
   totalHistoryCount?: number;
   /** 앨범 하이라이트 사진들 (최대 4장) */
   albums?: AlbumThumbnails[];
-  /** 클러스터 목록 (줌 < 15일 때) */
+  /** 데이터 버전 (사진 변경 시 증가, 프론트 캐싱에 사용) */
+  dataVersion?: number;
+  /** 클러스터 목록 (줌 < 15일 때, dataVersion 미변경 시 null) */
   clusters?: ClusterResponse[];
-  /** 개별 사진 목록 (줌 >= 15일 때) */
+  /** 개별 사진 목록 (줌 >= 15일 때, dataVersion 미변경 시 null) */
   photos?: MapPhotoResponse[];
 }

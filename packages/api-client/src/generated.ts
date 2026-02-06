@@ -23,8 +23,6 @@ import type {
   CreatePhotoRequest,
   GetLocationInfoParams,
   GetMeParams,
-  GetPhotos1Params,
-  HomeParams,
   JoinCoupleRequest,
   KakaoAuthorizeParams,
   PresignedUrlRequest,
@@ -41,11 +39,10 @@ import type { RequestHandlerOptions } from 'msw';
 import type {
   AlbumMapInfoResponse,
   ClusterPhotoResponse,
-  HomeResponse,
   IdResponse,
   LocationInfoResponse,
   MapMeResponse,
-  MapPhotosResponse,
+  PairLongString,
   PhotoDetailResponse,
   PhotoListResponse,
   PlaceSearchResponse,
@@ -990,82 +987,6 @@ export function useSearchPlaces<
 
 /**
  * 
-            줌 레벨과 바운딩 박스를 기반으로 지도에 표시할 사진 또는 클러스터를 조회합니다.
-
-            - **줌 레벨 < 15**: ST_SnapToGrid를 사용하여 사진을 클러스터링하여 반환
-            - clusterId: 줌 레벨 + 그리드 셀 인덱스 (예: z14_130234_38456)
-            - count: 클러스터 내 사진 개수
-            - thumbnailUrl: 클러스터 내 가장 최근 생성된 사진의 URL
-
-            - **줌 레벨 >= 15**: 개별 사진 썸네일을 반환
-        
- * @summary 지도 사진 조회
- */
-export const getPhotos1 = (params: GetPhotos1Params, signal?: AbortSignal) => {
-  return customFetcher<MapPhotosResponse>({
-    url: `/map/photos`,
-    method: 'GET',
-    params,
-    signal,
-  });
-};
-
-export const getGetPhotos1QueryKey = (params?: GetPhotos1Params) => {
-  return [`/map/photos`, ...(params ? [params] : [])] as const;
-};
-
-export const getGetPhotos1QueryOptions = <
-  TData = Awaited<ReturnType<typeof getPhotos1>>,
-  TError = ApiResponseErrorDetail,
->(
-  params: GetPhotos1Params,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos1>>, TError, TData>;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetPhotos1QueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotos1>>> = ({ signal }) =>
-    getPhotos1(params, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getPhotos1>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type GetPhotos1QueryResult = NonNullable<Awaited<ReturnType<typeof getPhotos1>>>;
-export type GetPhotos1QueryError = ApiResponseErrorDetail;
-
-/**
- * @summary 지도 사진 조회
- */
-
-export function useGetPhotos1<
-  TData = Awaited<ReturnType<typeof getPhotos1>>,
-  TError = ApiResponseErrorDetail,
->(
-  params: GetPhotos1Params,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos1>>, TError, TData>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetPhotos1QueryOptions(params, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-/**
- * 
             홈 정보와 지도 사진을 한 번에 조회합니다.
 
             - 위치 정보, 앨범 목록, 바운딩 박스 (map/home 응답)
@@ -1205,63 +1126,6 @@ export function useGetLocationInfo<
 }
 
 /**
- * @summary 홈 조회(홈 화면 초기 진입 시 1회 호출)
- */
-export const home = (params: HomeParams, signal?: AbortSignal) => {
-  return customFetcher<HomeResponse>({ url: `/map/home`, method: 'GET', params, signal });
-};
-
-export const getHomeQueryKey = (params?: HomeParams) => {
-  return [`/map/home`, ...(params ? [params] : [])] as const;
-};
-
-export const getHomeQueryOptions = <
-  TData = Awaited<ReturnType<typeof home>>,
-  TError = ApiResponseErrorDetail,
->(
-  params: HomeParams,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof home>>, TError, TData> },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getHomeQueryKey(params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof home>>> = ({ signal }) =>
-    home(params, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof home>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type HomeQueryResult = NonNullable<Awaited<ReturnType<typeof home>>>;
-export type HomeQueryError = ApiResponseErrorDetail;
-
-/**
- * @summary 홈 조회(홈 화면 초기 진입 시 1회 호출)
- */
-
-export function useHome<
-  TData = Awaited<ReturnType<typeof home>>,
-  TError = ApiResponseErrorDetail,
->(
-  params: HomeParams,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof home>>, TError, TData> },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getHomeQueryOptions(params, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-/**
  * 
             클러스터 ID를 기반으로 해당 그리드 셀 영역 내의 모든 사진을 조회합니다.
 
@@ -1273,7 +1137,7 @@ export function useHome<
  * @summary 클러스터 내 사진 목록 조회
  */
 export const getClusterPhotos = (clusterId: string, signal?: AbortSignal) => {
-  return customFetcher<ClusterPhotoResponse[]>({
+  return customFetcher<ClusterPhotoResponse>({
     url: `/map/clusters/${clusterId}/photos`,
     method: 'GET',
     signal,
@@ -1539,50 +1403,51 @@ export function useGetSelectableAlbums<
   return query;
 }
 
-export const deleteUser = (email: string, signal?: AbortSignal) => {
-  return customFetcher<unknown>({ url: `/admin/delete/${email}`, method: 'GET', signal });
+/**
+ * @summary 모든 유저의 DB 식별자와 Email을 조회합니다.
+ */
+export const getUsers = (signal?: AbortSignal) => {
+  return customFetcher<PairLongString[]>({ url: `/admin/users`, method: 'GET', signal });
 };
 
-export const getDeleteUserQueryKey = (email?: string) => {
-  return [`/admin/delete/${email}`] as const;
+export const getGetUsersQueryKey = () => {
+  return [`/admin/users`] as const;
 };
 
-export const getDeleteUserQueryOptions = <
-  TData = Awaited<ReturnType<typeof deleteUser>>,
+export const getGetUsersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getUsers>>,
   TError = ApiResponseErrorDetail,
->(
-  email: string,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteUser>>, TError, TData>;
-  },
-) => {
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
+}) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getDeleteUserQueryKey(email);
+  const queryKey = queryOptions?.queryKey ?? getGetUsersQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteUser>>> = ({ signal }) =>
-    deleteUser(email, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsers>>> = ({ signal }) =>
+    getUsers(signal);
 
-  return { queryKey, queryFn, enabled: !!email, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof deleteUser>>,
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getUsers>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type DeleteUserQueryResult = NonNullable<Awaited<ReturnType<typeof deleteUser>>>;
-export type DeleteUserQueryError = ApiResponseErrorDetail;
+export type GetUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getUsers>>>;
+export type GetUsersQueryError = ApiResponseErrorDetail;
 
-export function useDeleteUser<
-  TData = Awaited<ReturnType<typeof deleteUser>>,
+/**
+ * @summary 모든 유저의 DB 식별자와 Email을 조회합니다.
+ */
+
+export function useGetUsers<
+  TData = Awaited<ReturnType<typeof getUsers>>,
   TError = ApiResponseErrorDetail,
->(
-  email: string,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteUser>>, TError, TData>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getDeleteUserQueryOptions(email, options);
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetUsersQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1593,8 +1458,75 @@ export function useDeleteUser<
   return query;
 }
 
+/**
+ * @summary Email에 해당하는 유저의 모든 데이터를 삭제합니다.
+ */
+export const deleteAllByEmail = (email: string, signal?: AbortSignal) => {
+  return customFetcher<string>({ url: `/admin/delete/${email}`, method: 'GET', signal });
+};
+
+export const getDeleteAllByEmailQueryKey = (email?: string) => {
+  return [`/admin/delete/${email}`] as const;
+};
+
+export const getDeleteAllByEmailQueryOptions = <
+  TData = Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError = ApiResponseErrorDetail,
+>(
+  email: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError, TData>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getDeleteAllByEmailQueryKey(email);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteAllByEmail>>> = ({
+    signal,
+  }) => deleteAllByEmail(email, signal);
+
+  return { queryKey, queryFn, enabled: !!email, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type DeleteAllByEmailQueryResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAllByEmail>>
+>;
+export type DeleteAllByEmailQueryError = ApiResponseErrorDetail;
+
+/**
+ * @summary Email에 해당하는 유저의 모든 데이터를 삭제합니다.
+ */
+
+export function useDeleteAllByEmail<
+  TData = Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError = ApiResponseErrorDetail,
+>(
+  email: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getDeleteAllByEmailQueryOptions(email, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary 서버 전체의 캐시 데이터를 강제 만료합니다.
+ */
 export const clearAllCaches = (signal?: AbortSignal) => {
-  return customFetcher<unknown>({ url: `/admin/cache/clear`, method: 'GET', signal });
+  return customFetcher<string>({ url: `/admin/cache/clear`, method: 'GET', signal });
 };
 
 export const getClearAllCachesQueryKey = () => {
@@ -1626,6 +1558,10 @@ export type ClearAllCachesQueryResult = NonNullable<
   Awaited<ReturnType<typeof clearAllCaches>>
 >;
 export type ClearAllCachesQueryError = ApiResponseErrorDetail;
+
+/**
+ * @summary 서버 전체의 캐시 데이터를 강제 만료합니다.
+ */
 
 export function useClearAllCaches<
   TData = Awaited<ReturnType<typeof clearAllCaches>>,
@@ -1673,6 +1609,14 @@ export const getGetPhotoDetailResponseMock = (
   ]),
   description: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  longitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    undefined,
+  ]),
+  latitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
     undefined,
   ]),
   ...overrideResponse,
@@ -1857,54 +1801,6 @@ export const getSearchPlacesResponseMock = (
   ...overrideResponse,
 });
 
-export const getGetPhotos1ResponseMock = (
-  overrideResponse: Partial<MapPhotosResponse> = {},
-): MapPhotosResponse => ({
-  clusters: faker.helpers.arrayElement([
-    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
-      () => ({
-        clusterId: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        count: faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          undefined,
-        ]),
-        thumbnailUrl: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
-        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
-      }),
-    ),
-    undefined,
-  ]),
-  photos: faker.helpers.arrayElement([
-    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
-      () => ({
-        id: faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          undefined,
-        ]),
-        thumbnailUrl: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
-        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
-        takenAt: faker.helpers.arrayElement([
-          `${faker.date.past().toISOString().split('.')[0]}Z`,
-          undefined,
-        ]),
-      }),
-    ),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
 export const getGetMeResponseMock = (
   overrideResponse: Partial<MapMeResponse> = {},
 ): MapMeResponse => ({
@@ -1980,6 +1876,10 @@ export const getGetMeResponseMock = (
     ),
     undefined,
   ]),
+  dataVersion: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
   clusters: faker.helpers.arrayElement([
     Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
       () => ({
@@ -2042,80 +1942,6 @@ export const getGetLocationInfoResponseMock = (
   ]),
   regionName: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getHomeResponseMock = (
-  overrideResponse: Partial<HomeResponse> = {},
-): HomeResponse => ({
-  location: faker.helpers.arrayElement([
-    {
-      address: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-      roadName: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-      placeName: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-      regionName: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-    },
-    undefined,
-  ]),
-  boundingBox: faker.helpers.arrayElement([
-    {
-      west: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-      south: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-      east: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-      north: faker.helpers.arrayElement([
-        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
-        undefined,
-      ]),
-    },
-    undefined,
-  ]),
-  albums: faker.helpers.arrayElement([
-    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
-      () => ({
-        id: faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          undefined,
-        ]),
-        title: faker.helpers.arrayElement([
-          faker.string.alpha({ length: { min: 10, max: 20 } }),
-          undefined,
-        ]),
-        photoCount: faker.helpers.arrayElement([
-          faker.number.int({ min: undefined, max: undefined }),
-          undefined,
-        ]),
-        thumbnailUrls: faker.helpers.arrayElement([
-          Array.from(
-            { length: faker.number.int({ min: 1, max: 10 }) },
-            (_, i) => i + 1,
-          ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
-          undefined,
-        ]),
-      }),
-    ),
     undefined,
   ]),
   ...overrideResponse,
@@ -2212,6 +2038,24 @@ export const getGetSelectableAlbumsResponseMock = (
   ]),
   ...overrideResponse,
 });
+
+export const getGetUsersResponseMock = (): PairLongString[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+    () => ({
+      first: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      second: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    }),
+  );
+
+export const getDeleteAllByEmailResponseMock = (): string => faker.word.sample();
+
+export const getClearAllCachesResponseMock = (): string => faker.word.sample();
 
 export const getGetPhotoDetailMockHandler = (
   overrideResponse?:
@@ -2531,34 +2375,6 @@ export const getSearchPlacesMockHandler = (
   );
 };
 
-export const getGetPhotos1MockHandler = (
-  overrideResponse?:
-    | MapPhotosResponse
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<MapPhotosResponse> | MapPhotosResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/map/photos',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getGetPhotos1ResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
 export const getGetMeMockHandler = (
   overrideResponse?:
     | MapMeResponse
@@ -2607,34 +2423,6 @@ export const getGetLocationInfoMockHandler = (
               ? await overrideResponse(info)
               : overrideResponse
             : getGetLocationInfoResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getHomeMockHandler = (
-  overrideResponse?:
-    | HomeResponse
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<HomeResponse> | HomeResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/map/home',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getHomeResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -2748,22 +2536,55 @@ export const getGetSelectableAlbumsMockHandler = (
   );
 };
 
-export const getDeleteUserMockHandler = (
+export const getGetUsersMockHandler = (
   overrideResponse?:
-    | unknown
+    | PairLongString[]
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<unknown> | unknown),
+      ) => Promise<PairLongString[]> | PairLongString[]),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/admin/users',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetUsersResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getDeleteAllByEmailMockHandler = (
+  overrideResponse?:
+    | string
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string> | string),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
     '*/admin/delete/:email',
     async (info) => {
       await delay(1000);
-      if (typeof overrideResponse === 'function') {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 200 });
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getDeleteAllByEmailResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
     },
     options,
   );
@@ -2771,20 +2592,25 @@ export const getDeleteUserMockHandler = (
 
 export const getClearAllCachesMockHandler = (
   overrideResponse?:
-    | unknown
-    | ((
-        info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<unknown> | unknown),
+    | string
+    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string> | string),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
     '*/admin/cache/clear',
     async (info) => {
       await delay(1000);
-      if (typeof overrideResponse === 'function') {
-        await overrideResponse(info);
-      }
-      return new HttpResponse(null, { status: 200 });
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getClearAllCachesResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
     },
     options,
   );
@@ -2802,14 +2628,13 @@ export const getLokitAPIMock = () => [
   getUpdateTitleMockHandler(),
   getGetPhotosMockHandler(),
   getSearchPlacesMockHandler(),
-  getGetPhotos1MockHandler(),
   getGetMeMockHandler(),
   getGetLocationInfoMockHandler(),
-  getHomeMockHandler(),
   getGetClusterPhotosMockHandler(),
   getGetAlbumMapInfoMockHandler(),
   getKakaoAuthorizeMockHandler(),
   getGetSelectableAlbumsMockHandler(),
-  getDeleteUserMockHandler(),
+  getGetUsersMockHandler(),
+  getDeleteAllByEmailMockHandler(),
   getClearAllCachesMockHandler(),
 ];
