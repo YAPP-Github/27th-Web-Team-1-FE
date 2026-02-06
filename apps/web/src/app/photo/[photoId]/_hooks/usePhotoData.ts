@@ -16,7 +16,9 @@ interface UsePhotoDataProps {
   clusterIdFromQuery?: string;
 }
 
-const convertClusterPhotoToPhotoResponse = (photo: ClusterPhotoResponse): PhotoResponse => ({
+const convertClusterPhotoToPhotoResponse = (
+  photo: ClusterPhotoResponse,
+): PhotoResponse => ({
   id: photo.id,
   url: photo.url,
   takenAt: photo.takenAt,
@@ -35,7 +37,11 @@ const sortPhotosByDate = (photos: PhotoResponse[]): PhotoResponse[] => {
   });
 };
 
-const usePhotoData = ({ photoId, albumIdFromQuery, clusterIdFromQuery }: UsePhotoDataProps) => {
+const usePhotoData = ({
+  photoId,
+  albumIdFromQuery,
+  clusterIdFromQuery,
+}: UsePhotoDataProps) => {
   const { data: photoDetail, isLoading: isPhotoLoading } = useGetPhotoDetail(photoId);
 
   // 클러스터 사진 조회

@@ -7,8 +7,8 @@
  */
 
 export type SearchPlacesParams = {
-/**
- * 검색 키워드
- */
-query: string;
+  /**
+   * 검색 키워드
+   */
+  query: string;
 };
