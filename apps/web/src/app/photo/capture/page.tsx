@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ChevronLeftIcon from '@/assets/images/chevronLeft.svg';
+import { useToast } from '@/components/toast';
 import { ROUTES } from '@/constants';
 import { CAMERA } from './_constants';
 import { usePhotoContext } from '../_contexts/PhotoContext';
@@ -13,7 +14,8 @@ type CameraFacing = 'user' | 'environment';
 
 export default function PhotoCapturePage() {
   const router = useRouter();
-  const { addPhotos, setSelectedPhoto } = usePhotoContext();
+  const { showToast } = useToast();
+  const { addPhotos, selectedPhoto, setSelectedPhoto } = usePhotoContext();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,6 +28,17 @@ export default function PhotoCapturePage() {
     latitude: number;
     longitude: number;
   } | null>(null);
+
+  // 라우팅 트리거 상태 - 상태 업데이트 완료 후 라우팅하기 위함
+  const [shouldNavigateToNote, setShouldNavigateToNote] = useState(false);
+
+  // selectedPhoto가 설정되고 shouldNavigateToNote가 true일 때 라우팅
+  useEffect(() => {
+    if (shouldNavigateToNote && selectedPhoto) {
+      setShouldNavigateToNote(false);
+      router.push(ROUTES.PHOTO.NOTE.ADD);
+    }
+  }, [shouldNavigateToNote, selectedPhoto, router]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -128,13 +141,16 @@ export default function PhotoCapturePage() {
     const dataUrl = canvas.toDataURL(CAMERA.IMAGE_TYPE, CAMERA.JPEG_QUALITY);
     const photo = await dataUrlToSelectedPhoto(dataUrl, currentLocation ?? undefined);
 
-    if (photo) {
-      addPhotos([photo]);
-      setSelectedPhoto(photo);
-      stopCamera();
-      router.push(ROUTES.PHOTO.NOTE.ADD);
+    if (!photo) {
+      showToast('사진을 처리할 수 없습니다. 다시 시도해주세요.');
+      return;
     }
-  }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, router]);
+
+    addPhotos([photo]);
+    setSelectedPhoto(photo);
+    stopCamera();
+    setShouldNavigateToNote(true);
+  }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, showToast]);
 
   return (
     <S.Container>

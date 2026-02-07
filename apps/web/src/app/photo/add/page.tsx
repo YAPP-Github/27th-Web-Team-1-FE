@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, type MouseEvent } from 'react';
+import { useCallback, useEffect, useState, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import PlusIcon from '@/assets/images/plus.svg';
 import DefaultHeader from '@/components/header/default/DefaultHeader';
 import PhotoGridContainer from '@/components/photoGridContainer/PhotoGridContainer';
 import PhotoGridItem from '@/components/photoGridItem/PhotoGridItem';
+import { useToast } from '@/components/toast';
 import { ROUTES } from '@/constants';
 import { usePhotoContext } from '../_contexts/PhotoContext';
 import { usePhotoSelect } from './_hooks/usePhotoSelect';
@@ -14,7 +15,20 @@ import * as S from './page.styles';
 
 export default function PhotoAddPage() {
   const router = useRouter();
-  const { photos, addPhotos, setSelectedPhoto, setSelectedPhotoRect } = usePhotoContext();
+  const { showToast } = useToast();
+  const { photos, addPhotos, selectedPhoto, setSelectedPhoto, setSelectedPhotoRect } =
+    usePhotoContext();
+
+  // 라우팅 트리거 상태 - 상태 업데이트 완료 후 라우팅하기 위함
+  const [shouldNavigateToNote, setShouldNavigateToNote] = useState(false);
+
+  // selectedPhoto가 설정되고 shouldNavigateToNote가 true일 때 라우팅
+  useEffect(() => {
+    if (shouldNavigateToNote && selectedPhoto) {
+      setShouldNavigateToNote(false);
+      router.push(ROUTES.PHOTO.NOTE.ADD);
+    }
+  }, [shouldNavigateToNote, selectedPhoto, router]);
 
   /**
    * 웹 브라우저 환경에서는 보안 정책상 사용자의 전체 갤러리에 접근할 수 없음.
@@ -25,14 +39,17 @@ export default function PhotoAddPage() {
    */
   const handlePhotosSelected = useCallback(
     (newPhotos: SelectedPhoto[]) => {
-      addPhotos(newPhotos);
-      // 첫 번째 사진을 선택하고 바로 정보 기입 화면으로 이동
-      if (newPhotos.length > 0) {
-        setSelectedPhoto(newPhotos[0]);
-        router.push(ROUTES.PHOTO.NOTE.ADD);
+      if (newPhotos.length === 0) {
+        showToast('이미지를 불러올 수 없습니다. 다시 시도해주세요.');
+        return;
       }
+
+      addPhotos(newPhotos);
+      // 첫 번째 사진을 선택하고, useEffect에서 라우팅 처리
+      setSelectedPhoto(newPhotos[0]);
+      setShouldNavigateToNote(true);
     },
-    [addPhotos, setSelectedPhoto, router],
+    [addPhotos, setSelectedPhoto, showToast],
   );
 
   const { isLoading, selectPhotosFromFile } = usePhotoSelect({
@@ -55,9 +72,9 @@ export default function PhotoAddPage() {
         height: rect.height,
       });
       setSelectedPhoto(photo);
-      router.push(ROUTES.PHOTO.NOTE.ADD);
+      setShouldNavigateToNote(true);
     },
-    [router, setSelectedPhoto, setSelectedPhotoRect],
+    [setSelectedPhoto, setSelectedPhotoRect],
   );
 
   const handleAddPhotos = useCallback(async () => {
