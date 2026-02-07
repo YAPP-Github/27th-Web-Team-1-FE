@@ -17,6 +17,7 @@ export function MSWProvider({ children }: MSWProviderProps) {
       }
 
       const { worker } = await import('./browser');
+
       await worker.start({
         onUnhandledRequest: 'bypass',
       });
