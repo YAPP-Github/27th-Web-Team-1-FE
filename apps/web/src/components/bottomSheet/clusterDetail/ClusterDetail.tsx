@@ -16,7 +16,7 @@ const ClusterDetail = ({ clusterId }: ClusterDetailProps) => {
   const { data, isLoading, isError } = useGetClusterPhotos(clusterId);
 
   const processedPhotos = useMemo(() => {
-    if (!data) return [];
+    if (!data || !Array.isArray(data)) return [];
 
     // 날짜순으로 정렬 (최신순)
     const sortedPhotos = [...data].sort((a, b) => {
