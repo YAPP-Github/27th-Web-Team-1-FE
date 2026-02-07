@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import ChevronLeftIcon from '@/assets/images/chevronLeft.svg';
 import { useToast } from '@/components/toast';
@@ -15,7 +16,7 @@ type CameraFacing = 'user' | 'environment';
 export default function PhotoCapturePage() {
   const router = useRouter();
   const { showToast } = useToast();
-  const { addPhotos, selectedPhoto, setSelectedPhoto } = usePhotoContext();
+  const { addPhotos, setSelectedPhoto } = usePhotoContext();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,20 +29,6 @@ export default function PhotoCapturePage() {
     latitude: number;
     longitude: number;
   } | null>(null);
-
-  // 라우팅할 대상 사진 ID - 상태 업데이트 완료 확인용
-  const [pendingNavigationPhotoId, setPendingNavigationPhotoId] = useState<string | null>(
-    null,
-  );
-
-  // selectedPhoto.id가 pendingNavigationPhotoId와 일치할 때 라우팅
-  // 이렇게 하면 Context 상태가 확실히 반영된 후에만 라우팅됨
-  useEffect(() => {
-    if (pendingNavigationPhotoId && selectedPhoto?.id === pendingNavigationPhotoId) {
-      setPendingNavigationPhotoId(null);
-      router.push(ROUTES.PHOTO.NOTE.ADD);
-    }
-  }, [pendingNavigationPhotoId, selectedPhoto?.id, router]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -149,13 +136,15 @@ export default function PhotoCapturePage() {
       return;
     }
 
-    addPhotos([photo]);
     stopCamera();
-    // 먼저 라우팅 대상 ID 설정, 그 다음 사진 선택
-    // useEffect에서 selectedPhoto.id === pendingNavigationPhotoId 확인 후 라우팅
-    setPendingNavigationPhotoId(photo.id);
-    setSelectedPhoto(photo);
-  }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, showToast]);
+    // flushSync로 상태 업데이트를 동기적으로 처리하여
+    // 라우팅 시점에 상태가 확실히 반영되도록 함
+    flushSync(() => {
+      addPhotos([photo]);
+      setSelectedPhoto(photo);
+    });
+    router.push(ROUTES.PHOTO.NOTE.ADD);
+  }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, showToast, router]);
 
   return (
     <S.Container>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState, type MouseEvent } from 'react';
+import { useCallback, type MouseEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import PlusIcon from '@/assets/images/plus.svg';
 import DefaultHeader from '@/components/header/default/DefaultHeader';
@@ -16,22 +17,7 @@ import * as S from './page.styles';
 export default function PhotoAddPage() {
   const router = useRouter();
   const { showToast } = useToast();
-  const { photos, addPhotos, selectedPhoto, setSelectedPhoto, setSelectedPhotoRect } =
-    usePhotoContext();
-
-  // 라우팅할 대상 사진 ID - 상태 업데이트 완료 확인용
-  const [pendingNavigationPhotoId, setPendingNavigationPhotoId] = useState<string | null>(
-    null,
-  );
-
-  // selectedPhoto.id가 pendingNavigationPhotoId와 일치할 때 라우팅
-  // 이렇게 하면 Context 상태가 확실히 반영된 후에만 라우팅됨
-  useEffect(() => {
-    if (pendingNavigationPhotoId && selectedPhoto?.id === pendingNavigationPhotoId) {
-      setPendingNavigationPhotoId(null);
-      router.push(ROUTES.PHOTO.NOTE.ADD);
-    }
-  }, [pendingNavigationPhotoId, selectedPhoto?.id, router]);
+  const { photos, addPhotos, setSelectedPhoto, setSelectedPhotoRect } = usePhotoContext();
 
   /**
    * 웹 브라우저 환경에서는 보안 정책상 사용자의 전체 갤러리에 접근할 수 없음.
@@ -47,14 +33,15 @@ export default function PhotoAddPage() {
         return;
       }
 
-      addPhotos(newPhotos);
-      const targetPhoto = newPhotos[0];
-      // 먼저 라우팅 대상 ID 설정, 그 다음 사진 선택
-      // useEffect에서 selectedPhoto.id === pendingNavigationPhotoId 확인 후 라우팅
-      setPendingNavigationPhotoId(targetPhoto.id);
-      setSelectedPhoto(targetPhoto);
+      // flushSync로 상태 업데이트를 동기적으로 처리하여
+      // 라우팅 시점에 상태가 확실히 반영되도록 함
+      flushSync(() => {
+        addPhotos(newPhotos);
+        setSelectedPhoto(newPhotos[0]);
+      });
+      router.push(ROUTES.PHOTO.NOTE.ADD);
     },
-    [addPhotos, setSelectedPhoto, showToast],
+    [addPhotos, setSelectedPhoto, showToast, router],
   );
 
   const { isLoading, selectPhotosFromFile } = usePhotoSelect({
@@ -70,16 +57,20 @@ export default function PhotoAddPage() {
       const target = event.currentTarget;
       const rect = target.getBoundingClientRect();
 
-      setSelectedPhotoRect({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
+      // flushSync로 상태 업데이트를 동기적으로 처리하여
+      // 라우팅 시점에 상태가 확실히 반영되도록 함
+      flushSync(() => {
+        setSelectedPhotoRect({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        });
+        setSelectedPhoto(photo);
       });
-      setPendingNavigationPhotoId(photo.id);
-      setSelectedPhoto(photo);
+      router.push(ROUTES.PHOTO.NOTE.ADD);
     },
-    [setSelectedPhoto, setSelectedPhotoRect],
+    [setSelectedPhoto, setSelectedPhotoRect, router],
   );
 
   const handleAddPhotos = useCallback(async () => {
