@@ -11,7 +11,7 @@ export function MSWProvider({ children }: MSWProviderProps) {
 
   useEffect(() => {
     async function enableMocking() {
-      if (process.env.NODE_ENV !== 'development') {
+      if (process.env.NEXT_PUBLIC_ENABLE_MOCK !== 'true') {
         setIsReady(true);
         return;
       }
