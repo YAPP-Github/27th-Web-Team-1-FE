@@ -71,7 +71,7 @@ export default function MapRoute() {
         zoom: centerInfo.zoom,
       });
     }
-  }, [selectedAlbumId, albumMapInfo, viewState, handleViewStateChange]);
+  }, [selectedAlbumId, albumMapInfo, handleViewStateChange]);
 
   useEffect(() => {
     const initLocation = async () => {

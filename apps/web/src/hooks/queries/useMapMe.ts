@@ -70,7 +70,7 @@ export const useMapMe = ({
       isCluster: true,
     }));
 
-    return roundedZoom >= 15 ? photoPins : clusterPins;
+    return roundedZoom >= 17 ? photoPins : clusterPins;
   }, [response.data, roundedZoom]);
 
   return {
