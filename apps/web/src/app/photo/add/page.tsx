@@ -19,16 +19,19 @@ export default function PhotoAddPage() {
   const { photos, addPhotos, selectedPhoto, setSelectedPhoto, setSelectedPhotoRect } =
     usePhotoContext();
 
-  // 라우팅 트리거 상태 - 상태 업데이트 완료 후 라우팅하기 위함
-  const [shouldNavigateToNote, setShouldNavigateToNote] = useState(false);
+  // 라우팅할 대상 사진 ID - 상태 업데이트 완료 확인용
+  const [pendingNavigationPhotoId, setPendingNavigationPhotoId] = useState<string | null>(
+    null,
+  );
 
-  // selectedPhoto가 설정되고 shouldNavigateToNote가 true일 때 라우팅
+  // selectedPhoto.id가 pendingNavigationPhotoId와 일치할 때 라우팅
+  // 이렇게 하면 Context 상태가 확실히 반영된 후에만 라우팅됨
   useEffect(() => {
-    if (shouldNavigateToNote && selectedPhoto) {
-      setShouldNavigateToNote(false);
+    if (pendingNavigationPhotoId && selectedPhoto?.id === pendingNavigationPhotoId) {
+      setPendingNavigationPhotoId(null);
       router.push(ROUTES.PHOTO.NOTE.ADD);
     }
-  }, [shouldNavigateToNote, selectedPhoto, router]);
+  }, [pendingNavigationPhotoId, selectedPhoto?.id, router]);
 
   /**
    * 웹 브라우저 환경에서는 보안 정책상 사용자의 전체 갤러리에 접근할 수 없음.
@@ -45,9 +48,11 @@ export default function PhotoAddPage() {
       }
 
       addPhotos(newPhotos);
-      // 첫 번째 사진을 선택하고, useEffect에서 라우팅 처리
-      setSelectedPhoto(newPhotos[0]);
-      setShouldNavigateToNote(true);
+      const targetPhoto = newPhotos[0];
+      // 먼저 라우팅 대상 ID 설정, 그 다음 사진 선택
+      // useEffect에서 selectedPhoto.id === pendingNavigationPhotoId 확인 후 라우팅
+      setPendingNavigationPhotoId(targetPhoto.id);
+      setSelectedPhoto(targetPhoto);
     },
     [addPhotos, setSelectedPhoto, showToast],
   );
@@ -71,8 +76,8 @@ export default function PhotoAddPage() {
         width: rect.width,
         height: rect.height,
       });
+      setPendingNavigationPhotoId(photo.id);
       setSelectedPhoto(photo);
-      setShouldNavigateToNote(true);
     },
     [setSelectedPhoto, setSelectedPhotoRect],
   );

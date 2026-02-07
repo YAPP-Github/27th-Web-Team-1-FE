@@ -29,16 +29,19 @@ export default function PhotoCapturePage() {
     longitude: number;
   } | null>(null);
 
-  // 라우팅 트리거 상태 - 상태 업데이트 완료 후 라우팅하기 위함
-  const [shouldNavigateToNote, setShouldNavigateToNote] = useState(false);
+  // 라우팅할 대상 사진 ID - 상태 업데이트 완료 확인용
+  const [pendingNavigationPhotoId, setPendingNavigationPhotoId] = useState<string | null>(
+    null,
+  );
 
-  // selectedPhoto가 설정되고 shouldNavigateToNote가 true일 때 라우팅
+  // selectedPhoto.id가 pendingNavigationPhotoId와 일치할 때 라우팅
+  // 이렇게 하면 Context 상태가 확실히 반영된 후에만 라우팅됨
   useEffect(() => {
-    if (shouldNavigateToNote && selectedPhoto) {
-      setShouldNavigateToNote(false);
+    if (pendingNavigationPhotoId && selectedPhoto?.id === pendingNavigationPhotoId) {
+      setPendingNavigationPhotoId(null);
       router.push(ROUTES.PHOTO.NOTE.ADD);
     }
-  }, [shouldNavigateToNote, selectedPhoto, router]);
+  }, [pendingNavigationPhotoId, selectedPhoto?.id, router]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -147,9 +150,11 @@ export default function PhotoCapturePage() {
     }
 
     addPhotos([photo]);
-    setSelectedPhoto(photo);
     stopCamera();
-    setShouldNavigateToNote(true);
+    // 먼저 라우팅 대상 ID 설정, 그 다음 사진 선택
+    // useEffect에서 selectedPhoto.id === pendingNavigationPhotoId 확인 후 라우팅
+    setPendingNavigationPhotoId(photo.id);
+    setSelectedPhoto(photo);
   }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, showToast]);
 
   return (
