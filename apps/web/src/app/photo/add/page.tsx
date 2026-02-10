@@ -60,8 +60,8 @@ export default function PhotoAddPage() {
     [router, setSelectedPhoto, setSelectedPhotoRect],
   );
 
-  const handleAddPhotos = useCallback(async () => {
-    await selectPhotosFromFile();
+  const handleAddPhotos = useCallback(() => {
+    selectPhotosFromFile();
   }, [selectPhotosFromFile]);
 
   if (isLoading && photos.length === 0) {
