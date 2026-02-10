@@ -1,7 +1,8 @@
 'use client';
 
 import { useGetSelectableAlbums, type SelectableAlbum } from '@repo/api-client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePhotoContext } from '@/app/photo/_contexts/PhotoContext';
 
 interface SelectedAlbum {
   id: number;
@@ -9,6 +10,9 @@ interface SelectedAlbum {
 }
 
 const useAlbumModal = () => {
+  const { initialAlbumId, setInitialAlbumId } = usePhotoContext();
+  const hasInitialized = useRef(false);
+
   const [selectedAlbum, setSelectedAlbum] = useState<SelectedAlbum | null>(null);
   const [tempSelectedAlbumId, setTempSelectedAlbumId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,7 +20,17 @@ const useAlbumModal = () => {
 
   const { data, isLoading } = useGetSelectableAlbums();
 
-  // TODO: 앨범 상세에서 진입 시 또는 수정 화면에서 기존 앨범 자동 선택
+  // 앨범 상세에서 진입 시 앨범 자동 선택 (최초 1회만)
+  useEffect(() => {
+    if (initialAlbumId && data?.albums && !hasInitialized.current) {
+      const album = data.albums.find((a) => a.id === initialAlbumId);
+      if (album && album.id && album.title) {
+        setSelectedAlbum({ id: album.id, title: album.title });
+        hasInitialized.current = true;
+        setInitialAlbumId(null);
+      }
+    }
+  }, [initialAlbumId, data?.albums, setInitialAlbumId]);
 
   const trimmedSearchQuery = searchQuery.trim();
 

@@ -36,6 +36,10 @@ interface PhotoContextValue {
   selectedPhotoRect: PhotoRect | null;
   /** 선택한 사진 위치 설정 - UI 상태 */
   setSelectedPhotoRect: (rect: PhotoRect | null) => void;
+  /** 사진 추가 시 기본으로 선택할 앨범 ID */
+  initialAlbumId: number | null;
+  /** 기본 앨범 ID 설정 */
+  setInitialAlbumId: (albumId: number | null) => void;
 }
 
 const PhotoContext = createContext<PhotoContextValue | null>(null);
@@ -44,6 +48,7 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<SelectedPhoto | null>(null);
   const [selectedPhotoRect, setSelectedPhotoRect] = useState<PhotoRect | null>(null);
+  const [initialAlbumId, setInitialAlbumId] = useState<number | null>(null);
 
   const addPhotos = useCallback((newPhotos: SelectedPhoto[]) => {
     setPhotos((prev) => [...prev, ...newPhotos]);
@@ -57,8 +62,10 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
       setSelectedPhoto,
       selectedPhotoRect,
       setSelectedPhotoRect,
+      initialAlbumId,
+      setInitialAlbumId,
     }),
-    [photos, addPhotos, selectedPhoto, selectedPhotoRect],
+    [photos, addPhotos, selectedPhoto, selectedPhotoRect, initialAlbumId],
   );
 
   return <PhotoContext.Provider value={value}>{children}</PhotoContext.Provider>;

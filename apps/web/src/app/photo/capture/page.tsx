@@ -13,7 +13,7 @@ type CameraFacing = 'user' | 'environment';
 
 export default function PhotoCapturePage() {
   const router = useRouter();
-  const { addPhotos, setSelectedPhoto } = usePhotoContext();
+  const { addPhotos, setSelectedPhoto, setInitialAlbumId } = usePhotoContext();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -131,10 +131,19 @@ export default function PhotoCapturePage() {
     if (photo) {
       addPhotos([photo]);
       setSelectedPhoto(photo);
+      setInitialAlbumId(null);
       stopCamera();
       router.push(ROUTES.PHOTO.NOTE.ADD);
     }
-  }, [facingMode, currentLocation, addPhotos, setSelectedPhoto, stopCamera, router]);
+  }, [
+    facingMode,
+    currentLocation,
+    addPhotos,
+    setSelectedPhoto,
+    setInitialAlbumId,
+    stopCamera,
+    router,
+  ]);
 
   return (
     <S.Container>
