@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { SelectedPhoto } from '../_types/photo';
 import { fileToSelectedPhoto } from '../_utils/fileToSelectedPhoto';
 
@@ -17,6 +17,8 @@ interface UsePhotoSelectReturn {
 
 export const usePhotoSelect = (options?: UsePhotoSelectOptions): UsePhotoSelectReturn => {
   const [isLoading, setIsLoading] = useState(false);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const selectPhotosFromFile = useCallback(() => {
     const input = document.createElement('input');
@@ -35,12 +37,12 @@ export const usePhotoSelect = (options?: UsePhotoSelectOptions): UsePhotoSelectR
       const results = await Promise.all(photoPromises);
       const newPhotos = results.filter((photo): photo is SelectedPhoto => photo !== null);
 
-      options?.onPhotosSelected?.(newPhotos);
+      optionsRef.current?.onPhotosSelected?.(newPhotos);
       setIsLoading(false);
     };
 
     input.click();
-  }, [options]);
+  }, []);
 
   return {
     isLoading,
