@@ -4,6 +4,22 @@ import { useCallback, useRef, useState } from 'react';
 import type { SelectedPhoto } from '../_types/photo';
 import { fileToSelectedPhoto } from '../_utils/fileToSelectedPhoto';
 
+/** XSS 방지를 위해 허용된 이미지 MIME 타입 (SVG 제외) */
+const ALLOWED_IMAGE_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+] as const;
+
+const isAllowedImageType = (file: File): boolean => {
+  return ALLOWED_IMAGE_MIME_TYPES.includes(
+    file.type.toLowerCase() as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
+  );
+};
+
 interface UsePhotoSelectOptions {
   onPhotosSelected?: (photos: SelectedPhoto[]) => void;
 }
@@ -23,7 +39,7 @@ export const usePhotoSelect = (options?: UsePhotoSelectOptions): UsePhotoSelectR
   const selectPhotosFromFile = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = ALLOWED_IMAGE_MIME_TYPES.join(',');
     input.multiple = false;
     input.style.display = 'none';
     document.body.appendChild(input);
@@ -40,13 +56,19 @@ export const usePhotoSelect = (options?: UsePhotoSelectOptions): UsePhotoSelectR
       }
 
       setIsLoading(true);
-      const photoPromises = Array.from(files).map((file) => fileToSelectedPhoto(file));
-      const results = await Promise.all(photoPromises);
-      const newPhotos = results.filter((photo): photo is SelectedPhoto => photo !== null);
+      try {
+        const validFiles = Array.from(files).filter(isAllowedImageType);
+        const photoPromises = validFiles.map((file) => fileToSelectedPhoto(file));
+        const results = await Promise.all(photoPromises);
+        const newPhotos = results.filter(
+          (photo): photo is SelectedPhoto => photo !== null,
+        );
 
-      optionsRef.current?.onPhotosSelected?.(newPhotos);
-      setIsLoading(false);
-      cleanup();
+        optionsRef.current?.onPhotosSelected?.(newPhotos);
+      } finally {
+        setIsLoading(false);
+        cleanup();
+      }
     };
 
     input.oncancel = cleanup;
