@@ -13,7 +13,8 @@ type CameraFacing = 'user' | 'environment';
 
 export default function PhotoCapturePage() {
   const router = useRouter();
-  const { addPhotos, setSelectedPhoto, setInitialAlbumId } = usePhotoContext();
+  const { addPhotos, setSelectedPhoto, setInitialAlbumId, resetPhotoNoteState } =
+    usePhotoContext();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -131,6 +132,7 @@ export default function PhotoCapturePage() {
     if (photo) {
       addPhotos([photo]);
       setSelectedPhoto(photo);
+      resetPhotoNoteState();
       setInitialAlbumId(null);
       stopCamera();
       router.push(ROUTES.PHOTO.NOTE.ADD);
@@ -140,6 +142,7 @@ export default function PhotoCapturePage() {
     currentLocation,
     addPhotos,
     setSelectedPhoto,
+    resetPhotoNoteState,
     setInitialAlbumId,
     stopCamera,
     router,

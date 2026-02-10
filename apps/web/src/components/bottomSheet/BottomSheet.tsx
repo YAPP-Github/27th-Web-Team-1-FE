@@ -40,7 +40,8 @@ const BottomSheet = ({
 }: BottomSheetProps) => {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
-  const { addPhotos, setSelectedPhoto, setInitialAlbumId } = usePhotoContext();
+  const { addPhotos, setSelectedPhoto, setInitialAlbumId, resetPhotoNoteState } =
+    usePhotoContext();
 
   /**
    * 웹 브라우저 환경에서는 보안 정책상 사용자의 전체 갤러리에 접근할 수 없음.
@@ -54,13 +55,21 @@ const BottomSheet = ({
       addPhotos(newPhotos);
       if (newPhotos.length > 0) {
         setSelectedPhoto(newPhotos[0]);
+        resetPhotoNoteState();
         const albumId =
           context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? context.albumId : null;
         setInitialAlbumId(albumId);
         router.push(ROUTES.PHOTO.NOTE.ADD);
       }
     },
-    [addPhotos, setSelectedPhoto, setInitialAlbumId, router, context],
+    [
+      addPhotos,
+      setSelectedPhoto,
+      resetPhotoNoteState,
+      setInitialAlbumId,
+      router,
+      context,
+    ],
   );
 
   const { selectPhotosFromFile } = usePhotoSelect({

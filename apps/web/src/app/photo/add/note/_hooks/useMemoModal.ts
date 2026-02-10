@@ -1,15 +1,31 @@
 import { useState, useEffect } from 'react';
+import { usePhotoContext } from '@/app/photo/_contexts/PhotoContext';
 
-const useMemoModal = (initialMemo: string = '') => {
-  const [memo, setMemo] = useState(initialMemo);
-  const [tempMemo, setTempMemo] = useState(initialMemo);
+interface UseMemoModalOptions {
+  /** 로컬 상태 사용 (편집 화면용) */
+  initialMemo?: string;
+}
+
+const useMemoModal = (options?: UseMemoModalOptions) => {
+  const useLocalState = options?.initialMemo !== undefined;
+  const { photoNoteState, updatePhotoNoteState } = usePhotoContext();
+
+  // 로컬 상태 (편집 화면용)
+  const [localMemo, setLocalMemo] = useState(options?.initialMemo ?? '');
+  const [tempMemo, setTempMemo] = useState(
+    useLocalState ? (options?.initialMemo ?? '') : photoNoteState.memo,
+  );
   const [isOpen, setIsOpen] = useState(false);
 
-  // initialMemo가 변경될 때마다 상태 재설정
+  // initialMemo가 변경될 때 로컬 상태 업데이트 (편집 화면용)
   useEffect(() => {
-    setMemo(initialMemo);
-    setTempMemo(initialMemo);
-  }, [initialMemo]);
+    if (useLocalState && options?.initialMemo !== undefined) {
+      setLocalMemo(options.initialMemo);
+      setTempMemo(options.initialMemo);
+    }
+  }, [useLocalState, options?.initialMemo]);
+
+  const memo = useLocalState ? localMemo : photoNoteState.memo;
 
   const openModal = () => {
     setTempMemo(memo);
@@ -21,7 +37,11 @@ const useMemoModal = (initialMemo: string = '') => {
   };
 
   const submitMemo = () => {
-    setMemo(tempMemo);
+    if (useLocalState) {
+      setLocalMemo(tempMemo);
+    } else {
+      updatePhotoNoteState({ memo: tempMemo });
+    }
     closeModal();
   };
 
@@ -29,7 +49,6 @@ const useMemoModal = (initialMemo: string = '') => {
     memo,
     tempMemo,
     setTempMemo,
-    setMemo,
     isOpen,
     openModal,
     closeModal,

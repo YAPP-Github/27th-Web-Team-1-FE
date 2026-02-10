@@ -4,25 +4,25 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchPlaces, getSearchPlacesQueryKey, PlaceResponse } from '@repo/api-client';
 import { useDebounce } from '@/hooks/useDebounce';
+import { usePhotoContext, type PhotoNoteState } from '@/app/photo/_contexts/PhotoContext';
 
 const DEBOUNCE_DELAY = 500;
 
+type SelectedLocation = PhotoNoteState['selectedLocation'];
+
 interface UseLocationModalOptions {
-  initialLocation?: Pick<PlaceResponse, 'latitude' | 'longitude' | 'address'> | null;
+  /** 로컬 상태 사용 (편집 화면용) */
+  useLocalState?: boolean;
 }
 
 const useLocationModal = (options?: UseLocationModalOptions) => {
-  const initialLocationState: PlaceResponse | null = options?.initialLocation
-    ? {
-        latitude: options.initialLocation.latitude,
-        longitude: options.initialLocation.longitude,
-        address: options.initialLocation.address,
-      }
-    : null;
+  const useLocalState = options?.useLocalState ?? false;
+  const { photoNoteState, updatePhotoNoteState } = usePhotoContext();
 
-  const [selectedLocation, setSelectedLocation] = useState<PlaceResponse | null>(
-    initialLocationState,
-  );
+  // 로컬 상태 (편집 화면용)
+  const [localSelectedLocation, setLocalSelectedLocation] =
+    useState<SelectedLocation>(null);
+
   const [tempSelectedLocationId, setTempSelectedLocationId] = useState<string | null>(
     null,
   );
@@ -38,6 +38,18 @@ const useLocationModal = (options?: UseLocationModalOptions) => {
   });
 
   const locations = data?.places ?? [];
+
+  const selectedLocation = useLocalState
+    ? localSelectedLocation
+    : photoNoteState.selectedLocation;
+
+  const setSelectedLocation = (location: SelectedLocation) => {
+    if (useLocalState) {
+      setLocalSelectedLocation(location);
+    } else {
+      updatePhotoNoteState({ selectedLocation: location });
+    }
+  };
 
   const openModal = () => {
     setTempSelectedLocationId(
@@ -59,7 +71,13 @@ const useLocationModal = (options?: UseLocationModalOptions) => {
         (l) => `${l.longitude}-${l.latitude}` === tempSelectedLocationId,
       );
       if (location) {
-        setSelectedLocation(location);
+        setSelectedLocation({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          address: location.address,
+          roadAddress: location.roadAddress,
+          placeName: location.placeName,
+        });
       }
     }
     closeModal();

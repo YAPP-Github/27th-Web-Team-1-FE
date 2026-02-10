@@ -17,6 +17,19 @@ export interface PhotoRect {
   height: number;
 }
 
+/** 사진 정보 기입 화면의 상태 (지도뷰 미리보기 이동 시에도 유지) */
+export interface PhotoNoteState {
+  memo: string;
+  selectedAlbum: { id: number; title: string } | null;
+  selectedLocation: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+    roadAddress?: string;
+    placeName?: string;
+  } | null;
+}
+
 /**
  * TODO: 기능이 복잡해지면 PhotoAnimationContext로 분리 고려
  * - selectedPhotoRect, setSelectedPhotoRect는 UI 애니메이션 전용 상태
@@ -40,18 +53,40 @@ interface PhotoContextValue {
   initialAlbumId: number | null;
   /** 기본 앨범 ID 설정 */
   setInitialAlbumId: (albumId: number | null) => void;
+  /** 사진 정보 기입 화면의 상태 */
+  photoNoteState: PhotoNoteState;
+  /** 사진 정보 기입 상태 업데이트 */
+  updatePhotoNoteState: (state: Partial<PhotoNoteState>) => void;
+  /** 사진 정보 기입 상태 초기화 */
+  resetPhotoNoteState: () => void;
 }
 
 const PhotoContext = createContext<PhotoContextValue | null>(null);
+
+const initialPhotoNoteState: PhotoNoteState = {
+  memo: '',
+  selectedAlbum: null,
+  selectedLocation: null,
+};
 
 export function PhotoProvider({ children }: { children: ReactNode }) {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<SelectedPhoto | null>(null);
   const [selectedPhotoRect, setSelectedPhotoRect] = useState<PhotoRect | null>(null);
   const [initialAlbumId, setInitialAlbumId] = useState<number | null>(null);
+  const [photoNoteState, setPhotoNoteState] =
+    useState<PhotoNoteState>(initialPhotoNoteState);
 
   const addPhotos = useCallback((newPhotos: SelectedPhoto[]) => {
     setPhotos((prev) => [...prev, ...newPhotos]);
+  }, []);
+
+  const updatePhotoNoteState = useCallback((state: Partial<PhotoNoteState>) => {
+    setPhotoNoteState((prev) => ({ ...prev, ...state }));
+  }, []);
+
+  const resetPhotoNoteState = useCallback(() => {
+    setPhotoNoteState(initialPhotoNoteState);
   }, []);
 
   const value = useMemo(
@@ -64,8 +99,20 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
       setSelectedPhotoRect,
       initialAlbumId,
       setInitialAlbumId,
+      photoNoteState,
+      updatePhotoNoteState,
+      resetPhotoNoteState,
     }),
-    [photos, addPhotos, selectedPhoto, selectedPhotoRect, initialAlbumId],
+    [
+      photos,
+      addPhotos,
+      selectedPhoto,
+      selectedPhotoRect,
+      initialAlbumId,
+      photoNoteState,
+      updatePhotoNoteState,
+      resetPhotoNoteState,
+    ],
   );
 
   return <PhotoContext.Provider value={value}>{children}</PhotoContext.Provider>;

@@ -50,7 +50,7 @@ export default function PhotoEditOverlay({
     openModal: handleAddMemo,
     closeModal: handleMemoModalClose,
     submitMemo: handleMemoSubmit,
-  } = useMemoModal(photoDetail?.description || '');
+  } = useMemoModal({ initialMemo: photoDetail?.description || '' });
 
   const {
     selectedAlbum,
@@ -79,7 +79,7 @@ export default function PhotoEditOverlay({
     openModal: handleAddLocation,
     closeModal: handleLocationModalClose,
     submitLocation: handleLocationSubmit,
-  } = useLocationModal();
+  } = useLocationModal({ useLocalState: true });
 
   // photoDetail이 로드되면 기존 좌표값으로 초기화
   useEffect(() => {

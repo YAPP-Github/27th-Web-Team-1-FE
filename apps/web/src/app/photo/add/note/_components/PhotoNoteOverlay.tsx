@@ -50,7 +50,7 @@ interface PhotoNoteOverlayProps {
 export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const router = useRouter();
   const { showToast } = useToast();
-  const { selectedPhoto, selectedPhotoRect } = usePhotoContext();
+  const { selectedPhoto, selectedPhotoRect, resetPhotoNoteState } = usePhotoContext();
   const {
     memo,
     tempMemo,
@@ -115,6 +115,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
       },
       {
         onSuccess: () => {
+          resetPhotoNoteState();
           showToast('사진이 추가되었습니다');
           if (selectedAlbum) {
             router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));

@@ -1,36 +1,30 @@
 'use client';
 
 import { useGetSelectableAlbums, type SelectableAlbum } from '@repo/api-client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePhotoContext } from '@/app/photo/_contexts/PhotoContext';
 
-interface SelectedAlbum {
-  id: number;
-  title: string;
-}
-
 const useAlbumModal = () => {
-  const { initialAlbumId, setInitialAlbumId } = usePhotoContext();
-  const hasInitialized = useRef(false);
+  const { initialAlbumId, setInitialAlbumId, photoNoteState, updatePhotoNoteState } =
+    usePhotoContext();
 
-  const [selectedAlbum, setSelectedAlbum] = useState<SelectedAlbum | null>(null);
   const [tempSelectedAlbumId, setTempSelectedAlbumId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const { data, isLoading } = useGetSelectableAlbums();
 
-  // 앨범 상세에서 진입 시 앨범 자동 선택 (최초 1회만)
+  // 앨범 상세에서 진입 시 앨범 자동 선택
+  // initialAlbumId 사용 후 바로 null로 설정하여 중복 실행 방지
   useEffect(() => {
-    if (initialAlbumId && data?.albums && !hasInitialized.current) {
+    if (initialAlbumId && data?.albums) {
       const album = data.albums.find((a) => a.id === initialAlbumId);
       if (album && album.id && album.title) {
-        setSelectedAlbum({ id: album.id, title: album.title });
-        hasInitialized.current = true;
-        setInitialAlbumId(null);
+        updatePhotoNoteState({ selectedAlbum: { id: album.id, title: album.title } });
       }
+      setInitialAlbumId(null);
     }
-  }, [initialAlbumId, data?.albums, setInitialAlbumId]);
+  }, [initialAlbumId, data?.albums, setInitialAlbumId, updatePhotoNoteState]);
 
   const trimmedSearchQuery = searchQuery.trim();
 
@@ -45,7 +39,7 @@ const useAlbumModal = () => {
   );
 
   const openModal = () => {
-    setTempSelectedAlbumId(selectedAlbum?.id ?? null);
+    setTempSelectedAlbumId(photoNoteState.selectedAlbum?.id ?? null);
     setSearchQuery('');
     setIsOpen(true);
   };
@@ -55,21 +49,21 @@ const useAlbumModal = () => {
   };
 
   const resetAlbum = () => {
-    setSelectedAlbum(null);
+    updatePhotoNoteState({ selectedAlbum: null });
   };
 
   const submitAlbum = () => {
     if (tempSelectedAlbumId && data?.albums) {
       const album = data.albums.find((a) => a.id === tempSelectedAlbumId);
       if (album && album.id && album.title) {
-        setSelectedAlbum({ id: album.id, title: album.title });
+        updatePhotoNoteState({ selectedAlbum: { id: album.id, title: album.title } });
       }
     }
     closeModal();
   };
 
   return {
-    selectedAlbum,
+    selectedAlbum: photoNoteState.selectedAlbum,
     tempSelectedAlbumId,
     setTempSelectedAlbumId,
     searchQuery,
