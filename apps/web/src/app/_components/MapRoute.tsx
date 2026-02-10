@@ -208,10 +208,6 @@ export default function MapRoute() {
         isOpen={isLocationDeniedModalOpen}
         onClose={handleCloseLocationDeniedModal}
       />
-      <LocationPermissionModal
-        isOpen={isLocationDeniedModalOpen}
-        onClose={handleCloseLocationDeniedModal}
-      />
     </S.Wrapper>
   );
 }
