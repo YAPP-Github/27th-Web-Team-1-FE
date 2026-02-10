@@ -50,7 +50,7 @@ interface PhotoNoteOverlayProps {
 export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const router = useRouter();
   const { showToast } = useToast();
-  const { selectedPhoto, selectedPhotoRect, resetPhotoNoteState } = usePhotoContext();
+  const { selectedPhoto, selectedPhotoRect } = usePhotoContext();
   const {
     memo,
     tempMemo,
@@ -115,7 +115,6 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
       },
       {
         onSuccess: () => {
-          resetPhotoNoteState();
           showToast('사진이 추가되었습니다');
           if (selectedAlbum) {
             router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
@@ -158,11 +157,12 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const hasSelectedLocation = !!selectedLocation;
   const hasLocation = hasPhotoLocation || hasSelectedLocation;
 
-  const locationText = selectedLocation
-    ? selectedLocation.placeName ||
-      selectedLocation.roadAddress ||
-      selectedLocation.address
-    : addressData?.placeName || addressData?.address;
+  const locationText =
+    selectedLocation?.placeName ||
+    selectedLocation?.roadAddress ||
+    selectedLocation?.address ||
+    addressData?.placeName ||
+    addressData?.address;
 
   /**
    * scale 애니메이션을 위한 초기값과 transform-origin 계산

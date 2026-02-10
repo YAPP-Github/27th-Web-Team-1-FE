@@ -1,34 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePhotoContext } from '@/app/photo/_contexts/PhotoContext';
+import { STATE_SOURCE, type StateSource } from '@/app/photo/_constants/stateSource';
 
 interface UseMemoModalOptions {
-  /** 로컬 상태 사용 (편집 화면용) */
-  initialMemo?: string;
+  /** 상태 소스: 사진 추가(NOTE) 또는 사진 수정(EDIT) */
+  stateSource?: StateSource;
 }
 
 const useMemoModal = (options?: UseMemoModalOptions) => {
-  const useLocalState = options?.initialMemo !== undefined;
-  const { photoNoteState, updatePhotoNoteState } = usePhotoContext();
+  const stateSource = options?.stateSource ?? STATE_SOURCE.NOTE;
+  const { photoNoteState, updatePhotoNoteState, photoEditState, updatePhotoEditState } =
+    usePhotoContext();
 
-  // 로컬 상태 (편집 화면용)
-  const [localMemo, setLocalMemo] = useState(options?.initialMemo ?? '');
-  const [tempMemo, setTempMemo] = useState(
-    useLocalState ? (options?.initialMemo ?? '') : photoNoteState.memo,
-  );
+  const state = stateSource === STATE_SOURCE.EDIT ? photoEditState : photoNoteState;
+  const updateState =
+    stateSource === STATE_SOURCE.EDIT ? updatePhotoEditState : updatePhotoNoteState;
+
+  const [tempMemo, setTempMemo] = useState(state.memo);
   const [isOpen, setIsOpen] = useState(false);
 
-  // initialMemo가 변경될 때 로컬 상태 업데이트 (편집 화면용)
-  useEffect(() => {
-    if (useLocalState && options?.initialMemo !== undefined) {
-      setLocalMemo(options.initialMemo);
-      setTempMemo(options.initialMemo);
-    }
-  }, [useLocalState, options?.initialMemo]);
-
-  const memo = useLocalState ? localMemo : photoNoteState.memo;
-
   const openModal = () => {
-    setTempMemo(memo);
+    setTempMemo(state.memo);
     setIsOpen(true);
   };
 
@@ -37,16 +29,12 @@ const useMemoModal = (options?: UseMemoModalOptions) => {
   };
 
   const submitMemo = () => {
-    if (useLocalState) {
-      setLocalMemo(tempMemo);
-    } else {
-      updatePhotoNoteState({ memo: tempMemo });
-    }
+    updateState({ memo: tempMemo });
     closeModal();
   };
 
   return {
-    memo,
+    memo: state.memo,
     tempMemo,
     setTempMemo,
     isOpen,

@@ -7,6 +7,8 @@ import { useGetPhotoDetail } from '@repo/api-client';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
+import { usePhotoContext } from '../../_contexts/PhotoContext';
+import { STATE_SOURCE } from '../../_constants/stateSource';
 import MemoModal from '../../add/note/_components/MemoModal';
 import AlbumSelectOverlay from '../../add/note/_components/AlbumSelectOverlay';
 import LocationSelectOverlay from '../../add/note/_components/LocationSelectOverlay';
@@ -41,7 +43,28 @@ export default function PhotoEditOverlay({
   isSaving = false,
 }: PhotoEditOverlayProps) {
   const router = useRouter();
+  const { initPhotoEditState, isEditStateInitialized } = usePhotoContext();
   const { data: photoDetail, isLoading } = useGetPhotoDetail(photoId);
+
+  // photoDetail이 로드되면 photoEditState 초기화 (최초 1회만)
+  // 지도뷰 미리보기에서 복귀 시에는 이미 초기화되어 있으므로 스킵
+  useEffect(() => {
+    if (photoDetail && !isEditStateInitialized) {
+      initPhotoEditState({
+        memo: photoDetail.description || '',
+        selectedAlbum: null, // API에서 albumId를 제공하지 않아서 초기 선택 불가
+        selectedLocation:
+          photoDetail.latitude != null && photoDetail.longitude != null
+            ? {
+                latitude: photoDetail.latitude,
+                longitude: photoDetail.longitude,
+                address: photoDetail.address,
+              }
+            : null,
+      });
+    }
+  }, [photoDetail, isEditStateInitialized, initPhotoEditState]);
+
   const {
     memo,
     tempMemo,
@@ -50,7 +73,7 @@ export default function PhotoEditOverlay({
     openModal: handleAddMemo,
     closeModal: handleMemoModalClose,
     submitMemo: handleMemoSubmit,
-  } = useMemoModal({ initialMemo: photoDetail?.description || '' });
+  } = useMemoModal({ stateSource: STATE_SOURCE.EDIT });
 
   const {
     selectedAlbum,
@@ -64,11 +87,10 @@ export default function PhotoEditOverlay({
     openModal: handleAlbumSelect,
     closeModal: handleAlbumModalClose,
     submitAlbum: handleAlbumSubmit,
-  } = useAlbumModal();
+  } = useAlbumModal({ stateSource: STATE_SOURCE.EDIT });
 
   const {
     selectedLocation,
-    setSelectedLocation,
     tempSelectedLocationId,
     setTempSelectedLocationId,
     searchQuery: locationSearchQuery,
@@ -79,22 +101,7 @@ export default function PhotoEditOverlay({
     openModal: handleAddLocation,
     closeModal: handleLocationModalClose,
     submitLocation: handleLocationSubmit,
-  } = useLocationModal({ useLocalState: true });
-
-  // photoDetail이 로드되면 기존 좌표값으로 초기화
-  useEffect(() => {
-    if (
-      photoDetail?.latitude != null &&
-      photoDetail?.longitude != null &&
-      !selectedLocation
-    ) {
-      setSelectedLocation({
-        latitude: photoDetail.latitude,
-        longitude: photoDetail.longitude,
-        address: photoDetail.address,
-      });
-    }
-  }, [photoDetail, selectedLocation, setSelectedLocation]);
+  } = useLocationModal({ stateSource: STATE_SOURCE.EDIT });
 
   const handleMapPreview = () => {
     if (!photoDetail || !selectedLocation) return;

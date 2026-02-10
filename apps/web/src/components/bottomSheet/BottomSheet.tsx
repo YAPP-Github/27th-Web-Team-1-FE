@@ -55,7 +55,7 @@ const BottomSheet = ({
       addPhotos(newPhotos);
       if (newPhotos.length > 0) {
         setSelectedPhoto(newPhotos[0]);
-        resetPhotoNoteState();
+        resetPhotoNoteState(newPhotos[0]);
         const albumId =
           context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ? context.albumId : null;
         setInitialAlbumId(albumId);

@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { useUpdate, getGetPhotoDetailQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast/ToastProvider';
+import { usePhotoContext } from '@/app/photo/_contexts/PhotoContext';
 import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 
 interface EditData {
@@ -12,10 +12,12 @@ interface EditData {
 }
 
 const usePhotoEdit = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingPhotoId, setEditingPhotoId] = useState<number | null>(null);
+  const { editingPhotoId, setEditingPhotoId, initPhotoEditState } = usePhotoContext();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+
+  // editingPhotoId가 있으면 수정 중인 상태
+  const isEditing = editingPhotoId !== null;
 
   const { mutate: updatePhoto, isPending: isSaving } = useUpdate({
     mutation: {
@@ -24,8 +26,8 @@ const usePhotoEdit = () => {
           queryKey: getGetPhotoDetailQueryKey(variables.id),
         });
         showToast('기록이 수정되었어요');
-        setIsEditing(false);
         setEditingPhotoId(null);
+        initPhotoEditState({});
       },
       onError: (error) => {
         console.error('사진 수정 실패:', error);
@@ -36,12 +38,11 @@ const usePhotoEdit = () => {
 
   const openEditOverlay = (photoId: number) => {
     setEditingPhotoId(photoId);
-    setIsEditing(true);
   };
 
   const closeEditOverlay = () => {
-    setIsEditing(false);
     setEditingPhotoId(null);
+    initPhotoEditState({});
   };
 
   const saveEdit = (data: EditData) => {

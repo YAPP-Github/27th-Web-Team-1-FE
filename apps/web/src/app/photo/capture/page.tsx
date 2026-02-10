@@ -132,7 +132,7 @@ export default function PhotoCapturePage() {
     if (photo) {
       addPhotos([photo]);
       setSelectedPhoto(photo);
-      resetPhotoNoteState();
+      resetPhotoNoteState(photo);
       setInitialAlbumId(null);
       stopCamera();
       router.push(ROUTES.PHOTO.NOTE.ADD);

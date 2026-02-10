@@ -2,26 +2,28 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { searchPlaces, getSearchPlacesQueryKey, PlaceResponse } from '@repo/api-client';
+import { searchPlaces, getSearchPlacesQueryKey } from '@repo/api-client';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePhotoContext, type PhotoNoteState } from '@/app/photo/_contexts/PhotoContext';
+import { STATE_SOURCE, type StateSource } from '@/app/photo/_constants/stateSource';
 
 const DEBOUNCE_DELAY = 500;
 
 type SelectedLocation = PhotoNoteState['selectedLocation'];
 
 interface UseLocationModalOptions {
-  /** 로컬 상태 사용 (편집 화면용) */
-  useLocalState?: boolean;
+  /** 상태 소스: 사진 추가(NOTE) 또는 사진 수정(EDIT) */
+  stateSource?: StateSource;
 }
 
 const useLocationModal = (options?: UseLocationModalOptions) => {
-  const useLocalState = options?.useLocalState ?? false;
-  const { photoNoteState, updatePhotoNoteState } = usePhotoContext();
+  const stateSource = options?.stateSource ?? STATE_SOURCE.NOTE;
+  const { photoNoteState, updatePhotoNoteState, photoEditState, updatePhotoEditState } =
+    usePhotoContext();
 
-  // 로컬 상태 (편집 화면용)
-  const [localSelectedLocation, setLocalSelectedLocation] =
-    useState<SelectedLocation>(null);
+  const state = stateSource === STATE_SOURCE.EDIT ? photoEditState : photoNoteState;
+  const updateState =
+    stateSource === STATE_SOURCE.EDIT ? updatePhotoEditState : updatePhotoNoteState;
 
   const [tempSelectedLocationId, setTempSelectedLocationId] = useState<string | null>(
     null,
@@ -39,22 +41,14 @@ const useLocationModal = (options?: UseLocationModalOptions) => {
 
   const locations = data?.places ?? [];
 
-  const selectedLocation = useLocalState
-    ? localSelectedLocation
-    : photoNoteState.selectedLocation;
-
   const setSelectedLocation = (location: SelectedLocation) => {
-    if (useLocalState) {
-      setLocalSelectedLocation(location);
-    } else {
-      updatePhotoNoteState({ selectedLocation: location });
-    }
+    updateState({ selectedLocation: location });
   };
 
   const openModal = () => {
     setTempSelectedLocationId(
-      selectedLocation
-        ? `${selectedLocation.longitude}-${selectedLocation.latitude}`
+      state.selectedLocation
+        ? `${state.selectedLocation.longitude}-${state.selectedLocation.latitude}`
         : null,
     );
     setSearchQuery('');
@@ -84,7 +78,7 @@ const useLocationModal = (options?: UseLocationModalOptions) => {
   };
 
   return {
-    selectedLocation,
+    selectedLocation: state.selectedLocation,
     setSelectedLocation,
     tempSelectedLocationId,
     setTempSelectedLocationId,
