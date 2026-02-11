@@ -18,12 +18,14 @@ export const SheetWrapper = styled.div<SheetWrapperProps>`
   transition: ${({ $isDragging }) => ($isDragging ? 'none' : 'height 0.3s ease-out')};
   overflow: hidden;
   display: flex;
+  gap: 4px;
   flex-direction: column;
 `;
 
 export const HandleBar = styled.div`
   width: 100%;
-  height: 40px;
+  height: 28px;
+  padding: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,9 +33,9 @@ export const HandleBar = styled.div`
   touch-action: none;
 
   .handle {
-    width: 40px;
-    height: 5px;
-    background-color: #e0e0e0;
+    width: 44px;
+    height: 4px;
+    background-color: ${({ theme }) => theme.colors.gray[400]};
     border-radius: 10px;
   }
 `;
