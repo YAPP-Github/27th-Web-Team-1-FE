@@ -25,8 +25,13 @@ const useAlbumAdd = (onSuccess?: () => void) => {
           showToast('앨범이 생성되었어요');
           onSuccess?.();
         },
-        onError: () => {
-          showToast('앨범 생성에 실패했어요');
+        onError: (error) => {
+          const apiError = error as any;
+          if (apiError?.code === 409 || apiError?.data?.errorCode === 'ALBUM_003') {
+            showToast('존재하는 앨범명이에요');
+          } else {
+            showToast('앨범 생성에 실패했어요');
+          }
         },
       },
     );
