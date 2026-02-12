@@ -1,4 +1,4 @@
-import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumThumbnails, AlbumWithPhotosResponse, ClusterPhotoResponse } from '@repo/api-client';
 import AlbumDetail from '../albumDetail/AlbumDetail';
 import ClusterDetail from '../clusterDetail/ClusterDetail';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '../constants';
@@ -10,6 +10,7 @@ interface BottomSheetContentProps {
   albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   onSelectAlbum: (albumId: number) => void;
+  clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
 const BottomSheetContent = ({
@@ -17,6 +18,7 @@ const BottomSheetContent = ({
   albums,
   albumDetailById,
   onSelectAlbum,
+  clusterExpansionData,
 }: BottomSheetContentProps) => {
   switch (context.type) {
     case SHEET_CONTEXT_TYPE.HOME:
@@ -29,7 +31,7 @@ const BottomSheetContent = ({
       return <AlbumDetail album={albumDetailById[context.albumId]} />;
 
     case SHEET_CONTEXT_TYPE.CLUSTER_DETAIL:
-      return <ClusterDetail clusterId={context.clusterId} />;
+      return <ClusterDetail clusterId={context.clusterId} clusterExpansionData={clusterExpansionData} />;
 
     default:
       return null;

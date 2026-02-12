@@ -97,7 +97,7 @@ export default function PhotoViewPage() {
   const displayPhotoUrl = displayPhoto?.url;
   const displayPhotoId = displayPhoto?.id ?? photoId;
   // fetch 중이면 이전 데이터 표시
-  const currentDisplayPhotoDetail = displayPhotoDetail || photoDetail;
+  const currentDisplayPhotoDetail = (displayPhotoDetail || photoDetail) as any;
 
   const handleBack = () => {
     router.back();
@@ -131,11 +131,11 @@ export default function PhotoViewPage() {
           <S.HeaderWrapper>
             <MenuHeader
               title={
-                (displayPhoto as any)?.address || currentDisplayPhotoDetail?.address || ''
+                (displayPhoto as any)?.address || (currentDisplayPhotoDetail as any)?.address || ''
               }
               onClickBack={handleBack}
               showLocation={
-                !!(displayPhoto as any)?.address || !!currentDisplayPhotoDetail?.address
+                !!(displayPhoto as any)?.address || !!(currentDisplayPhotoDetail as any)?.address
               }
             >
               <MenuHeader.Menu>

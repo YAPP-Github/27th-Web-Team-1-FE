@@ -10,6 +10,21 @@ import {
   type ClusterPhotoResponse,
 } from '@repo/api-client';
 
+/**
+ * sessionStorage에서 클라이언트 클러스터 데이터를 가져옵니다.
+ * 클라이언트 클러스터는 API를 호출하지 않고 로컬 데이터를 사용합니다.
+ */
+const getClientClusterPhotosFromStorage = (clusterId: string): ClusterPhotoResponse[] | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = sessionStorage.getItem(`cluster_${clusterId}`);
+    return stored ? JSON.parse(stored) : null;
+  } catch (error) {
+    console.error('Failed to parse cluster data from storage:', error);
+    return null;
+  }
+};
+
 interface UsePhotoDataProps {
   photoId: number;
   albumIdFromQuery?: number;
@@ -42,32 +57,74 @@ const usePhotoData = ({
   albumIdFromQuery,
   clusterIdFromQuery,
 }: UsePhotoDataProps) => {
-  const { data: photoDetail, isLoading: isPhotoLoading } = useGetPhotoDetail(photoId);
+  // 클라이언트 클러스터 여부 판별
+  const isClientCluster = clusterIdFromQuery?.startsWith('client_');
 
-  // 클러스터 사진 조회
-  const { data: clusterPhotosData } = useGetClusterPhotos(clusterIdFromQuery ?? '');
+  // 클라이언트 클러스터인 경우 sessionStorage에서 데이터 가져오기
+  // 아니면 서버 API 호출
+  const clientClusterPhotosData = useMemo(() => {
+    if (isClientCluster && clusterIdFromQuery) {
+      return getClientClusterPhotosFromStorage(clusterIdFromQuery);
+    }
+    return null;
+  }, [isClientCluster, clusterIdFromQuery]);
+
+  // 클라이언트 클러스터인 경우 sessionStorage에서 photoDetail 생성
+  const clientClusterPhotoDetail = useMemo(() => {
+    if (!isClientCluster || !clientClusterPhotosData) return undefined;
+
+    const photo = clientClusterPhotosData.find((p) => p.id === photoId);
+    if (!photo) return undefined;
+
+    return convertClusterPhotoToPhotoResponse(photo);
+  }, [isClientCluster, clientClusterPhotosData, photoId]);
+
+  // 클라이언트 클러스터가 아닌 경우에만 API 호출
+  // 또는 클라이언트 클러스터이지만 sessionStorage에 데이터가 없으면 API 호출 (fallback)
+  const shouldFetchPhotoDetail = !isClientCluster || (!clientClusterPhotoDetail && isClientCluster);
+
+  const { data: apiPhotoDetail, isLoading: isApiLoading } = useGetPhotoDetail(
+    shouldFetchPhotoDetail ? photoId : 0,
+  );
+
+  const photoDetail = clientClusterPhotoDetail || apiPhotoDetail;
+  const isPhotoLoading = shouldFetchPhotoDetail ? isApiLoading : false;
+
+  const { data: serverClusterPhotosData } = useGetClusterPhotos(
+    isClientCluster || !clusterIdFromQuery ? '' : clusterIdFromQuery
+  );
+
+  const clusterPhotosData = isClientCluster ? clientClusterPhotosData : serverClusterPhotosData;
 
   // 앨범 목록 조회 (albumId가 없을 때 albumName으로 찾기 위함)
+  // 클라이언트 클러스터인 경우는 필요 없음 (이미 clusterIdFromQuery가 있음)
   const { data: selectableAlbums } = useGetSelectableAlbums({
     query: {
       queryKey: getGetSelectableAlbumsQueryKey(),
-      enabled: !albumIdFromQuery && !clusterIdFromQuery && !!photoDetail?.albumName,
+      enabled: !albumIdFromQuery && !clusterIdFromQuery && !isClientCluster && !!photoDetail,
     },
   });
 
   // albumId 결정: 쿼리 파라미터 우선, 없으면 albumName으로 매칭
+  // 클라이언트 클러스터인 경우는 albumId가 필요 없음
   const albumId = useMemo(() => {
     if (albumIdFromQuery) return albumIdFromQuery;
 
-    if (selectableAlbums?.albums && photoDetail?.albumName) {
-      const matchedAlbum = selectableAlbums.albums.find(
-        (album) => album.title === photoDetail.albumName,
-      );
-      return matchedAlbum?.id;
+    // 클라이언트 클러스터인 경우 albumId 사용 안 함
+    if (isClientCluster) return undefined;
+
+    if (selectableAlbums?.albums && photoDetail) {
+      const albumNameFromDetail = (photoDetail as any).albumName;
+      if (albumNameFromDetail) {
+        const matchedAlbum = selectableAlbums.albums.find(
+          (album) => album.title === albumNameFromDetail,
+        );
+        return matchedAlbum?.id;
+      }
     }
 
     return undefined;
-  }, [albumIdFromQuery, selectableAlbums?.albums, photoDetail?.albumName]);
+  }, [albumIdFromQuery, selectableAlbums?.albums, photoDetail, isClientCluster]);
 
   const { data: albumPhotos } = useGetPhotos(albumId ?? 0, {
     query: {

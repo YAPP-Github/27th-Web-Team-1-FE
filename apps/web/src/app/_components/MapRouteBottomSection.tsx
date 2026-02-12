@@ -3,7 +3,7 @@
 import BottomSheet from '@/components/bottomSheet/BottomSheet';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import { type SheetContext } from '@/components/bottomSheet/constants';
-import type { AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumWithPhotosResponse, ClusterPhotoResponse } from '@repo/api-client';
 import * as S from '../page.styles';
 
 interface MapRouteBottomSectionProps {
@@ -15,6 +15,7 @@ interface MapRouteBottomSectionProps {
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
   onOpenAddAlbumModal?: () => void;
+  clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
 /**
@@ -31,6 +32,7 @@ export const MapRouteBottomSection = ({
   onSelectAlbum,
   onGoToCurrentLocation,
   onOpenAddAlbumModal,
+  clusterExpansionData,
 }: MapRouteBottomSectionProps) => {
   return (
     <>
@@ -42,6 +44,7 @@ export const MapRouteBottomSection = ({
         onSelectAlbum={onSelectAlbum}
         onGoToCurrentLocation={onGoToCurrentLocation}
         onOpenAddAlbumModal={onOpenAddAlbumModal}
+        clusterExpansionData={clusterExpansionData}
       />
       <S.FloatingButtonWrapper>
         <FloatingButton text={`기록 ${photoCount}개`} />

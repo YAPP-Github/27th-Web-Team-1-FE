@@ -40,6 +40,7 @@ export default function MapRoute() {
     totalHistoryCount,
     clusterLocationData,
     clusterPhotosData,
+    clusterExpansionData,
   } = useMapRouteData({
     viewState,
     sheetContext,
@@ -194,6 +195,7 @@ export default function MapRoute() {
         onSelectAlbum={handleSelectAlbum}
         onGoToCurrentLocation={handleGoToCurrentLocation}
         onOpenAddAlbumModal={() => setIsAddModalOpen(true)}
+        clusterExpansionData={clusterExpansionData}
       />
 
       <AlbumAddModalContainer

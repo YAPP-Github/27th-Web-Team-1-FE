@@ -6,7 +6,7 @@ import MapPinIcon from '@/assets/images/mapPin.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import { ROUTES } from '@/constants/routes';
-import type { AlbumThumbnails, AlbumWithPhotosResponse } from '@repo/api-client';
+import type { AlbumThumbnails, AlbumWithPhotosResponse, ClusterPhotoResponse } from '@repo/api-client';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useRef, useState } from 'react';
 import MenuButton from '../buttons/menuButton/MenuButton';
@@ -27,6 +27,7 @@ interface BottomSheetProps {
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
   onOpenAddAlbumModal?: () => void;
+  clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
 const BottomSheet = ({
@@ -37,6 +38,7 @@ const BottomSheet = ({
   onSelectAlbum,
   onGoToCurrentLocation,
   onOpenAddAlbumModal,
+  clusterExpansionData,
 }: BottomSheetProps) => {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
@@ -187,6 +189,7 @@ const BottomSheet = ({
             albums={albums}
             albumDetailById={albumDetailById}
             onSelectAlbum={onSelectAlbum}
+            clusterExpansionData={clusterExpansionData}
           />
         </S.Content>
       </S.SheetWrapper>

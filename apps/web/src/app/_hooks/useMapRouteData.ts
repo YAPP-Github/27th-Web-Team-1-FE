@@ -38,6 +38,7 @@ interface UseMapRouteDataReturn {
   totalHistoryCount: number | undefined;
   clusterLocationData: LocationInfoResponse | undefined;
   clusterPhotosData: ClusterPhotoResponse[] | undefined;
+  clusterExpansionData: Map<string, ClusterPhotoResponse[]> | undefined;
 }
 
 /**
@@ -80,7 +81,7 @@ export const useMapRouteData = ({
   });
 
   // 사진 핀 조회 (/map/me에서 photos/clusters 처리)
-  const { address, mapPins, totalHistoryCount } = useMapMe({
+  const { address, mapPins, totalHistoryCount, clusterExpansionData } = useMapMe({
     longitude: viewState?.longitude,
     latitude: viewState?.latitude,
     zoom: viewState?.zoom ?? DEFAULT_ZOOM,
@@ -112,7 +113,23 @@ export const useMapRouteData = ({
       ? sheetContext.clusterId
       : null;
 
-  const { data: clusterPhotosData } = useGetClusterPhotos(clusterId ?? '');
+  // 클라이언트 클러스터인지 판별
+  const isClientCluster = clusterId?.startsWith('client_');
+
+  // 서버 클러스터인 경우에만 API 호출 (클라이언트 클러스터는 빈 문자열 전달)
+  const { data: serverClusterPhotosData } = useGetClusterPhotos(
+    isClientCluster || !clusterId ? '' : clusterId,
+  );
+
+  // 클라이언트 클러스터는 로컬 데이터 사용
+  const clientClusterPhotosData = useMemo(() => {
+    if (!isClientCluster || !clusterId || !clusterExpansionData) {
+      return undefined;
+    }
+    return clusterExpansionData.get(clusterId);
+  }, [isClientCluster, clusterId, clusterExpansionData]);
+
+  const clusterPhotosData = isClientCluster ? clientClusterPhotosData : serverClusterPhotosData;
 
   return {
     albumList,
@@ -123,5 +140,6 @@ export const useMapRouteData = ({
     totalHistoryCount,
     clusterLocationData,
     clusterPhotosData,
+    clusterExpansionData,
   };
 };
