@@ -20,8 +20,26 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
 
   // 클라이언트 클러스터인 경우 로컬 데이터 사용, 아니면 API 호출
   const clientClusterData = useMemo(() => {
-    if (isClientCluster && clusterExpansionData) {
-      return clusterExpansionData.get(clusterId);
+    if (isClientCluster) {
+      // 1. clusterExpansionData에서 먼저 찾기
+      if (clusterExpansionData) {
+        const data = clusterExpansionData.get(clusterId);
+        if (data) {
+          return data;
+        }
+      }
+
+      // 2. sessionStorage에서 복구하기 (navigation 후 돌아온 경우)
+      try {
+        const sessionKey = `cluster_${clusterId}`;
+        const savedData = sessionStorage.getItem(sessionKey);
+        if (savedData) {
+          const parsed = JSON.parse(savedData) as ClusterPhotoResponse[];
+          return parsed;
+        }
+      } catch (error) {
+        console.error('[ClusterDetail] Failed to parse sessionStorage:', error);
+      }
     }
     return undefined;
   }, [isClientCluster, clusterId, clusterExpansionData]);
@@ -61,10 +79,12 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
   const handlePhotoClick = (photoId: number) => {
     // 클라이언트 클러스터인 경우 sessionStorage에 데이터 저장
     if (isClientCluster && data) {
-      sessionStorage.setItem(
-        `cluster_${clusterId}`,
-        JSON.stringify(data)
-      );
+      const sessionKey = `cluster_${clusterId}`;
+      try {
+        sessionStorage.setItem(sessionKey, JSON.stringify(data));
+      } catch (error) {
+        console.error('[ClusterDetail] Failed to save to sessionStorage:', error);
+      }
     }
     router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(photoId, clusterId));
   };

@@ -1,8 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { getMe, getGetMeQueryKey } from '@repo/api-client';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import Supercluster from 'supercluster';
 import type { MapPin } from '@/types/map.type';
+import {
+  convertPhotosToGeoJsonFeatures,
+  parseBbox,
+  convertClusteredResultsToMapPins,
+  extractClusterPhotoData,
+  generateClientClusterId,
+  type ClusterPhotoResponse,
+} from './_utils/mapClustering.calc';
+
 
 interface UseMapMeParams {
   longitude?: number;
@@ -10,22 +19,6 @@ interface UseMapMeParams {
   zoom: number;
   bbox: string;
   albumId?: number | null;
-}
-
-interface ClusterPhotoResponse {
-  id: number;
-  url?: string;
-  thumbnailUrl?: string;
-  longitude: number;
-  latitude: number;
-}
-
-/**
- * 클라이언트 clusterId를 생성합니다.
- * 서버 클러스터와 구분하기 위해 "client_" prefix를 사용합니다.
- */
-function generateClientClusterId(superclusterId: number, zoom: number): string {
-  return `client_z${Math.floor(zoom)}_${superclusterId}`;
 }
 
 /**
@@ -73,128 +66,61 @@ export const useMapMe = ({
     });
   }, []);
 
-  const mapPins: MapPin[] = useMemo(() => {
+  // 클러스터 확장 데이터를 캐싱하여 페이지 이동 후에도 유지
+  const clusterExpansionCacheRef = useRef<Map<string, ClusterPhotoResponse[]>>(
+    new Map()
+  );
+
+  // 통합 클러스터링 계산 - mapPins와 clusterExpansionData를 한 번에 처리
+  // 이전에는 이 로직이 두 개의 useMemo에서 중복되었음
+  const clusteringResult = useMemo(() => {
     const data = response.data;
-    if (!data) return [];
-
-    const photoPins: MapPin[] = (data.photos ?? []).map((photo) => ({
-      id: photo.id ?? 0,
-      albumId: 0,
-      latitude: photo.latitude ?? 0,
-      longitude: photo.longitude ?? 0,
-      imageUrl: photo.thumbnailUrl ?? '',
-      imageCount: 1,
-      isCluster: false,
-    }));
-
-    const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
-      id: 0,
-      albumId: 0,
-      latitude: cluster.latitude ?? 0,
-      longitude: cluster.longitude ?? 0,
-      imageUrl: cluster.thumbnailUrl ?? '',
-      imageCount: cluster.count ?? 1,
-      clusterId: cluster.clusterId ?? '',
-      isCluster: true,
-    }));
+    if (!data) {
+      // API 로딩 중이어도 캐시된 클러스터 데이터 유지
+      return {
+        mapPins: [],
+        clusterExpansionData: clusterExpansionCacheRef.current,
+      };
+    }
 
     // 줌레벨 < 17: 서버 클러스터 사용
     if (roundedZoom < 17) {
-      return clusterPins;
+      const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
+        id: 0,
+        albumId: 0,
+        latitude: cluster.latitude ?? 0,
+        longitude: cluster.longitude ?? 0,
+        imageUrl: cluster.thumbnailUrl ?? '',
+        imageCount: cluster.count ?? 1,
+        clusterId: cluster.clusterId ?? '',
+        isCluster: true,
+      }));
+      return {
+        mapPins: clusterPins,
+        clusterExpansionData: clusterExpansionCacheRef.current,
+      };
     }
 
     // 줌레벨 >= 17: 클라이언트 클러스터링
-    if (photoPins.length === 0) {
-      return [];
+    const photos = data.photos ?? [];
+    if (photos.length === 0) {
+      return {
+        mapPins: [],
+        clusterExpansionData: clusterExpansionCacheRef.current,
+      };
     }
 
-    // GeoJSON Feature 형식으로 변환
-    // API 응답 데이터로부터 takenAt 추출
-    const photoDataMap = new Map((data.photos ?? []).map((photo) => [photo.id, photo]));
-    const geoJsonPoints = photoPins.map((pin) => {
-      const photoData = photoDataMap.get(pin.id);
-      return {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [pin.longitude, pin.latitude], // [lng, lat] 순서 중요!
-        },
-        properties: {
-          id: pin.id,
-          albumId: pin.albumId,
-          imageUrl: pin.imageUrl,
-          takenAt: photoData?.takenAt ?? '',
-        },
-      };
-    }) as GeoJSON.Feature<GeoJSON.Point>[];
+    // GeoJSON Feature 형식으로 변환 (헬퍼 함수 사용)
+    const geoJsonPoints = convertPhotosToGeoJsonFeatures(photos);
 
     // Supercluster에 데이터 로드
     superclusterInstance.load(geoJsonPoints as any);
 
-    // bbox 파싱
-    const bboxValues = bbox.split(',').map(Number);
-    if (bboxValues.length !== 4) {
-      return photoPins; // bbox가 없으면 개별 핀 반환
-    }
-    const [west, south, east, north] = bboxValues;
-
-    // 클러스터 조회
-    const clusteredResults = superclusterInstance.getClusters(
-      [west, south, east, north],
-      Math.floor(roundedZoom),
-    );
-
-    // MapPin 형식으로 변환
-    const mapPinsFromCluster: MapPin[] = clusteredResults.map((feature) => {
-      const [lng, lat] = feature.geometry.coordinates;
-
-      if (feature.properties.cluster) {
-        // 클러스터
-        const pointCount = feature.properties.point_count;
-        const clusterId = feature.properties.cluster_id;
-
-        // 클러스터의 첫 번째 사진 썸네일
-        const leaves = superclusterInstance.getLeaves(clusterId, 1);
-        const thumbnailUrl = leaves[0]?.properties.imageUrl ?? '';
-
-        return {
-          id: 0,
-          albumId: 0,
-          latitude: lat,
-          longitude: lng,
-          imageUrl: thumbnailUrl,
-          imageCount: pointCount,
-          clusterId: generateClientClusterId(clusterId, roundedZoom),
-          isCluster: true,
-        };
-      }
-
-      // 개별 포인트
-      return {
-        id: feature.properties.id,
-        albumId: feature.properties.albumId,
-        latitude: lat,
-        longitude: lng,
-        imageUrl: feature.properties.imageUrl,
-        imageCount: 1,
-        isCluster: false,
-      };
-    });
-
-    return mapPinsFromCluster;
-  }, [response.data, roundedZoom, bbox, superclusterInstance]);
-
-  // 클라이언트 클러스터의 사진 데이터 매핑
-  const clusterExpansionData = useMemo(() => {
-    const map = new Map<string, ClusterPhotoResponse[]>();
-
-    if (roundedZoom >= 17 && superclusterInstance) {
-      const data = response.data;
-      if (!data?.photos) return map;
-
-      // GeoJSON 포인트 재생성 (mapPins 계산과 동일)
-      const photoMap = new Map((data.photos ?? []).map((photo) => [photo.id, photo]));
-      const photoPins: MapPin[] = (data.photos ?? []).map((photo) => ({
+    // bbox 파싱 (헬퍼 함수 사용)
+    const bboxValues = parseBbox(bbox);
+    if (!bboxValues) {
+      // bbox가 없으면 개별 핀으로 반환
+      const photoPins: MapPin[] = photos.map((photo) => ({
         id: photo.id ?? 0,
         albumId: 0,
         latitude: photo.latitude ?? 0,
@@ -203,64 +129,54 @@ export const useMapMe = ({
         imageCount: 1,
         isCluster: false,
       }));
-
-      if (photoPins.length === 0) return map;
-
-      const geoJsonPoints = photoPins.map((pin) => {
-        const photoData = photoMap.get(pin.id);
-        return {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [pin.longitude, pin.latitude],
-          },
-          properties: {
-            id: pin.id,
-            albumId: pin.albumId,
-            imageUrl: pin.imageUrl,
-            takenAt: photoData?.takenAt ?? '',
-          },
-        };
-      }) as GeoJSON.Feature<GeoJSON.Point>[];
-
-      // Supercluster에 데이터 재로드
-      superclusterInstance.load(geoJsonPoints as any);
-
-      // 클러스터 조회
-      const bboxValues = bbox.split(',').map(Number);
-      if (bboxValues.length !== 4) return map;
-
-      const [west, south, east, north] = bboxValues;
-      const clusteredResults = superclusterInstance.getClusters(
-        [west, south, east, north],
-        Math.floor(roundedZoom),
-      );
-
-      // 각 클러스터의 사진 데이터 추출
-      clusteredResults.forEach((feature) => {
-        if (feature.properties.cluster) {
-          const superClusterId = feature.properties.cluster_id;
-          const clientClusterId = generateClientClusterId(superClusterId, roundedZoom);
-
-          // 클러스터의 모든 포인트 조회
-          const leaves = superclusterInstance.getLeaves(superClusterId, Infinity);
-
-          const photos: ClusterPhotoResponse[] = leaves.map((leaf) => ({
-            id: leaf.properties.id,
-            url: leaf.properties.imageUrl,
-            thumbnailUrl: leaf.properties.imageUrl,
-            longitude: leaf.geometry.coordinates[0],
-            latitude: leaf.geometry.coordinates[1],
-            takenAt: leaf.properties.takenAt,
-          }));
-
-          map.set(clientClusterId, photos);
-        }
-      });
+      return {
+        mapPins: photoPins,
+        clusterExpansionData: new Map<string, ClusterPhotoResponse[]>(),
+      };
     }
 
-    return map;
+    // 클러스터 조회
+    const clusteredResults = superclusterInstance.getClusters(
+      bboxValues,
+      Math.floor(roundedZoom),
+    );
+
+    // MapPin 형식으로 변환 (헬퍼 함수 사용)
+    const mapPins = convertClusteredResultsToMapPins(
+      clusteredResults,
+      superclusterInstance,
+      roundedZoom,
+    );
+
+    // 클러스터별 사진 데이터 추출 (헬퍼 함수 사용)
+    const newClusterData = extractClusterPhotoData(
+      clusteredResults,
+      superclusterInstance,
+      roundedZoom,
+    );
+
+    // 이전 캐시와 새로운 데이터 병합
+    // 페이지 이동 후 돌아왔을 때도 이전 클러스터 데이터 유지
+    const mergedClusterExpansionData = new Map(clusterExpansionCacheRef.current);
+    newClusterData.forEach((photos, clusterId) => {
+      mergedClusterExpansionData.set(clusterId, photos);
+    });
+    clusterExpansionCacheRef.current = mergedClusterExpansionData;
+
+    return { mapPins, clusterExpansionData: mergedClusterExpansionData };
   }, [response.data, roundedZoom, bbox, superclusterInstance]);
+
+  // 개별 값 추출 (메모이제이션으로 불필요한 리렌더링 방지)
+  const mapPins: MapPin[] = useMemo(
+    () => clusteringResult?.mapPins ?? [],
+    [clusteringResult],
+  );
+
+  const clusterExpansionData = useMemo(
+    () => clusteringResult?.clusterExpansionData ?? new Map<string, ClusterPhotoResponse[]>(),
+    [clusteringResult],
+  );
+
 
   return {
     address,

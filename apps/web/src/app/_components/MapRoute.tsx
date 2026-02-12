@@ -117,6 +117,16 @@ export default function MapRoute() {
         sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
         sheetContext.clusterId === pin.clusterId
       ) {
+        // sessionStorage에 클러스터 데이터 저장
+        if (clusterPhotosData) {
+          const sessionKey = `cluster_${pin.clusterId}`;
+          try {
+            sessionStorage.setItem(sessionKey, JSON.stringify(clusterPhotosData));
+          } catch (error) {
+            console.error('[MapRoute] Failed to save to sessionStorage:', error);
+          }
+        }
+
         const firstPhotoId = clusterPhotosData?.[0]?.id;
         if (firstPhotoId) {
           router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, pin.clusterId));
