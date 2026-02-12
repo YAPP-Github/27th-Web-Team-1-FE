@@ -11,7 +11,7 @@ import * as S from '../page.styles';
 import { useMapRouteViewState } from '../_hooks/useMapRouteViewState';
 import { useMapRouteSheetContext } from '../_hooks/useMapRouteSheetContext';
 import { useMapRouteData } from '../_hooks/useMapRouteData';
-import { calculatePhotoCount } from '../_utils/mapRoute.calc';
+import { calculatePhotoCount, calculateCenterFromAlbumPhotos } from '../_utils/mapRoute.calc';
 import { MapRouteHeader } from './MapRouteHeader';
 import { MapRouteBottomSection } from './MapRouteBottomSection';
 import { AlbumAddModalContainer } from './albumAddModal/AlbumAddModalContainer';
@@ -54,15 +54,22 @@ export default function MapRoute() {
 
   // 앨범이 선택되었을 때 앨범의 중심 위치로 지도 이동
   useEffect(() => {
-    if (!viewState || !selectedAlbumId || !albumMapInfo) return;
+    if (!selectedAlbumId) {
+      return;
+    }
 
-    // centerLongitude/centerLatitude가 boundingBox 범위 내에 있는지 검증
-    // 범위를 벗어나면 boundingBox에서 중심 계산
-    const centerInfo = validateCenterCoordinate(
-      albumMapInfo.centerLongitude,
-      albumMapInfo.centerLatitude,
-      albumMapInfo.boundingBox,
-    );
+    // 앨범의 실제 사진 위치들로부터 중심 계산 (백엔드 centerLng/Lat가 부정확할 수 있으므로)
+    let centerInfo = null;
+    if (albumDetail?.photos && albumDetail.photos.length > 0) {
+      centerInfo = calculateCenterFromAlbumPhotos(albumDetail.photos);
+    } else if (albumMapInfo) {
+      // photos 데이터가 없으면 albumMapInfo 사용
+      centerInfo = validateCenterCoordinate(
+        albumMapInfo.centerLongitude,
+        albumMapInfo.centerLatitude,
+        albumMapInfo.boundingBox,
+      );
+    }
 
     if (centerInfo) {
       handleViewStateChange({
@@ -71,7 +78,7 @@ export default function MapRoute() {
         zoom: centerInfo.zoom,
       });
     }
-  }, [selectedAlbumId, albumMapInfo, handleViewStateChange]);
+  }, [selectedAlbumId, handleViewStateChange]);
 
   useEffect(() => {
     const initLocation = async () => {

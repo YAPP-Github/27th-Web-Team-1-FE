@@ -34,13 +34,16 @@ export const validateCenterCoordinate = (
       centerLat >= boundingBox.south &&
       centerLat <= boundingBox.north;
 
-    // 범위 내에 있으면 센터 좌표 사용
+    // 범위 내에 있으면 센터 좌표 사용하되, 줌은 boundingBox 크기로 계산
     if (isWithinBounds) {
-      return {
-        longitude: centerLng,
-        latitude: centerLat,
-        zoom: 12, // 적절한 기본 줌
-      };
+      const centerFromBbox = calculateCenterFromBoundingBox(boundingBox);
+      if (centerFromBbox) {
+        return {
+          longitude: centerLng,
+          latitude: centerLat,
+          zoom: centerFromBbox.zoom, // boundingBox 크기에 따라 계산된 줌 사용
+        };
+      }
     }
   }
 
@@ -72,17 +75,14 @@ export const calculateCenterFromBoundingBox = (
   // 줌 레벨 계산: 바운딩박스의 범위 크기로부터 적절한 줌 계산
   const latDiff = Math.abs(boundingBox.north - boundingBox.south);
   const lngDiff = Math.abs(boundingBox.east - boundingBox.west);
-  const maxDiff = Math.max(latDiff, lngDiff);
 
-  // Mapbox 줌 레벨 공식
-  let zoom = 10;
-  if (maxDiff > 10) zoom = 4;
-  else if (maxDiff > 5) zoom = 5;
-  else if (maxDiff > 2) zoom = 6;
-  else if (maxDiff > 1) zoom = 8;
-  else if (maxDiff > 0.5) zoom = 10;
-  else if (maxDiff > 0.1) zoom = 12;
-  else zoom = 14;
+  // Mapbox 줌 레벨 공식: 전체 바운딩박스가 화면에 보이도록 계산
+  // 경도 기반: zoom = log2(360 / (lngDiff * 2)) - 1
+  // 위도 기반: zoom = log2(180 / latDiff) - 1
+  // 두 값 중 더 작은 값을 선택해서 전체 영역이 보이도록 함
+  const lngZoom = lngDiff > 0 ? Math.log2(360 / (lngDiff * 2.5)) - 1 : 15;
+  const latZoom = latDiff > 0 ? Math.log2(180 / (latDiff * 2.5)) - 1 : 15;
+  const zoom = Math.max(0, Math.floor(Math.min(lngZoom, latZoom)));
 
   return { longitude, latitude, zoom };
 };
@@ -162,4 +162,54 @@ export const calculatePhotoCount = (
   }
 
   return totalHistoryCount ?? 0;
+};
+
+/**
+ * 앨범의 실제 사진 위치들로부터 올바른 중심 좌표와 줌 레벨을 계산합니다.
+ * @param photos - 사진 배열 (location 정보 포함)
+ * @returns {longitude, latitude, zoom} 중심 좌표와 줌 레벨, 또는 null
+ */
+export const calculateCenterFromAlbumPhotos = (
+  photos: Array<{ location?: { longitude?: number; latitude?: number } | null }> | undefined,
+): { longitude: number; latitude: number; zoom: number } | null => {
+  if (!photos || photos.length === 0) {
+    return null;
+  }
+
+  // 유효한 location을 가진 사진들만 필터링
+  const validPhotos = photos.filter(
+    (p) =>
+      p.location &&
+      typeof p.location.longitude === 'number' &&
+      typeof p.location.latitude === 'number',
+  );
+
+  if (validPhotos.length === 0) {
+    return null;
+  }
+
+  // 모든 사진의 경도/위도 범위 계산
+  let minLng = validPhotos[0].location!.longitude as number;
+  let maxLng = validPhotos[0].location!.longitude as number;
+  let minLat = validPhotos[0].location!.latitude as number;
+  let maxLat = validPhotos[0].location!.latitude as number;
+
+  for (const photo of validPhotos) {
+    const lng = photo.location!.longitude as number;
+    const lat = photo.location!.latitude as number;
+    minLng = Math.min(minLng, lng);
+    maxLng = Math.max(maxLng, lng);
+    minLat = Math.min(minLat, lat);
+    maxLat = Math.max(maxLat, lat);
+  }
+
+  const boundingBox = {
+    west: minLng,
+    east: maxLng,
+    south: minLat,
+    north: maxLat,
+  };
+
+  // 계산한 boundingBox로부터 중심과 줌 계산
+  return calculateCenterFromBoundingBox(boundingBox);
 };
