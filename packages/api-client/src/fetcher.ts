@@ -4,7 +4,7 @@ export type ApiErrorData = {
   errorCode: string;
   detail: string;
   instance: string;
-  errors: Record<string, unknown>;
+  errors: Record<string, string> | null;
 };
 
 export type ApiErrorResponse = {
@@ -18,7 +18,8 @@ export class ApiError extends Error {
   errorCode: string;
   detail: string;
   instance: string;
-  errors: Record<string, unknown>;
+  errors: Record<string, string> | null;
+  data: ApiErrorData;
 
   constructor(response: ApiErrorResponse) {
     super(response.data.detail || response.message);
@@ -28,6 +29,7 @@ export class ApiError extends Error {
     this.detail = response.data.detail;
     this.instance = response.data.instance;
     this.errors = response.data.errors;
+    this.data = response.data;
   }
 }
 
@@ -213,7 +215,7 @@ export async function customFetcher<TResponse>(
             errorCode: 'UNAUTHORIZED',
             detail: '',
             instance: '',
-            errors: {},
+            errors: null,
           },
         };
       }
@@ -278,7 +280,7 @@ export async function customFetcher<TResponse>(
           errorCode: '',
           detail: '',
           instance: '',
-          errors: {},
+          errors: null,
         },
       };
     }

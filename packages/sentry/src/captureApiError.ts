@@ -6,7 +6,7 @@ interface ApiErrorLike {
   errorCode: string;
   detail: string;
   instance: string;
-  errors: Record<string, unknown>;
+  errors: Record<string, string> | null;
 }
 
 /**

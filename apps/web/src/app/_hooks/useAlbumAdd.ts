@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCreate2 } from '@repo/api-client';
+import { ApiError, useCreate2 } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
@@ -26,11 +26,12 @@ const useAlbumAdd = (onSuccess?: () => void) => {
           onSuccess?.();
         },
         onError: (error) => {
-          const apiError = error as any;
-          if (apiError?.code === 409 || apiError?.data?.errorCode === 'ALBUM_003') {
-            showToast('존재하는 앨범명이에요');
-          } else {
-            showToast('앨범 생성에 실패했어요');
+          if (error instanceof ApiError) {
+            if (error?.code === 409 || error?.data?.errorCode === 'ALBUM_003') {
+              showToast('존재하는 앨범명이에요');
+            } else {
+              showToast('앨범 생성에 실패했어요');
+            }
           }
         },
       },
