@@ -189,19 +189,19 @@ export const calculateCenterFromAlbumPhotos = (
   }
 
   // 모든 사진의 경도/위도 범위 계산
-  let minLng = validPhotos[0].location!.longitude as number;
-  let maxLng = validPhotos[0].location!.longitude as number;
-  let minLat = validPhotos[0].location!.latitude as number;
-  let maxLat = validPhotos[0].location!.latitude as number;
-
-  for (const photo of validPhotos) {
-    const lng = photo.location!.longitude as number;
-    const lat = photo.location!.latitude as number;
-    minLng = Math.min(minLng, lng);
-    maxLng = Math.max(maxLng, lng);
-    minLat = Math.min(minLat, lat);
-    maxLat = Math.max(maxLat, lat);
-  }
+  const { minLng, maxLng, minLat, maxLat } = validPhotos.reduce(
+    (acc, photo) => {
+      const lng = photo.location!.longitude as number;
+      const lat = photo.location!.latitude as number;
+      return {
+        minLng: Math.min(acc.minLng, lng),
+        maxLng: Math.max(acc.maxLng, lng),
+        minLat: Math.min(acc.minLat, lat),
+        maxLat: Math.max(acc.maxLat, lat),
+      };
+    },
+    { minLng: Infinity, maxLng: -Infinity, minLat: Infinity, maxLat: -Infinity }
+  );
 
   const boundingBox = {
     west: minLng,
