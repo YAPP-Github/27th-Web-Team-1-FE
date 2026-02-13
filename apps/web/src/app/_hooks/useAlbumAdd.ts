@@ -22,6 +22,7 @@ const useAlbumAdd = (onSuccess?: () => void) => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
+          queryClient.refetchQueries({ queryKey: getMapMeAlbumsQueryKey() });
           showToast('앨범이 생성되었어요');
           onSuccess?.();
         },
