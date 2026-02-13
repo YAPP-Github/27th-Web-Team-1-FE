@@ -6,6 +6,7 @@ import { useGetClusterPhotos, type ClusterPhotoResponse } from '@repo/api-client
 import PhotoGridContainer from '@/components/photoGridContainer/PhotoGridContainer';
 import PhotoGridItem from '@/components/photoGridItem/PhotoGridItem';
 import { ROUTES } from '@/constants/routes';
+import { saveClusterToSession, getClusterFromSession } from '@/utils/sessionStorage';
 
 interface ClusterDetailProps {
   clusterId: string;
@@ -30,16 +31,7 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
       }
 
       // 2. sessionStorage에서 복구하기 (navigation 후 돌아온 경우)
-      try {
-        const sessionKey = `cluster_${clusterId}`;
-        const savedData = sessionStorage.getItem(sessionKey);
-        if (savedData) {
-          const parsed = JSON.parse(savedData) as ClusterPhotoResponse[];
-          return parsed;
-        }
-      } catch (error) {
-        console.error('[ClusterDetail] Failed to parse sessionStorage:', error);
-      }
+      return getClusterFromSession<ClusterPhotoResponse[]>(clusterId);
     }
     return undefined;
   }, [isClientCluster, clusterId, clusterExpansionData]);
@@ -79,12 +71,7 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
   const handlePhotoClick = (photoId: number) => {
     // 클라이언트 클러스터인 경우 sessionStorage에 데이터 저장
     if (isClientCluster && data) {
-      const sessionKey = `cluster_${clusterId}`;
-      try {
-        sessionStorage.setItem(sessionKey, JSON.stringify(data));
-      } catch (error) {
-        console.error('[ClusterDetail] Failed to save to sessionStorage:', error);
-      }
+      saveClusterToSession(clusterId, data);
     }
     router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(photoId, clusterId));
   };

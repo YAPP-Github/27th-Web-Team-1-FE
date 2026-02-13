@@ -9,21 +9,7 @@ import {
   type PhotoResponse,
   type ClusterPhotoResponse,
 } from '@repo/api-client';
-
-/**
- * sessionStorage에서 클라이언트 클러스터 데이터를 가져옵니다.
- * 클라이언트 클러스터는 API를 호출하지 않고 로컬 데이터를 사용합니다.
- */
-const getClientClusterPhotosFromStorage = (clusterId: string): ClusterPhotoResponse[] | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    const stored = sessionStorage.getItem(`cluster_${clusterId}`);
-    return stored ? JSON.parse(stored) : null;
-  } catch (error) {
-    console.error('Failed to parse cluster data from storage:', error);
-    return null;
-  }
-};
+import { getClusterFromSession } from '@/utils/sessionStorage';
 
 interface UsePhotoDataProps {
   photoId: number;
@@ -64,7 +50,7 @@ const usePhotoData = ({
   // 아니면 서버 API 호출
   const clientClusterPhotosData = useMemo(() => {
     if (isClientCluster && clusterIdFromQuery) {
-      return getClientClusterPhotosFromStorage(clusterIdFromQuery);
+      return getClusterFromSession<ClusterPhotoResponse[]>(clusterIdFromQuery);
     }
     return null;
   }, [isClientCluster, clusterIdFromQuery]);

@@ -20,6 +20,7 @@ import { AlbumDeleteModalContainer } from './albumDeleteModal/AlbumDeleteModalCo
 import LocationPermissionModal from './locationPermissionModal/LocationPermissionModal';
 import { getCurrentPosition } from '@/utils/getCurrentPosition';
 import { validateCenterCoordinate } from '../_utils/mapRoute.calc';
+import { saveClusterToSession } from '@/utils/sessionStorage';
 
 export default function MapRoute() {
   const router = useRouter();
@@ -119,12 +120,7 @@ export default function MapRoute() {
       ) {
         // sessionStorage에 클러스터 데이터 저장
         if (clusterPhotosData) {
-          const sessionKey = `cluster_${pin.clusterId}`;
-          try {
-            sessionStorage.setItem(sessionKey, JSON.stringify(clusterPhotosData));
-          } catch (error) {
-            console.error('[MapRoute] Failed to save to sessionStorage:', error);
-          }
+          saveClusterToSession(pin.clusterId, clusterPhotosData);
         }
 
         const firstPhotoId = clusterPhotosData?.[0]?.id;
