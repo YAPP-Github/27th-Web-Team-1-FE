@@ -3,12 +3,12 @@ import { getMe, getGetMeQueryKey } from '@repo/api-client';
 import { useMemo, useRef } from 'react';
 import Supercluster from 'supercluster';
 import type { MapPin } from '@/types/map.type';
+import { MAP_CLUSTERING_CONFIG } from '@/constants/map';
 import {
   convertPhotosToGeoJsonFeatures,
   parseBbox,
   convertClusteredResultsToMapPins,
   extractClusterPhotoData,
-  generateClientClusterId,
   type ClusterPhotoResponse,
 } from './_utils/mapClustering.calc';
 
@@ -25,7 +25,7 @@ interface UseMapMeParams {
  * /map/me API를 호출하여 앨범, 사진, 클러스터 데이터를 한 번에 조회
  * - albums: useMapMeAlbums로 별도 관리됨
  * - photos/clusters: 이 훅에서 mapPins로 변환
- * - 줌레벨 >= 17: 클라이언트 측 Supercluster로 동적 클러스터링
+ * - 줌레벨 >= MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM: 클라이언트 측 Supercluster로 동적 클러스터링
  */
 export const useMapMe = ({
   longitude,
@@ -59,10 +59,10 @@ export const useMapMe = ({
   // Supercluster 인스턴스 생성 (한 번만)
   const superclusterInstance = useMemo(() => {
     return new Supercluster({
-      radius: 60,
-      maxZoom: 20,
-      minZoom: 17,
-      minPoints: 2,
+      radius: MAP_CLUSTERING_CONFIG.SUPERCLUSTER_RADIUS,
+      maxZoom: MAP_CLUSTERING_CONFIG.SUPERCLUSTER_MAX_ZOOM,
+      minZoom: MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM,
+      minPoints: MAP_CLUSTERING_CONFIG.SUPERCLUSTER_MIN_POINTS,
     });
   }, []);
 
@@ -83,8 +83,8 @@ export const useMapMe = ({
       };
     }
 
-    // 줌레벨 < 17: 서버 클러스터 사용
-    if (roundedZoom < 17) {
+    // 줌레벨 < CLIENT_CLUSTERING_MIN_ZOOM: 서버 클러스터 사용
+    if (roundedZoom < MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM) {
       const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
         id: 0,
         albumId: 0,
@@ -101,7 +101,7 @@ export const useMapMe = ({
       };
     }
 
-    // 줌레벨 >= 17: 클라이언트 클러스터링
+    // 줌레벨 >= CLIENT_CLUSTERING_MIN_ZOOM: 클라이언트 클러스터링
     const photos = data.photos ?? [];
     if (photos.length === 0) {
       return {
