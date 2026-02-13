@@ -11,6 +11,7 @@ import { useGetPhotoDetail, getGetPhotoDetailQueryOptions } from '@repo/api-clie
 import { AnimatePresence } from 'framer-motion';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { type PhotoDetailResponse } from '@repo/api-client';
 import DeleteConfirmModal from './_components/DeleteConfirmModal';
 import PhotoEditOverlay from './_components/PhotoEditOverlay';
 import {
@@ -97,7 +98,7 @@ export default function PhotoViewPage() {
   const displayPhotoUrl = displayPhoto?.url;
   const displayPhotoId = displayPhoto?.id ?? photoId;
   // fetch 중이면 이전 데이터 표시
-  const currentDisplayPhotoDetail = (displayPhotoDetail || photoDetail) as any;
+  const currentDisplayPhotoDetail: PhotoDetailResponse | undefined = displayPhotoDetail;
 
   const handleBack = () => {
     router.back();
@@ -130,13 +131,9 @@ export default function PhotoViewPage() {
         <>
           <S.HeaderWrapper>
             <MenuHeader
-              title={
-                (displayPhoto as any)?.address || (currentDisplayPhotoDetail as any)?.address || ''
-              }
+              title={currentDisplayPhotoDetail?.address || ''}
               onClickBack={handleBack}
-              showLocation={
-                !!(displayPhoto as any)?.address || !!(currentDisplayPhotoDetail as any)?.address
-              }
+              showLocation={!!currentDisplayPhotoDetail?.address}
             >
               <MenuHeader.Menu>
                 <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
