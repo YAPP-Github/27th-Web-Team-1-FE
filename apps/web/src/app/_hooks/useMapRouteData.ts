@@ -21,7 +21,6 @@ import {
   SHEET_CONTEXT_TYPE,
   type SheetContext,
 } from '@/components/bottomSheet/constants';
-import { calculateBbox } from '../_utils/mapRoute.calc';
 
 interface UseMapRouteDataProps {
   viewState: LocationState | null;
@@ -54,7 +53,7 @@ export const useMapRouteData = ({
   sheetContext,
   selectedAlbumId,
 }: UseMapRouteDataProps): UseMapRouteDataReturn => {
-  // 선택된 앨범의 상세 정보 조회 (bbox 계산에 필요하므로 먼저 호출)
+  // 선택된 앨범의 상세 정보 조회
   const { albumDetail } = useAlbumPhotos(selectedAlbumId);
 
   // 선택된 앨범의 맵 정보 (중심 좌표) 조회
@@ -62,21 +61,11 @@ export const useMapRouteData = ({
     selectedAlbumId ?? 0,
   );
 
-  // 앨범이 선택되면 앨범의 boundingBox 사용, 아니면 현재 위치 기반 bbox 사용
-  const bbox = useMemo(() => {
-    if (selectedAlbumId && albumMapInfo?.boundingBox) {
-      const bb = albumMapInfo.boundingBox;
-      return `${bb.west},${bb.south},${bb.east},${bb.north}`;
-    }
-    return viewState ? calculateBbox(viewState) : '';
-  }, [selectedAlbumId, albumMapInfo?.boundingBox, viewState]);
-
   // 앨범 리스트 조회 (/map/me에서 albums만 별도 관리)
   const { albumList } = useMapMeAlbums({
     longitude: viewState?.longitude,
     latitude: viewState?.latitude,
     zoom: viewState?.zoom ?? DEFAULT_ZOOM,
-    bbox,
     albumId: selectedAlbumId,
   });
 
@@ -85,7 +74,6 @@ export const useMapRouteData = ({
     longitude: viewState?.longitude,
     latitude: viewState?.latitude,
     zoom: viewState?.zoom ?? DEFAULT_ZOOM,
-    bbox,
     albumId: selectedAlbumId,
   });
 

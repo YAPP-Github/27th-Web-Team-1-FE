@@ -6,7 +6,7 @@ interface UseMapMeAlbumsParams {
   longitude?: number;
   latitude?: number;
   zoom: number;
-  bbox: string;
+  bbox?: string;
   albumId?: number | null;
 }
 
@@ -24,7 +24,7 @@ export const useMapMeAlbums = ({
   bbox,
   albumId,
 }: UseMapMeAlbumsParams) => {
-  const isValid = !!(longitude !== undefined && latitude !== undefined && bbox);
+  const isValid = !!(longitude !== undefined && latitude !== undefined);
   const queryClient = useQueryClient();
   const roundedZoom = Math.round(zoom);
 
@@ -33,10 +33,9 @@ export const useMapMeAlbums = ({
       longitude: longitude ?? 0,
       latitude: latitude ?? 0,
       zoom: roundedZoom,
-      bbox: bbox || '',
       ...(albumId ? { albumId } : {}),
     }),
-    [longitude, latitude, roundedZoom, bbox, albumId],
+    [longitude, latitude, roundedZoom, albumId],
   );
 
   // /map/me 데이터 가져오기 (백그라운드)

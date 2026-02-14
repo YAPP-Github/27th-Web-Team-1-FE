@@ -16,7 +16,7 @@ interface UseMapMeParams {
   longitude?: number;
   latitude?: number;
   zoom: number;
-  bbox: string;
+  bbox?: string;
   albumId?: number | null;
 }
 
@@ -33,7 +33,7 @@ export const useMapMe = ({
   bbox,
   albumId,
 }: UseMapMeParams) => {
-  const isValid = !!(longitude !== undefined && latitude !== undefined && bbox);
+  const isValid = !!(longitude !== undefined && latitude !== undefined);
   const roundedZoom = Math.round(zoom);
   const [lastDataVersion, setLastDataVersion] = useState<number | undefined>(undefined);
 
@@ -42,10 +42,9 @@ export const useMapMe = ({
       longitude: longitude ?? 0,
       latitude: latitude ?? 0,
       zoom: roundedZoom,
-      bbox: bbox || '',
       ...(albumId ? { albumId } : {}),
     }),
-    [longitude, latitude, roundedZoom, bbox, albumId],
+    [longitude, latitude, roundedZoom, albumId],
   );
 
 
@@ -130,7 +129,7 @@ export const useMapMe = ({
     superclusterInstance.load(geoJsonPoints as any);
 
     // bbox 파싱 (헬퍼 함수 사용)
-    const bboxValues = parseBbox(bbox);
+    const bboxValues = parseBbox(bbox ?? '');
     if (!bboxValues) {
       // bbox가 없으면 개별 핀으로 반환
       const photoPins: MapPin[] = photos.map((photo) => ({
@@ -177,7 +176,7 @@ export const useMapMe = ({
     clusterExpansionCacheRef.current = mergedClusterExpansionData;
 
     return { mapPins, clusterExpansionData: mergedClusterExpansionData };
-  }, [response.data, roundedZoom, bbox, superclusterInstance]);
+  }, [response.data, roundedZoom, bbox ?? '', superclusterInstance]);
 
   // 개별 값 추출 (메모이제이션으로 불필요한 리렌더링 방지)
   const mapPins: MapPin[] = useMemo(
