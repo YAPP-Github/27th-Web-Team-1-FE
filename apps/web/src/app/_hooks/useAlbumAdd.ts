@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ApiError, useCreate2 } from '@repo/api-client';
+import { ApiError, useCreate2, getGetMeQueryKey } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
@@ -21,8 +21,10 @@ const useAlbumAdd = (onSuccess?: () => void) => {
       { data: { title: nextTitle } },
       {
         onSuccess: () => {
+          // getMe 관련 모든 쿼리 invalidate (params 무관)
+          queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+          // 앨범 리스트 쿼리도 invalidate
           queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
-          queryClient.refetchQueries({ queryKey: getMapMeAlbumsQueryKey() });
           showToast('앨범이 생성되었어요');
           onSuccess?.();
         },
