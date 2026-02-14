@@ -2,6 +2,7 @@ import ExploreIcon from '@/assets/images/explore.svg';
 import LocationIcon from '@/assets/images/location.svg';
 import ProfileIcon from '@/assets/images/profile.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
+import CrossfadeText from '@/components/common/crossfadeText/CrossfadeText';
 import {
   BUTTON_SIZE,
   ICON_SIZE,
@@ -56,7 +57,9 @@ const ExploreHeader = ({
           <S.LocationIconWrapper>
             <LocationIcon width={16} height={16} />
           </S.LocationIconWrapper>
-          <S.LocationText>{title}</S.LocationText>
+          <S.LocationText>
+            <CrossfadeText text={title} />
+          </S.LocationText>
         </S.LocationWrapper>
       }
       right={

@@ -3,6 +3,7 @@ import ChevronLeftIcon from '@/assets/images/chevronLeft.svg';
 import LocationIcon from '@/assets/images/location.svg';
 import MenuIcon from '@/assets/images/menu.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
+import CrossfadeText from '@/components/common/crossfadeText/CrossfadeText';
 import { BUTTON_SIZE, ICON_SIZE } from '../base/Header.constants';
 import HeaderBase from '../base/HeaderBase';
 import * as B from '../base/Header.styles';
@@ -73,7 +74,11 @@ const MenuHeaderMain = ({
                   <LocationIcon width={16} height={16} />
                 </E.LocationIconWrapper>
               )}
-              {title && <B.Title>{title}</B.Title>}
+              {title && (
+                <B.Title>
+                  <CrossfadeText text={title} />
+                </B.Title>
+              )}
             </B.CenterSection>
           }
           right={

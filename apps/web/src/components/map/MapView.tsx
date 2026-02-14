@@ -4,6 +4,7 @@ import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react
 import { Map, GeolocateControl, Marker } from 'react-map-gl/mapbox';
 import type { GeolocateControl as GeolocateControlInstance } from 'mapbox-gl';
 import type { MapRef } from 'react-map-gl/mapbox';
+import { AnimatePresence } from 'framer-motion';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { LocationState, MapPin } from '@/types/map.type';
 import * as S from './MapView.styels';
@@ -93,20 +94,22 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
             position="bottom-right"
             style={{ display: 'none' }}
           />
-          {pins.map((pin) => (
-            <Marker
-              key={pin.isCluster ? pin.clusterId : pin.id}
-              latitude={pin.latitude}
-              longitude={pin.longitude}
-              anchor="bottom"
-            >
-              <ImagePin
-                imageUrl={pin.imageUrl}
-                imageCount={pin.imageCount}
-                onClick={() => onPinClick(pin)}
-              />
-            </Marker>
-          ))}
+          <AnimatePresence mode="sync">
+            {pins.map((pin) => (
+              <Marker
+                key={pin.isCluster ? pin.clusterId : pin.id}
+                latitude={pin.latitude}
+                longitude={pin.longitude}
+                anchor="bottom"
+              >
+                <ImagePin
+                  imageUrl={pin.imageUrl}
+                  imageCount={pin.imageCount}
+                  onClick={() => onPinClick(pin)}
+                />
+              </Marker>
+            ))}
+          </AnimatePresence>
         </Map>
       </S.Wrapper>
     );
