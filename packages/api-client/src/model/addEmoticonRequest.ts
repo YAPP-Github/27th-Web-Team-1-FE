@@ -6,9 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SearchPlacesParams = {
 /**
- * 검색 키워드
+ * 이모지 추가 요청
  */
-query: string;
-};
+export interface AddEmoticonRequest {
+  /**
+   * 이모지
+   * @minLength 1
+   */
+  emoji: string;
+}

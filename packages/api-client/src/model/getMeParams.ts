@@ -7,24 +7,24 @@
  */
 
 export type GetMeParams = {
-  /**
-   * 경도
-   */
-  longitude: number;
-  /**
-   * 위도
-   */
-  latitude: number;
-  /**
-   * 줌 레벨. 15 미만이면 클러스터링, 15 이상이면 개별 사진 반환
-   */
-  zoom: number;
-  /**
-   * 앨범 ID (선택). 지정 시 해당 앨범의 사진만 조회
-   */
-  albumId?: number;
-  /**
-   * 이전 응답의 dataVersion. 일치하면 사진 데이터를 생략하여 응답 최적화
-   */
-  lastDataVersion?: number;
+/**
+ * 경도
+ */
+longitude: number;
+/**
+ * 위도
+ */
+latitude: number;
+/**
+ * 줌 레벨. 15 미만이면 클러스터링, 15 이상이면 개별 사진 반환
+ */
+zoom: number;
+/**
+ * 앨범 ID (선택). 지정 시 해당 앨범의 사진만 조회
+ */
+albumId?: number;
+/**
+ * 이전 응답의 dataVersion. 일치하면 사진 데이터를 생략하여 응답 최적화
+ */
+lastDataVersion?: number;
 };

@@ -20,6 +20,8 @@ export interface PhotoDetailResponse {
   albumName?: string;
   /** 등록자 이름 */
   uploaderName?: string;
+  /** 등록자 프로필 이미지 URL */
+  uploaderProfileImageUrl?: string;
   /** 도로명 주소 */
   address?: string;
   /** 사진 설명 */

@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SearchPlacesParams = {
 /**
- * 검색 키워드
+ * 초대 코드 응답
  */
-query: string;
-};
+export interface InviteCodeResponse {
+  inviteCode?: string;
+}

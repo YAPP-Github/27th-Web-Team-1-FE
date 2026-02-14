@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './addEmoticonRequest';
 export * from './albumMapInfoResponse';
 export * from './albumRequest';
 export * from './albumThumbnails';
@@ -15,11 +16,15 @@ export * from './boundingBoxResponse';
 export * from './clusterPhotoResponse';
 export * from './clusterPhotosPageResponse';
 export * from './clusterResponse';
+export * from './commentListResponse';
+export * from './commentResponse';
 export * from './create1Params';
+export * from './createCommentRequest';
 export * from './createCoupleRequest';
 export * from './createParams';
 export * from './createPhotoRequest';
 export * from './createWorkspaceRequest';
+export * from './emoticonSummaryResponse';
 export * from './errorDetail';
 export * from './errorDetailErrors';
 export * from './getClusterPhotosParams';
@@ -33,6 +38,7 @@ export * from './greetingResponse';
 export * from './homeParams';
 export * from './homeResponse';
 export * from './idResponse';
+export * from './inviteCodeResponse';
 export * from './joinByInviteCodeParams';
 export * from './joinCoupleRequest';
 export * from './joinWorkspaceRequest';
@@ -57,9 +63,12 @@ export * from './placeSearchResponse';
 export * from './presignedUrl';
 export * from './presignedUrlRequest';
 export * from './refreshTokenRequest';
+export * from './removeEmoticonRequest';
 export * from './searchPlacesParams';
 export * from './selectableAlbum';
 export * from './selectableAlbumResponse';
 export * from './updateAlbumTitleRequest';
+export * from './updateNicknameRequest';
 export * from './updateParams';
 export * from './updatePhotoRequest';
+export * from './updateProfileImageRequest';
