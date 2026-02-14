@@ -33,7 +33,7 @@ export const useMapMe = ({
   bbox,
   albumId,
 }: UseMapMeParams) => {
-  const isValid = !!(longitude !== undefined && latitude !== undefined);
+  const isValid = longitude !== undefined && latitude !== undefined;
   const roundedZoom = Math.round(zoom);
   const [lastDataVersion, setLastDataVersion] = useState<number | undefined>(undefined);
 
