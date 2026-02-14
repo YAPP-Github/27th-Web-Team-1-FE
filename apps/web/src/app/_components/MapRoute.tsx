@@ -6,12 +6,14 @@ import MapView from '@/components/map/MapView';
 import { MapPin } from '@/types/map.type';
 import { ROUTES } from '@/constants/routes';
 import { SHEET_CONTEXT_TYPE } from '@/components/bottomSheet/constants';
-import { DEFAULT_ZOOM } from '../constants';
 import * as S from '../page.styles';
 import { useMapRouteViewState } from '../_hooks/useMapRouteViewState';
 import { useMapRouteSheetContext } from '../_hooks/useMapRouteSheetContext';
 import { useMapRouteData } from '../_hooks/useMapRouteData';
-import { calculatePhotoCount, calculateCenterFromAlbumPhotos } from '../_utils/mapRoute.calc';
+import {
+  calculatePhotoCount,
+  calculateCenterFromAlbumPhotos,
+} from '../_utils/mapRoute.calc';
 import { MapRouteHeader } from './MapRouteHeader';
 import { MapRouteBottomSection } from './MapRouteBottomSection';
 import { AlbumAddModalContainer } from './albumAddModal/AlbumAddModalContainer';

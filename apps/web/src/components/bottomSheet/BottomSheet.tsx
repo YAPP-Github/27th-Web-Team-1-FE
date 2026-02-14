@@ -6,7 +6,11 @@ import MapPinIcon from '@/assets/images/mapPin.svg';
 import CircleButton from '@/components/buttons/circleButton/CircleButton';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import { ROUTES } from '@/constants/routes';
-import type { AlbumThumbnails, AlbumWithPhotosResponse, ClusterPhotoResponse } from '@repo/api-client';
+import type {
+  AlbumThumbnails,
+  AlbumWithPhotosResponse,
+  ClusterPhotoResponse,
+} from '@repo/api-client';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useRef, useState } from 'react';
 import MenuButton from '../buttons/menuButton/MenuButton';
