@@ -34,13 +34,12 @@ export const useMapMe = ({
   albumId,
 }: UseMapMeParams) => {
   const isValid = !!(longitude !== undefined && latitude !== undefined && bbox);
-  const roundedZoom = Math.round(zoom);
   const [lastDataVersion, setLastDataVersion] = useState<number | undefined>(undefined);
 
   const params = {
     longitude: longitude ?? 0,
     latitude: latitude ?? 0,
-    zoom: roundedZoom,
+    zoom,
     bbox: bbox || '',
     ...(albumId ? { albumId } : {}),
     ...(lastDataVersion ? { lastDataVersion } : {}),
@@ -90,7 +89,7 @@ export const useMapMe = ({
     }
 
     // 줌레벨 < CLIENT_CLUSTERING_MIN_ZOOM: 서버 클러스터 사용
-    if (roundedZoom < MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM) {
+    if (zoom < MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM) {
       const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
         id: 0,
         albumId: 0,
@@ -142,23 +141,20 @@ export const useMapMe = ({
     }
 
     // 클러스터 조회
-    const clusteredResults = superclusterInstance.getClusters(
-      bboxValues,
-      Math.floor(roundedZoom),
-    );
+    const clusteredResults = superclusterInstance.getClusters(bboxValues, zoom);
 
     // MapPin 형식으로 변환 (헬퍼 함수 사용)
     const mapPins = convertClusteredResultsToMapPins(
       clusteredResults,
       superclusterInstance,
-      roundedZoom,
+      zoom,
     );
 
     // 클러스터별 사진 데이터 추출 (헬퍼 함수 사용)
     const newClusterData = extractClusterPhotoData(
       clusteredResults,
       superclusterInstance,
-      roundedZoom,
+      zoom,
     );
 
     // 이전 캐시와 새로운 데이터 병합
@@ -170,7 +166,7 @@ export const useMapMe = ({
     clusterExpansionCacheRef.current = mergedClusterExpansionData;
 
     return { mapPins, clusterExpansionData: mergedClusterExpansionData };
-  }, [response.data, roundedZoom, bbox, superclusterInstance]);
+  }, [response.data, zoom, bbox, superclusterInstance]);
 
   // 개별 값 추출 (메모이제이션으로 불필요한 리렌더링 방지)
   const mapPins: MapPin[] = useMemo(

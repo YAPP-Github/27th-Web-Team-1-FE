@@ -86,9 +86,21 @@ export const calculateCenterFromBoundingBox = (
   // 경도 기반: zoom = log2(360 * BACKEND_LNG_EXPANSION_RATIO / (lngDiff * ZOOM_LEVEL_ADJUSTMENT_FACTOR)) - 1
   // 위도 기반: zoom = log2(180 * BACKEND_LAT_EXPANSION_RATIO / (latDiff * ZOOM_LEVEL_ADJUSTMENT_FACTOR)) - 1
   // 두 값 중 더 작은 값을 선택해서 전체 영역이 보이도록 함
-  const lngZoom = lngDiff > 0 ? Math.log2(360 * BBOX_ZOOM_CALCULATION.BACKEND_LNG_EXPANSION_RATIO / (lngDiff * BBOX_ZOOM_CALCULATION.ZOOM_LEVEL_ADJUSTMENT_FACTOR)) - 1 : BBOX_ZOOM_CALCULATION.DEFAULT_ZOOM;
-  const latZoom = latDiff > 0 ? Math.log2(180 * BBOX_ZOOM_CALCULATION.BACKEND_LAT_EXPANSION_RATIO / (latDiff * BBOX_ZOOM_CALCULATION.ZOOM_LEVEL_ADJUSTMENT_FACTOR)) - 1 : BBOX_ZOOM_CALCULATION.DEFAULT_ZOOM;
-  const zoom = Math.max(0, Math.floor(Math.min(lngZoom, latZoom)));
+  const lngZoom =
+    lngDiff > 0
+      ? Math.log2(
+          (360 * BBOX_ZOOM_CALCULATION.BACKEND_LNG_EXPANSION_RATIO) /
+            (lngDiff * BBOX_ZOOM_CALCULATION.ZOOM_LEVEL_ADJUSTMENT_FACTOR),
+        ) - 1
+      : BBOX_ZOOM_CALCULATION.DEFAULT_ZOOM;
+  const latZoom =
+    latDiff > 0
+      ? Math.log2(
+          (180 * BBOX_ZOOM_CALCULATION.BACKEND_LAT_EXPANSION_RATIO) /
+            (latDiff * BBOX_ZOOM_CALCULATION.ZOOM_LEVEL_ADJUSTMENT_FACTOR),
+        ) - 1
+      : BBOX_ZOOM_CALCULATION.DEFAULT_ZOOM;
+  const zoom = Math.max(0, Math.min(lngZoom, latZoom));
 
   return { longitude, latitude, zoom };
 };
@@ -176,7 +188,9 @@ export const calculatePhotoCount = (
  * @returns {longitude, latitude, zoom} 중심 좌표와 줌 레벨, 또는 null
  */
 export const calculateCenterFromAlbumPhotos = (
-  photos: Array<{ location?: { longitude?: number; latitude?: number } | null }> | undefined,
+  photos:
+    | Array<{ location?: { longitude?: number; latitude?: number } | null }>
+    | undefined,
 ): { longitude: number; latitude: number; zoom: number } | null => {
   if (!photos || photos.length === 0) {
     return null;
@@ -206,7 +220,7 @@ export const calculateCenterFromAlbumPhotos = (
         maxLat: Math.max(acc.maxLat, lat),
       };
     },
-    { minLng: Infinity, maxLng: -Infinity, minLat: Infinity, maxLat: -Infinity }
+    { minLng: Infinity, maxLng: -Infinity, minLat: Infinity, maxLat: -Infinity },
   );
 
   const boundingBox = {

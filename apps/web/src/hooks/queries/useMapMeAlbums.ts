@@ -26,12 +26,11 @@ export const useMapMeAlbums = ({
 }: UseMapMeAlbumsParams) => {
   const isValid = !!(longitude !== undefined && latitude !== undefined && bbox);
   const queryClient = useQueryClient();
-  const roundedZoom = Math.round(zoom);
 
   const params = {
     longitude: longitude ?? 0,
     latitude: latitude ?? 0,
-    zoom: roundedZoom,
+    zoom,
     bbox: bbox || '',
     ...(albumId ? { albumId } : {}),
   };

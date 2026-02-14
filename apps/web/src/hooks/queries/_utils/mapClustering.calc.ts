@@ -26,7 +26,7 @@ export interface ClusterPhotoResponse {
  * @returns "client_z{zoom}_{id}" 형식의 클러스터 ID
  */
 export function generateClientClusterId(superclusterId: number, zoom: number): string {
-  return `client_z${Math.floor(zoom)}_${superclusterId}`;
+  return `client_z${zoom}_${superclusterId}`;
 }
 
 /**
@@ -43,7 +43,7 @@ export function convertPhotosToGeoJsonFeatures(
     longitude?: number;
     latitude?: number;
     takenAt?: string;
-  }>
+  }>,
 ): GeoJSON.Feature<GeoJSON.Point>[] {
   return photos.map((photo) => ({
     type: 'Feature',
@@ -86,7 +86,7 @@ export function parseBbox(bbox: string): [number, number, number, number] | null
 export function convertClusteredResultsToMapPins(
   clusteredResults: Array<GeoJSON.Feature<GeoJSON.Point>>,
   superclusterInstance: Supercluster,
-  zoom: number
+  zoom: number,
 ): MapPin[] {
   return clusteredResults.map((feature) => {
     const [lng, lat] = feature.geometry.coordinates;
@@ -134,7 +134,7 @@ export function convertClusteredResultsToMapPins(
 export function extractClusterPhotoData(
   clusteredResults: Array<GeoJSON.Feature<GeoJSON.Point>>,
   superclusterInstance: Supercluster,
-  zoom: number
+  zoom: number,
 ): Map<string, ClusterPhotoResponse[]> {
   const map = new Map<string, ClusterPhotoResponse[]>();
 
