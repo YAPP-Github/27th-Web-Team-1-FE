@@ -28,13 +28,16 @@ export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams
   const albumList: AlbumThumbnails[] = useMemo(() => {
     if (!isValid) return prevAlbumListRef.current;
 
-    const newAlbums = response.data?.albums ?? [];
-    if (newAlbums.length > 0) {
+    // API 요청이 성공하면 결과를 신뢰 (빈 배열도 유효한 결과)
+    if (response.data !== undefined) {
+      const newAlbums = response.data.albums ?? [];
       prevAlbumListRef.current = newAlbums;
       return newAlbums;
     }
+
+    // 로딩 중에는 이전 데이터 유지
     return prevAlbumListRef.current;
-  }, [response.data?.albums, isValid]);
+  }, [response.data, isValid]);
 
   // 새 주소가 있으면 캐싱, 로딩 중에는 이전 주소 유지
   const newAddress = response.data?.location?.address;
