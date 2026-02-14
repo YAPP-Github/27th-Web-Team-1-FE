@@ -37,27 +37,34 @@ export const useMapMe = ({
   const roundedZoom = Math.round(zoom);
   const [lastDataVersion, setLastDataVersion] = useState<number | undefined>(undefined);
 
-  const params = {
-    longitude: longitude ?? 0,
-    latitude: latitude ?? 0,
-    zoom: roundedZoom,
-    bbox: bbox || '',
-    ...(albumId ? { albumId } : {}),
-    ...(lastDataVersion ? { lastDataVersion } : {}),
-  };
+  const params = useMemo(
+    () => ({
+      longitude: longitude ?? 0,
+      latitude: latitude ?? 0,
+      zoom: roundedZoom,
+      bbox: bbox || '',
+      ...(albumId ? { albumId } : {}),
+    }),
+    [longitude, latitude, roundedZoom, bbox, albumId],
+  );
+
 
   const response = useQuery({
     queryKey: getGetMeQueryKey(params),
-    queryFn: ({ signal }) => getMe(params, signal),
+    queryFn: ({ signal }) => {
+      const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
+      return getMe(requestParams, signal);
+    },
     enabled: isValid,
     placeholderData: keepPreviousData,
   });
 
+
   useEffect(() => {
-    if (response.data?.dataVersion !== undefined) {
+    if (response.data?.dataVersion !== undefined && response.data.dataVersion !== lastDataVersion) {
       setLastDataVersion(response.data.dataVersion);
     }
-  }, [response.data?.dataVersion]);
+  }, [response.data?.dataVersion, lastDataVersion]);
 
   const address = useMemo(() => {
     if (!isValid) return '';

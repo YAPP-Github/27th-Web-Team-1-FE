@@ -57,7 +57,18 @@ export const useMapRouteViewState = (): UseMapRouteViewStateReturn => {
 
     // 새로운 타이머 설정 (500ms 후에 viewState 업데이트)
     viewStateChangeTimerRef.current = setTimeout(() => {
-      setViewState(newViewState);
+      setViewState((prevState) => {
+        // 값이 실제로 변경된 경우에만 업데이트
+        if (
+          !prevState ||
+          prevState.longitude !== newViewState.longitude ||
+          prevState.latitude !== newViewState.latitude ||
+          prevState.zoom !== newViewState.zoom
+        ) {
+          return newViewState;
+        }
+        return prevState;
+      });
     }, 500);
   }, []);
 
