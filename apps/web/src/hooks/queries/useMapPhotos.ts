@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { customFetcher, type MapPhotosResponse } from '@repo/api-client';
 import { useMemo } from 'react';
 import type { MapPin } from '@/types/map.type';
+import { MAP_CLUSTERING_CONFIG } from '@/constants/map';
 
 interface UseMapPhotosParams {
   zoom: number;
@@ -54,7 +55,9 @@ export const useMapPhotos = (params: UseMapPhotosParams) => {
       isCluster: true,
     }));
 
-    return params.zoom >= 15 ? photoPins : clusterPins;
+    return params.zoom >= MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM
+      ? photoPins
+      : clusterPins;
   }, [query.data, params.zoom]);
 
   return {
