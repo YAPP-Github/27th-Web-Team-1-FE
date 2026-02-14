@@ -16,7 +16,6 @@ interface UseMapMeParams {
   longitude?: number;
   latitude?: number;
   zoom: number;
-  bbox?: string;
   albumId?: number | null;
 }
 
@@ -30,12 +29,24 @@ export const useMapMe = ({
   longitude,
   latitude,
   zoom,
-  bbox,
   albumId,
 }: UseMapMeParams) => {
   const isValid = longitude !== undefined && latitude !== undefined;
   const roundedZoom = Math.round(zoom);
   const [lastDataVersion, setLastDataVersion] = useState<number | undefined>(undefined);
+
+  // 클라이언트 측 클러스터링을 위한 bbox 계산 (longitude, latitude 기반)
+  const bbox = useMemo(() => {
+    if (longitude !== undefined && latitude !== undefined) {
+      const offset = 0.05;
+      const west = longitude - offset;
+      const south = latitude - offset;
+      const east = longitude + offset;
+      const north = latitude + offset;
+      return `${west},${south},${east},${north}`;
+    }
+    return '';
+  }, [longitude, latitude]);
 
   const params = useMemo(
     () => ({

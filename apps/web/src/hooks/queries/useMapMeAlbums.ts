@@ -6,7 +6,6 @@ interface UseMapMeAlbumsParams {
   longitude?: number;
   latitude?: number;
   zoom: number;
-  bbox?: string;
   albumId?: number | null;
 }
 
