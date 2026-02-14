@@ -21,12 +21,16 @@ export interface ClusterPhotoResponse {
  * 클라이언트 clusterId를 생성합니다.
  * 서버 클러스터와 구분하기 위해 "client_" prefix를 사용합니다.
  *
+ * NOTE: zoom 값을 정수화하여 사용합니다.
+ * 클라이언트 클러스터링에서는 데이터는 동일하고 클러스터만 달라지므로,
+ * 15.1, 15.2 등의 부동소수점 값으로 중복 캐싱되는 것을 방지합니다.
+ *
  * @param superclusterId - Supercluster 내부 ID
  * @param zoom - 현재 줌 레벨
  * @returns "client_z{zoom}_{id}" 형식의 클러스터 ID
  */
 export function generateClientClusterId(superclusterId: number, zoom: number): string {
-  return `client_z${zoom}_${superclusterId}`;
+  return `client_z${Math.floor(zoom)}_${superclusterId}`;
 }
 
 /**
