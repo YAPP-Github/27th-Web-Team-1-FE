@@ -6,6 +6,7 @@ import { useGetClusterPhotos, type ClusterPhotoResponse } from '@repo/api-client
 import PhotoGridContainer from '@/components/photoGridContainer/PhotoGridContainer';
 import PhotoGridItem from '@/components/photoGridItem/PhotoGridItem';
 import { ROUTES } from '@/constants/routes';
+import { MAP_CLUSTERING_CONFIG } from '@/constants/map';
 import { saveClusterToSession, getClusterFromSession } from '@/utils/sessionStorage';
 
 interface ClusterDetailProps {
@@ -17,7 +18,9 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
   const router = useRouter();
 
   // 클라이언트 클러스터인지 판별
-  const isClientCluster = clusterId.startsWith('client_');
+  const isClientCluster = clusterId.startsWith(
+    MAP_CLUSTERING_CONFIG.CLIENT_CLUSTER_PREFIX,
+  );
 
   // 클라이언트 클러스터인 경우 로컬 데이터 사용, 아니면 API 호출
   const clientClusterData = useMemo(() => {
@@ -36,9 +39,11 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
     return undefined;
   }, [isClientCluster, clusterId, clusterExpansionData]);
 
-  const { data: serverClusterData, isLoading, isError } = useGetClusterPhotos(
-    isClientCluster ? '' : clusterId,
-  );
+  const {
+    data: serverClusterData,
+    isLoading,
+    isError,
+  } = useGetClusterPhotos(isClientCluster ? '' : clusterId);
 
   const data = isClientCluster ? clientClusterData : serverClusterData;
 
