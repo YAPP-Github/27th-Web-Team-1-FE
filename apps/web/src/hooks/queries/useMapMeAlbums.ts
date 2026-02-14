@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { getMe, getGetMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
-import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 interface UseMapMeAlbumsParams {
@@ -42,6 +41,7 @@ export const useMapMeAlbums = ({
     queryKey: getGetMeQueryKey(params),
     queryFn: ({ signal }) => getMe(params, signal),
     enabled: isValid,
+    placeholderData: keepPreviousData,
   });
 
   // /map/me 응답에서 albums을 별도 쿼리 키로 저장
@@ -64,6 +64,7 @@ export const useMapMeAlbums = ({
       return data.albums ?? [];
     },
     enabled: isValid,
+    placeholderData: keepPreviousData,
   });
 
   const albumList: AlbumThumbnails[] = albumsResponse.data ?? [];

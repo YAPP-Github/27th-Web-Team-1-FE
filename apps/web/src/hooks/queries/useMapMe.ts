@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { getMe, getGetMeQueryKey } from '@repo/api-client';
 import { useMemo, useRef } from 'react';
 import Supercluster from 'supercluster';
@@ -11,7 +11,6 @@ import {
   extractClusterPhotoData,
   type ClusterPhotoResponse,
 } from './_utils/mapClustering.calc';
-
 
 interface UseMapMeParams {
   longitude?: number;
@@ -49,6 +48,7 @@ export const useMapMe = ({
     queryKey: getGetMeQueryKey(params),
     queryFn: ({ signal }) => getMe(params, signal),
     enabled: isValid,
+    placeholderData: keepPreviousData,
   });
 
   const address = useMemo(() => {
@@ -67,9 +67,7 @@ export const useMapMe = ({
   }, []);
 
   // 클러스터 확장 데이터를 캐싱하여 페이지 이동 후에도 유지
-  const clusterExpansionCacheRef = useRef<Map<string, ClusterPhotoResponse[]>>(
-    new Map()
-  );
+  const clusterExpansionCacheRef = useRef<Map<string, ClusterPhotoResponse[]>>(new Map());
 
   // 통합 클러스터링 계산 - mapPins와 clusterExpansionData를 한 번에 처리
   // 이전에는 이 로직이 두 개의 useMemo에서 중복되었음
@@ -173,10 +171,10 @@ export const useMapMe = ({
   );
 
   const clusterExpansionData = useMemo(
-    () => clusteringResult?.clusterExpansionData ?? new Map<string, ClusterPhotoResponse[]>(),
+    () =>
+      clusteringResult?.clusterExpansionData ?? new Map<string, ClusterPhotoResponse[]>(),
     [clusteringResult],
   );
-
 
   return {
     address,
