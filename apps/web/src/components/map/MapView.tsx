@@ -75,6 +75,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
             [123, 20],
             [133, 43],
           ]}
+          maxPitch={0}
           onMove={(evt) => {
             if (onViewStateChange) {
               onViewStateChange({
