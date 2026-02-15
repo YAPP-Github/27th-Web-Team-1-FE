@@ -10,7 +10,7 @@ export const HeaderContainer = styled.div`
   width: 100%;
   position: absolute;
   top: 0;
-  z-index: 10;
+  z-index: 1010;
 `;
 
 export const FloatingButtonWrapper = styled.div`

@@ -103,11 +103,16 @@ interface MenuProps {
 }
 
 const Menu = ({ children }: MenuProps) => {
-  const { isOpen } = useMenuContext();
+  const { isOpen, close } = useMenuContext();
 
   if (!isOpen) return null;
 
-  return <S.MenuDropdown>{children}</S.MenuDropdown>;
+  return (
+    <>
+      <S.MenuBackdrop onClick={close} />
+      <S.MenuDropdown>{children}</S.MenuDropdown>
+    </>
+  );
 };
 
 export interface MenuItemProps {

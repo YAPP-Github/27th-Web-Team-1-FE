@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
+  FLOATING_BUTTON_HEIGHT,
+  HEADER_HEIGHT,
   LOW_HEIGHT,
   MID_HEIGHT,
   MIN_HEIGHT,
@@ -8,7 +10,15 @@ import {
 } from '../constants';
 
 export function useBottomSheetController(context: SheetContext) {
-  const getMaxHeight = () => (typeof window !== 'undefined' ? window.innerHeight : 800);
+  const getMaxHeight = () => {
+    if (typeof window === 'undefined') return 800;
+
+    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
+      return window.innerHeight;
+    }
+
+    return window.innerHeight - HEADER_HEIGHT - FLOATING_BUTTON_HEIGHT;
+  };
 
   const [height, setHeight] = useState(MIN_HEIGHT);
 
@@ -46,6 +56,7 @@ export function useBottomSheetController(context: SheetContext) {
     isMaxHeight &&
     (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL ||
       context.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL);
+  const showActionButtons = !isMaxHeight;
 
   return {
     height,
@@ -55,5 +66,7 @@ export function useBottomSheetController(context: SheetContext) {
     deriveContextFromHeight,
     MID_HEIGHT,
     showFloatingButton,
+    showActionButtons,
+    isMaxHeight,
   };
 }

@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 interface SheetWrapperProps {
   $height: number;
   $isDragging: boolean;
+  $sheetZIndex?: number;
 }
 
 export const SheetWrapper = styled.div<SheetWrapperProps>`
@@ -14,7 +15,7 @@ export const SheetWrapper = styled.div<SheetWrapperProps>`
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: ${({ $sheetZIndex }) => $sheetZIndex ?? 1000};
   transition: ${({ $isDragging }) => ($isDragging ? 'none' : 'height 0.3s ease-out')};
   overflow: hidden;
   display: flex;

@@ -90,6 +90,8 @@ const BottomSheet = ({
     deriveContextFromHeight,
     MID_HEIGHT,
     showFloatingButton,
+    showActionButtons,
+    isMaxHeight,
   } = useBottomSheetController(context);
 
   const startY = useRef(0);
@@ -144,40 +146,45 @@ const BottomSheet = ({
 
   return (
     <>
-      <S.ActionColumn $sheetHeight={height}>
-        <MenuButton
-          triggerIcon={(isOpen) => (
-            <AddIcon
-              style={{
-                transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s ease',
-              }}
+      {showActionButtons && (
+        <S.ActionColumn $sheetHeight={height}>
+          <MenuButton
+            triggerIcon={(isOpen) => (
+              <AddIcon
+                style={{
+                  transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s ease',
+                }}
+              />
+            )}
+            placement="top"
+          >
+            {/* TODO: 웹에서 사진 촬영 기능 임시 제거 - 추후 앱에서 촬영 기능 구현 시 복구 예정 */}
+            {/* <TextButton
+              text="사진 촬영"
+              onClick={() => router.push(ROUTES.PHOTO.CAPTURE)}
+              textAlign="left"
+            /> */}
+            <TextButton
+              text="사진 추가"
+              onClick={() => selectPhotosFromFile()}
+              textAlign="left"
             />
-          )}
-          placement="top"
-        >
-          {/* TODO: 웹에서 사진 촬영 기능 임시 제거 - 추후 앱에서 촬영 기능 구현 시 복구 예정 */}
-          {/* <TextButton
-            text="사진 촬영"
-            onClick={() => router.push(ROUTES.PHOTO.CAPTURE)}
-            textAlign="left"
-          /> */}
-          <TextButton
-            text="사진 추가"
-            onClick={() => selectPhotosFromFile()}
-            textAlign="left"
-          />
-          <TextButton text="앨범 추가" onClick={handleAddAlbumClick} textAlign="left" />
-        </MenuButton>
+            <TextButton text="앨범 추가" onClick={handleAddAlbumClick} textAlign="left" />
+          </MenuButton>
 
-        <CircleButton aria-label="현재 위치로 이동" onClick={onGoToCurrentLocation}>
-          <CrossHairIcon />
-        </CircleButton>
-      </S.ActionColumn>
+          <CircleButton aria-label="현재 위치로 이동" onClick={onGoToCurrentLocation}>
+            <CrossHairIcon />
+          </CircleButton>
+        </S.ActionColumn>
+      )}
 
       <S.SheetWrapper
         $height={height}
         $isDragging={isDragging}
+        $sheetZIndex={
+          context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST && isMaxHeight ? 1011 : 1000
+        }
         style={{ height: `${height}px` }}
         onPointerDown={(e) => e.stopPropagation()}
       >
