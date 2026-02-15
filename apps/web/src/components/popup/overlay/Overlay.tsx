@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import { CSSProperties, ReactElement, ReactNode } from 'react';
 import PopupRoot from '../PopupRoot';
 import PopupLayer from '../PopupLayer';
 import Backdrop from '../BackDrop';
@@ -10,6 +10,8 @@ interface OverlayProps {
   /** 오버레이 닫는 함수 */
   onClose?: () => void;
   children?: ReactNode;
+  /** 배경(Backdrop) 스타일 (기본값: rgba(0, 0, 0, 0.5)) */
+  backdropStyle?: CSSProperties;
 }
 
 interface OverlayContentProps {
@@ -22,12 +24,12 @@ type OverlayComponent = ((props: OverlayProps) => ReactElement | null) & {
   Footer: (props: { children: React.ReactNode }) => ReactElement;
 };
 
-const Overlay: OverlayComponent = ({ isOpen, onClose, children }: OverlayProps) => {
+const Overlay: OverlayComponent = ({ isOpen, onClose, children, backdropStyle }: OverlayProps) => {
   if (!isOpen) return null;
 
   return (
     <PopupRoot>
-      <Backdrop onClick={onClose} />
+      <Backdrop onClick={onClose} style={backdropStyle} />
       <PopupLayer>{children}</PopupLayer>
     </PopupRoot>
   );
