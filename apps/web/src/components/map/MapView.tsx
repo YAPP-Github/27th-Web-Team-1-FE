@@ -72,8 +72,8 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
             zoom: locationState.zoom,
           }}
           maxBounds={[
-            [124.5, 31.1],
-            [133, 40],
+            [123, 20],
+            [133, 43],
           ]}
           onMove={(evt) => {
             if (onViewStateChange) {

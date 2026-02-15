@@ -73,9 +73,11 @@ export const calculateCenterFromBoundingBox = (
     return null;
   }
 
-  // 중심 좌표 계산
+  // 중심 좌표 계산 (위도는 남쪽으로 편향해서 바텀시트가 가리지 않도록 함)
   const longitude = (boundingBox.west + boundingBox.east) / 2;
-  const latitude = (boundingBox.south + boundingBox.north) / 2;
+  // 바운딩박스 범위에서 남쪽 75% 지점을 지도 중심으로 설정
+  const latitudeRange = boundingBox.north - boundingBox.south;
+  const latitude = boundingBox.south + latitudeRange * 0.01;
 
   // 줌 레벨 계산: 바운딩박스의 범위 크기로부터 적절한 줌 계산
   const latDiff = Math.abs(boundingBox.north - boundingBox.south);
