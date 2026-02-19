@@ -4,6 +4,7 @@ import BottomSheet from '@/components/bottomSheet/BottomSheet';
 import FloatingButton from '@/components/buttons/floatingButton/FloatingButton';
 import { type SheetContext } from '@/components/bottomSheet/constants';
 import type { AlbumWithPhotosResponse, ClusterPhotoResponse } from '@repo/api-client';
+import type { DisplayPhoto } from '@/stores/pendingPhotos/types';
 import * as S from '../page.styles';
 
 interface MapRouteBottomSectionProps {
@@ -11,6 +12,7 @@ interface MapRouteBottomSectionProps {
   albumList: AlbumWithPhotosResponse[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   photoCount: number;
+  displayPhotos: DisplayPhoto[];
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
@@ -28,6 +30,7 @@ export const MapRouteBottomSection = ({
   albumList,
   albumDetailById,
   photoCount,
+  displayPhotos,
   onChangeContext,
   onSelectAlbum,
   onGoToCurrentLocation,
@@ -40,6 +43,7 @@ export const MapRouteBottomSection = ({
         context={sheetContext}
         albums={albumList}
         albumDetailById={albumDetailById}
+        displayPhotos={displayPhotos}
         onChangeContext={onChangeContext}
         onSelectAlbum={onSelectAlbum}
         onGoToCurrentLocation={onGoToCurrentLocation}

@@ -11,6 +11,7 @@ import type {
   AlbumWithPhotosResponse,
   ClusterPhotoResponse,
 } from '@repo/api-client';
+import type { DisplayPhoto } from '@/stores/pendingPhotos/types';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useRef, useState } from 'react';
 import MenuButton from '../buttons/menuButton/MenuButton';
@@ -27,6 +28,7 @@ interface BottomSheetProps {
   context: SheetContext;
   albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
+  displayPhotos: DisplayPhoto[];
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
@@ -38,6 +40,7 @@ const BottomSheet = ({
   context,
   albums,
   albumDetailById,
+  displayPhotos,
   onChangeContext,
   onSelectAlbum,
   onGoToCurrentLocation,
@@ -211,6 +214,7 @@ const BottomSheet = ({
             context={context}
             albums={albums}
             albumDetailById={albumDetailById}
+            displayPhotos={displayPhotos}
             onSelectAlbum={onSelectAlbum}
             clusterExpansionData={clusterExpansionData}
           />

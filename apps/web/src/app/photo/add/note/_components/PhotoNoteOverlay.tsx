@@ -27,7 +27,7 @@ import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import useAlbumModal from '../_hooks/useAlbumModal';
 import useLocationModal from '../_hooks/useLocationModal';
 import useMemoModal from '../_hooks/useMemoModal';
-import { usePhotoUpload } from '../_hooks/usePhotoUpload';
+import { usePendingPhotos } from '@/stores/pendingPhotos/PendingPhotosContext';
 import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import AlbumSelectOverlay from './AlbumSelectOverlay';
 import LocationSelectOverlay from './LocationSelectOverlay';
@@ -95,12 +95,12 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     longitude: selectedPhoto?.location?.longitude,
   });
 
-  const { mutate: uploadPhoto, isPending: isUploading } = usePhotoUpload();
+  const { addPendingPhoto } = usePendingPhotos();
 
   const handleUpload = () => {
     if (!selectedPhoto || !hasLocation) return;
 
-    uploadPhoto({
+    addPendingPhoto({
       photo: selectedPhoto,
       description: memo || undefined,
       albumId: selectedAlbum?.id,
@@ -113,8 +113,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
           : undefined,
     });
 
-    // 낙관적 업데이트: 업로드 완료를 기다리지 않고 즉시 이동
-    showToast('사진이 추가되었습니다');
+    showToast('사진이 추가되었어요');
     if (selectedAlbum) {
       router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
     } else {
@@ -315,11 +314,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
               <S.MapPreviewText>지도뷰 미리보기</S.MapPreviewText>
             </S.MapPreviewButton>
 
-            <S.UploadButton
-              type="button"
-              onClick={handleUpload}
-              disabled={isUploading || !hasLocation}
-            >
+            <S.UploadButton type="button" onClick={handleUpload} disabled={!hasLocation}>
               <S.UploadIcon>
                 <ArrowRightIcon width={24} height={24} />
               </S.UploadIcon>
