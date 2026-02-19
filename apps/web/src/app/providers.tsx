@@ -54,9 +54,9 @@ export function AppProviders({
         <GlobalStyles />
         <QueryClientProvider client={queryClient}>
           <PhotoProvider>
-            <PendingPhotosProvider>
-              <ToastProvider>{children}</ToastProvider>
-            </PendingPhotosProvider>
+            <ToastProvider>
+              <PendingPhotosProvider>{children}</PendingPhotosProvider>
+            </ToastProvider>
           </PhotoProvider>
           {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
         </QueryClientProvider>
