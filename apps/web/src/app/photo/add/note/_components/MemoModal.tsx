@@ -26,13 +26,15 @@ const MemoModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Content>
         <S.Title>메모 추가</S.Title>
-        <Textarea
-          value={tempMemo}
-          onChange={onChangeTempMemo}
-          max={MAX_MEMO_LENGTH}
-          placeholder="텍스트를 입력해주세요"
-          autoFocus
-        />
+        <S.TextareaWrapper>
+          <Textarea
+            value={tempMemo}
+            onChange={onChangeTempMemo}
+            max={MAX_MEMO_LENGTH}
+            placeholder="텍스트를 입력해주세요"
+            autoFocus
+          />
+        </S.TextareaWrapper>
         <Modal.Footer>
           <TextButton text="취소" onClick={onClose} style={{ flex: 1 }} />
           <TextButton

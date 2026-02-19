@@ -44,7 +44,8 @@ const baseTextareaStyles = (theme: Theme) => css`
   border: none;
   outline: none;
   color: ${theme.colors.gray[100]};
-  ${theme.typography.body16Regular}
+  font-family: inherit;
+  ${theme.typography.body16Medium}
 
   &::placeholder {
     color: ${theme.colors.gray[400]};
