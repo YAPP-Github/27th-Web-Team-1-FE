@@ -7,9 +7,10 @@
  */
 
 /**
- * 초대 코드 응답
+ * 파트너 요약 정보
  */
-export interface InviteCodeResponse {
-  inviteCode?: string;
-  expiresAt?: string;
+export interface PartnerSummaryResponse {
+  userId?: number;
+  nickname?: string;
+  profileImageUrl?: string;
 }

@@ -24,7 +24,12 @@ type OverlayComponent = ((props: OverlayProps) => ReactElement | null) & {
   Footer: (props: { children: React.ReactNode }) => ReactElement;
 };
 
-const Overlay: OverlayComponent = ({ isOpen, onClose, children, backdropStyle }: OverlayProps) => {
+const Overlay: OverlayComponent = ({
+  isOpen,
+  onClose,
+  children,
+  backdropStyle,
+}: OverlayProps) => {
   if (!isOpen) return null;
 
   return (

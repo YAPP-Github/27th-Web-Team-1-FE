@@ -7,9 +7,9 @@
  */
 
 /**
- * 초대 코드 응답
+ * 관리자 작업 공통 응답
  */
-export interface InviteCodeResponse {
-  inviteCode?: string;
-  expiresAt?: string;
+export interface AdminActionResponse {
+  /** 작업 결과 메시지 */
+  message?: string;
 }

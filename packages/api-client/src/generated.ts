@@ -21,10 +21,9 @@ import type {
   AlbumRequest,
   ApiResponseErrorDetail,
   CreateCommentRequest,
-  CreateCoupleRequest,
   CreatePhotoRequest,
   GetLocationInfoParams,
-  GetMeParams,
+  GetMapMeParams,
   JoinCoupleRequest,
   KakaoAuthorizeParams,
   PresignedUrlRequest,
@@ -34,6 +33,7 @@ import type {
   UpdateNicknameRequest,
   UpdatePhotoRequest,
   UpdateProfileImageRequest,
+  VerifyInviteCodeRequest,
 } from './model';
 
 import { faker } from '@faker-js/faker';
@@ -42,14 +42,18 @@ import { HttpResponse, delay, http } from 'msw';
 import type { RequestHandlerOptions } from 'msw';
 
 import type {
+  AdminActionResponse,
+  AdminPartnerResponse,
+  AdminUserSummaryResponse,
   AlbumMapInfoResponse,
   ClusterPhotoResponse,
   CommentListResponse,
+  CoupleStatusResponse,
   IdResponse,
+  InviteCodePreviewResponse,
   InviteCodeResponse,
   LocationInfoResponse,
   MapMeResponse,
-  PairLongString,
   PhotoDetailResponse,
   PhotoListResponse,
   PlaceSearchResponse,
@@ -365,6 +369,86 @@ export const useUpdateProfileImage = <
   TContext
 > => {
   const mutationOptions = getUpdateProfileImageMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 사용자의 닉네임을 수정합니다.
+ * @summary 닉네임 수정
+ */
+export const updateNickname = (updateNicknameRequest: UpdateNicknameRequest) => {
+  return customFetcher<IdResponse>({
+    url: `/my-page/nickname`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateNicknameRequest,
+  });
+};
+
+export const getUpdateNicknameMutationOptions = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNickname>>,
+    TError,
+    { data: UpdateNicknameRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateNickname>>,
+  TError,
+  { data: UpdateNicknameRequest },
+  TContext
+> => {
+  const mutationKey = ['updateNickname'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateNickname>>,
+    { data: UpdateNicknameRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return updateNickname(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateNicknameMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateNickname>>
+>;
+export type UpdateNicknameMutationBody = UpdateNicknameRequest;
+export type UpdateNicknameMutationError = void | ApiResponseErrorDetail | IdResponse;
+
+/**
+ * @summary 닉네임 수정
+ */
+export const useUpdateNickname = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNickname>>,
+    TError,
+    { data: UpdateNicknameRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateNickname>>,
+  TError,
+  { data: UpdateNicknameRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateNicknameMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -852,97 +936,19 @@ export const useRemoveEmoticon = <
 };
 
 /**
- * 새로운 커플을 생성합니다.
- * @summary 커플 생성
- */
-export const create1 = (
-  createCoupleRequest: CreateCoupleRequest,
-  signal?: AbortSignal,
-) => {
-  return customFetcher<IdResponse>({
-    url: `/couples`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: createCoupleRequest,
-    signal,
-  });
-};
-
-export const getCreate1MutationOptions = <
-  TError = void | ApiResponseErrorDetail,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create1>>,
-    TError,
-    { data: CreateCoupleRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof create1>>,
-  TError,
-  { data: CreateCoupleRequest },
-  TContext
-> => {
-  const mutationKey = ['create1'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof create1>>,
-    { data: CreateCoupleRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return create1(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>;
-export type Create1MutationBody = CreateCoupleRequest;
-export type Create1MutationError = void | ApiResponseErrorDetail;
-
-/**
- * @summary 커플 생성
- */
-export const useCreate1 = <
-  TError = void | ApiResponseErrorDetail,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create1>>,
-    TError,
-    { data: CreateCoupleRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof create1>>,
-  TError,
-  { data: CreateCoupleRequest },
-  TContext
-> => {
-  const mutationOptions = getCreate1MutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
  * 연결 해제된 커플에 재연결합니다. 연결 해제 후 31일 이내이며 기존 커플에 최소 1명이 잔존한 경우에만 가능합니다.
  * @summary 커플 재연결
  */
 export const reconnect = (signal?: AbortSignal) => {
-  return customFetcher<IdResponse>({ url: `/couples/reconnect`, method: 'POST', signal });
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/reconnect`,
+    method: 'POST',
+    signal,
+  });
 };
 
 export const getReconnectMutationOptions = <
-  TError = void | ApiResponseErrorDetail | IdResponse,
+  TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -973,13 +979,13 @@ export const getReconnectMutationOptions = <
 
 export type ReconnectMutationResult = NonNullable<Awaited<ReturnType<typeof reconnect>>>;
 
-export type ReconnectMutationError = void | ApiResponseErrorDetail | IdResponse;
+export type ReconnectMutationError = void | ApiResponseErrorDetail | CoupleStatusResponse;
 
 /**
  * @summary 커플 재연결
  */
 export const useReconnect = <
-  TError = void | ApiResponseErrorDetail | IdResponse,
+  TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1002,7 +1008,7 @@ export const joinByInviteCode = (
   joinCoupleRequest: JoinCoupleRequest,
   signal?: AbortSignal,
 ) => {
-  return customFetcher<IdResponse>({
+  return customFetcher<CoupleStatusResponse>({
     url: `/couples/join`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1012,7 +1018,7 @@ export const joinByInviteCode = (
 };
 
 export const getJoinByInviteCodeMutationOptions = <
-  TError = ApiResponseErrorDetail | IdResponse,
+  TError = ApiResponseErrorDetail | CoupleStatusResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1052,13 +1058,13 @@ export type JoinByInviteCodeMutationResult = NonNullable<
   Awaited<ReturnType<typeof joinByInviteCode>>
 >;
 export type JoinByInviteCodeMutationBody = JoinCoupleRequest;
-export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | IdResponse;
+export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | CoupleStatusResponse;
 
 /**
  * @summary 초대 코드로 커플 합류
  */
 export const useJoinByInviteCode = <
-  TError = ApiResponseErrorDetail | IdResponse,
+  TError = ApiResponseErrorDetail | CoupleStatusResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1079,10 +1085,332 @@ export const useJoinByInviteCode = <
 };
 
 /**
+ * 초대코드를 생성하거나 활성 코드가 있으면 재사용합니다. 코드 만료 시간은 24시간입니다.
+ * @summary 초대코드 생성
+ */
+export const createInvite = (signal?: AbortSignal) => {
+  return customFetcher<InviteCodeResponse>({
+    url: `/couples/invites`,
+    method: 'POST',
+    signal,
+  });
+};
+
+export const getCreateInviteMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['createInvite'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createInvite>>,
+    void
+  > = () => {
+    return createInvite();
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createInvite>>
+>;
+
+export type CreateInviteMutationError = ApiResponseErrorDetail;
+
+/**
+ * @summary 초대코드 생성
+ */
+export const useCreateInvite = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getCreateInviteMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 코드 유효성을 확인하고 초대자 최소 정보를 미리보기로 제공합니다.
+ * @summary 초대코드 검증
+ */
+export const verifyInviteCode = (
+  verifyInviteCodeRequest: VerifyInviteCodeRequest,
+  signal?: AbortSignal,
+) => {
+  return customFetcher<InviteCodePreviewResponse>({
+    url: `/couples/invites/verify`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: verifyInviteCodeRequest,
+    signal,
+  });
+};
+
+export const getVerifyInviteCodeMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    TError,
+    { data: VerifyInviteCodeRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof verifyInviteCode>>,
+  TError,
+  { data: VerifyInviteCodeRequest },
+  TContext
+> => {
+  const mutationKey = ['verifyInviteCode'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    { data: VerifyInviteCodeRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return verifyInviteCode(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type VerifyInviteCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof verifyInviteCode>>
+>;
+export type VerifyInviteCodeMutationBody = VerifyInviteCodeRequest;
+export type VerifyInviteCodeMutationError = ApiResponseErrorDetail;
+
+/**
+ * @summary 초대코드 검증
+ */
+export const useVerifyInviteCode = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    TError,
+    { data: VerifyInviteCodeRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof verifyInviteCode>>,
+  TError,
+  { data: VerifyInviteCodeRequest },
+  TContext
+> => {
+  const mutationOptions = getVerifyInviteCodeMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 기존 활성 코드를 폐기하고 새 코드를 재발급합니다. 만료 시간은 24시간입니다.
+ * @summary 초대코드 갱신
+ */
+export const refreshInvite = (signal?: AbortSignal) => {
+  return customFetcher<InviteCodeResponse>({
+    url: `/couples/invites/refresh`,
+    method: 'POST',
+    signal,
+  });
+};
+
+export const getRefreshInviteMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof refreshInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['refreshInvite'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    void
+  > = () => {
+    return refreshInvite();
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RefreshInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof refreshInvite>>
+>;
+
+export type RefreshInviteMutationError = ApiResponseErrorDetail;
+
+/**
+ * @summary 초대코드 갱신
+ */
+export const useRefreshInvite = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof refreshInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getRefreshInviteMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 초대코드를 사용해 커플 연결을 확정합니다.
+ * @summary 커플 연결 확정
+ */
+export const confirmInviteCode = (
+  joinCoupleRequest: JoinCoupleRequest,
+  signal?: AbortSignal,
+) => {
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/invites/confirm`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: joinCoupleRequest,
+    signal,
+  });
+};
+
+export const getConfirmInviteCodeMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof confirmInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationKey = ['confirmInviteCode'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    { data: JoinCoupleRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return confirmInviteCode(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ConfirmInviteCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof confirmInviteCode>>
+>;
+export type ConfirmInviteCodeMutationBody = JoinCoupleRequest;
+export type ConfirmInviteCodeMutationError = ApiResponseErrorDetail;
+
+/**
+ * @summary 커플 연결 확정
+ */
+export const useConfirmInviteCode = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof confirmInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationOptions = getConfirmInviteCodeMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
  * 새로운 앨범을 생성합니다.
  * @summary 앨범 생성
  */
-export const create2 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
+export const create1 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
   return customFetcher<IdResponse>({
     url: `/albums`,
     method: 'POST',
@@ -1092,23 +1420,23 @@ export const create2 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
   });
 };
 
-export const getCreate2MutationOptions = <
+export const getCreate1MutationOptions = <
   TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     TError,
     { data: AlbumRequest },
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof create2>>,
+  Awaited<ReturnType<typeof create1>>,
   TError,
   { data: AlbumRequest },
   TContext
 > => {
-  const mutationKey = ['create2'];
+  const mutationKey = ['create1'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -1118,75 +1446,74 @@ export const getCreate2MutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     { data: AlbumRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return create2(data);
+    return create1(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type Create2MutationResult = NonNullable<Awaited<ReturnType<typeof create2>>>;
-export type Create2MutationBody = AlbumRequest;
-export type Create2MutationError = ApiResponseErrorDetail | IdResponse;
+export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>;
+export type Create1MutationBody = AlbumRequest;
+export type Create1MutationError = ApiResponseErrorDetail | IdResponse;
 
 /**
  * @summary 앨범 생성
  */
-export const useCreate2 = <
+export const useCreate1 = <
   TError = ApiResponseErrorDetail | IdResponse,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof create2>>,
+    Awaited<ReturnType<typeof create1>>,
     TError,
     { data: AlbumRequest },
     TContext
   >;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof create2>>,
+  Awaited<ReturnType<typeof create1>>,
   TError,
   { data: AlbumRequest },
   TContext
 > => {
-  const mutationOptions = getCreate2MutationOptions(options);
+  const mutationOptions = getCreate1MutationOptions(options);
 
   return useMutation(mutationOptions);
 };
 
 /**
- * 사용자의 닉네임을 수정합니다.
- * @summary 닉네임 수정
+ * 파트너 유저 1명을 생성(또는 재사용)하고 파트너 JWT를 발급합니다.
+ * @summary 개발용 커플 테스트 파트너 생성
  */
-export const updateNickname = (updateNicknameRequest: UpdateNicknameRequest) => {
-  return customFetcher<IdResponse>({
-    url: `/my-page/nickname`,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    data: updateNicknameRequest,
+export const createCouplePartner = (signal?: AbortSignal) => {
+  return customFetcher<AdminPartnerResponse>({
+    url: `/admin/couples/partner`,
+    method: 'POST',
+    signal,
   });
 };
 
-export const getUpdateNicknameMutationOptions = <
-  TError = void | ApiResponseErrorDetail | IdResponse,
+export const getCreateCouplePartnerMutationOptions = <
+  TError = void | ApiResponseErrorDetail,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateNickname>>,
+    Awaited<ReturnType<typeof createCouplePartner>>,
     TError,
-    { data: UpdateNicknameRequest },
+    void,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateNickname>>,
+  Awaited<ReturnType<typeof createCouplePartner>>,
   TError,
-  { data: UpdateNicknameRequest },
+  void,
   TContext
 > => {
-  const mutationKey = ['updateNickname'];
+  const mutationKey = ['createCouplePartner'];
   const { mutation: mutationOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
@@ -1196,43 +1523,118 @@ export const getUpdateNicknameMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateNickname>>,
-    { data: UpdateNicknameRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return updateNickname(data);
+    Awaited<ReturnType<typeof createCouplePartner>>,
+    void
+  > = () => {
+    return createCouplePartner();
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateNicknameMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateNickname>>
+export type CreateCouplePartnerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createCouplePartner>>
 >;
-export type UpdateNicknameMutationBody = UpdateNicknameRequest;
-export type UpdateNicknameMutationError = void | ApiResponseErrorDetail | IdResponse;
+
+export type CreateCouplePartnerMutationError = void | ApiResponseErrorDetail;
 
 /**
- * @summary 닉네임 수정
+ * @summary 개발용 커플 테스트 파트너 생성
  */
-export const useUpdateNickname = <
-  TError = void | ApiResponseErrorDetail | IdResponse,
+export const useCreateCouplePartner = <
+  TError = void | ApiResponseErrorDetail,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateNickname>>,
+    Awaited<ReturnType<typeof createCouplePartner>>,
     TError,
-    { data: UpdateNicknameRequest },
+    void,
     TContext
   >;
 }): UseMutationResult<
-  Awaited<ReturnType<typeof updateNickname>>,
+  Awaited<ReturnType<typeof createCouplePartner>>,
   TError,
-  { data: UpdateNicknameRequest },
+  void,
   TContext
 > => {
-  const mutationOptions = getUpdateNicknameMutationOptions(options);
+  const mutationOptions = getCreateCouplePartnerMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 서버 캐시를 즉시 비웁니다.
+ * @summary 전체 캐시 강제 비우기
+ */
+export const clearAllCaches = (signal?: AbortSignal) => {
+  return customFetcher<AdminActionResponse>({
+    url: `/admin/cache/clear`,
+    method: 'POST',
+    signal,
+  });
+};
+
+export const getClearAllCachesMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof clearAllCaches>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['clearAllCaches'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    void
+  > = () => {
+    return clearAllCaches();
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ClearAllCachesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof clearAllCaches>>
+>;
+
+export type ClearAllCachesMutationError = ApiResponseErrorDetail | void;
+
+/**
+ * @summary 전체 캐시 강제 비우기
+ */
+export const useClearAllCaches = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof clearAllCaches>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getClearAllCachesMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -1544,50 +1946,54 @@ export function useSearchPlaces<
         
  * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
  */
-export const getMe = (params: GetMeParams, signal?: AbortSignal) => {
+export const getMapMe = (params: GetMapMeParams, signal?: AbortSignal) => {
   return customFetcher<MapMeResponse>({ url: `/map/me`, method: 'GET', params, signal });
 };
 
-export const getGetMeQueryKey = (params?: GetMeParams) => {
+export const getGetMapMeQueryKey = (params?: GetMapMeParams) => {
   return [`/map/me`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetMeQueryOptions = <
-  TData = Awaited<ReturnType<typeof getMe>>,
+export const getGetMapMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapMe>>,
   TError = ApiResponseErrorDetail,
 >(
-  params: GetMeParams,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData> },
+  params: GetMapMeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>;
+  },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getGetMapMeQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({ signal }) =>
-    getMe(params, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMapMe>>> = ({ signal }) =>
+    getMapMe(params, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMe>>,
+    Awaited<ReturnType<typeof getMapMe>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>;
-export type GetMeQueryError = ApiResponseErrorDetail;
+export type GetMapMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMapMe>>>;
+export type GetMapMeQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
  */
 
-export function useGetMe<
-  TData = Awaited<ReturnType<typeof getMe>>,
+export function useGetMapMe<
+  TData = Awaited<ReturnType<typeof getMapMe>>,
   TError = ApiResponseErrorDetail,
 >(
-  params: GetMeParams,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData> },
+  params: GetMapMeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>;
+  },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetMeQueryOptions(params, options);
+  const queryOptions = getGetMapMeQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1679,7 +2085,7 @@ export function useGetLocationInfo<
             클러스터 ID를 기반으로 해당 그리드 셀 영역 내의 모든 사진을 조회합니다.
 
             - clusterId는 GET /map/photos 응답에서 반환된 값을 사용
-            - clusterId 형식: z{zoom}_{cellX}_{cellY} (예: z14_130234_38456)
+            - clusterId 형식: z{zoom}_{cellX}_{cellY}[_g{n}][_mz{zoom*1000}] (예: z14_130234_38456_mz14700)
             - 사진은 생성일시 기준 내림차순 정렬
             - 페이지네이션 지원 (page, size 파라미터)
         
@@ -1825,55 +2231,55 @@ export function useGetAlbumMapInfo<
 }
 
 /**
- * 초대 코드를 조회합니다.
- * @summary 초대 코드 조회
+ * 현재 로그인 사용자의 커플 연결 상태를 조회합니다.
+ * @summary 내 커플 상태 조회
  */
-export const getCode = (signal?: AbortSignal) => {
-  return customFetcher<InviteCodeResponse>({
-    url: `/couples/code`,
+export const getMyStatus = (signal?: AbortSignal) => {
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/me/status`,
     method: 'GET',
     signal,
   });
 };
 
-export const getGetCodeQueryKey = () => {
-  return [`/couples/code`] as const;
+export const getGetMyStatusQueryKey = () => {
+  return [`/couples/me/status`] as const;
 };
 
-export const getGetCodeQueryOptions = <
-  TData = Awaited<ReturnType<typeof getCode>>,
-  TError = void | ApiResponseErrorDetail,
+export const getGetMyStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMyStatus>>,
+  TError = ApiResponseErrorDetail,
 >(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getCode>>, TError, TData>;
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>;
 }) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetCodeQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetMyStatusQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getCode>>> = ({ signal }) =>
-    getCode(signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyStatus>>> = ({ signal }) =>
+    getMyStatus(signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getCode>>,
+    Awaited<ReturnType<typeof getMyStatus>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetCodeQueryResult = NonNullable<Awaited<ReturnType<typeof getCode>>>;
-export type GetCodeQueryError = void | ApiResponseErrorDetail;
+export type GetMyStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getMyStatus>>>;
+export type GetMyStatusQueryError = ApiResponseErrorDetail;
 
 /**
- * @summary 초대 코드 조회
+ * @summary 내 커플 상태 조회
  */
 
-export function useGetCode<
-  TData = Awaited<ReturnType<typeof getCode>>,
-  TError = void | ApiResponseErrorDetail,
+export function useGetMyStatus<
+  TData = Awaited<ReturnType<typeof getMyStatus>>,
+  TError = ApiResponseErrorDetail,
 >(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getCode>>, TError, TData>;
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetCodeQueryOptions(options);
+  const queryOptions = getGetMyStatusQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -2013,10 +2419,15 @@ export function useGetSelectableAlbums<
 }
 
 /**
- * @summary 모든 유저의 DB 식별자와 Email을 조회합니다.
+ * DB에 저장된 사용자 ID/이메일 목록을 조회합니다.
+ * @summary 전체 사용자 목록 조회
  */
 export const getUsers = (signal?: AbortSignal) => {
-  return customFetcher<PairLongString[]>({ url: `/admin/users`, method: 'GET', signal });
+  return customFetcher<AdminUserSummaryResponse[]>({
+    url: `/admin/users`,
+    method: 'GET',
+    signal,
+  });
 };
 
 export const getGetUsersQueryKey = () => {
@@ -2025,7 +2436,7 @@ export const getGetUsersQueryKey = () => {
 
 export const getGetUsersQueryOptions = <
   TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = ApiResponseErrorDetail,
+  TError = ApiResponseErrorDetail | void,
 >(options?: {
   query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
 }) => {
@@ -2044,141 +2455,19 @@ export const getGetUsersQueryOptions = <
 };
 
 export type GetUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getUsers>>>;
-export type GetUsersQueryError = ApiResponseErrorDetail;
+export type GetUsersQueryError = ApiResponseErrorDetail | void;
 
 /**
- * @summary 모든 유저의 DB 식별자와 Email을 조회합니다.
+ * @summary 전체 사용자 목록 조회
  */
 
 export function useGetUsers<
   TData = Awaited<ReturnType<typeof getUsers>>,
-  TError = ApiResponseErrorDetail,
+  TError = ApiResponseErrorDetail | void,
 >(options?: {
   query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetUsersQueryOptions(options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-/**
- * @summary Email에 해당하는 유저의 모든 데이터를 삭제합니다.
- */
-export const deleteAllByEmail = (email: string, signal?: AbortSignal) => {
-  return customFetcher<string>({ url: `/admin/delete/${email}`, method: 'GET', signal });
-};
-
-export const getDeleteAllByEmailQueryKey = (email?: string) => {
-  return [`/admin/delete/${email}`] as const;
-};
-
-export const getDeleteAllByEmailQueryOptions = <
-  TData = Awaited<ReturnType<typeof deleteAllByEmail>>,
-  TError = ApiResponseErrorDetail,
->(
-  email: string,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError, TData>;
-  },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getDeleteAllByEmailQueryKey(email);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteAllByEmail>>> = ({
-    signal,
-  }) => deleteAllByEmail(email, signal);
-
-  return { queryKey, queryFn, enabled: !!email, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof deleteAllByEmail>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type DeleteAllByEmailQueryResult = NonNullable<
-  Awaited<ReturnType<typeof deleteAllByEmail>>
->;
-export type DeleteAllByEmailQueryError = ApiResponseErrorDetail;
-
-/**
- * @summary Email에 해당하는 유저의 모든 데이터를 삭제합니다.
- */
-
-export function useDeleteAllByEmail<
-  TData = Awaited<ReturnType<typeof deleteAllByEmail>>,
-  TError = ApiResponseErrorDetail,
->(
-  email: string,
-  options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError, TData>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getDeleteAllByEmailQueryOptions(email, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-/**
- * @summary 서버 전체의 캐시 데이터를 강제 만료합니다.
- */
-export const clearAllCaches = (signal?: AbortSignal) => {
-  return customFetcher<string>({ url: `/admin/cache/clear`, method: 'GET', signal });
-};
-
-export const getClearAllCachesQueryKey = () => {
-  return [`/admin/cache/clear`] as const;
-};
-
-export const getClearAllCachesQueryOptions = <
-  TData = Awaited<ReturnType<typeof clearAllCaches>>,
-  TError = ApiResponseErrorDetail,
->(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError, TData>;
-}) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getClearAllCachesQueryKey();
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof clearAllCaches>>> = ({
-    signal,
-  }) => clearAllCaches(signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof clearAllCaches>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type ClearAllCachesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof clearAllCaches>>
->;
-export type ClearAllCachesQueryError = ApiResponseErrorDetail;
-
-/**
- * @summary 서버 전체의 캐시 데이터를 강제 만료합니다.
- */
-
-export function useClearAllCaches<
-  TData = Awaited<ReturnType<typeof clearAllCaches>>,
-  TError = ApiResponseErrorDetail,
->(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError, TData>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getClearAllCachesQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -2315,6 +2604,87 @@ export const useDisconnect = <
   return useMutation(mutationOptions);
 };
 
+/**
+ * 사용자와 연결된 커플/앨범/사진/토큰 데이터를 함께 삭제합니다.
+ * @summary 이메일 기준 사용자 데이터 전체 삭제
+ */
+export const deleteAllByEmail = (email: string) => {
+  return customFetcher<AdminActionResponse>({
+    url: `/admin/users/${email}`,
+    method: 'DELETE',
+  });
+};
+
+export const getDeleteAllByEmailMutationOptions = <
+  TError = ApiResponseErrorDetail | void | AdminActionResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    TError,
+    { email: string },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError,
+  { email: string },
+  TContext
+> => {
+  const mutationKey = ['deleteAllByEmail'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    { email: string }
+  > = (props) => {
+    const { email } = props ?? {};
+
+    return deleteAllByEmail(email);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteAllByEmailMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAllByEmail>>
+>;
+
+export type DeleteAllByEmailMutationError =
+  | ApiResponseErrorDetail
+  | void
+  | AdminActionResponse;
+
+/**
+ * @summary 이메일 기준 사용자 데이터 전체 삭제
+ */
+export const useDeleteAllByEmail = <
+  TError = ApiResponseErrorDetail | void | AdminActionResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    TError,
+    { email: string },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError,
+  { email: string },
+  TContext
+> => {
+  const mutationOptions = getDeleteAllByEmailMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getGetPhotoDetailResponseMock = (
   overrideResponse: Partial<PhotoDetailResponse> = {},
 ): PhotoDetailResponse => ({
@@ -2372,6 +2742,16 @@ export const getUpdateResponseMock = (
 });
 
 export const getUpdateProfileImageResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateNicknameResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
   id: faker.helpers.arrayElement([
@@ -2479,6 +2859,124 @@ export const getAddEmoticonResponseMock = (
   ...overrideResponse,
 });
 
+export const getReconnectResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getJoinByInviteCodeResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getCreateInviteResponseMock = (
+  overrideResponse: Partial<InviteCodeResponse> = {},
+): InviteCodeResponse => ({
+  inviteCode: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  expiresAt: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getVerifyInviteCodeResponseMock = (
+  overrideResponse: Partial<InviteCodePreviewResponse> = {},
+): InviteCodePreviewResponse => ({
+  inviterUserId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  nickname: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  profileImageUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getRefreshInviteResponseMock = (
+  overrideResponse: Partial<InviteCodeResponse> = {},
+): InviteCodeResponse => ({
+  inviteCode: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  expiresAt: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getConfirmInviteCodeResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
 export const getCreate1ResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
@@ -2489,41 +2987,34 @@ export const getCreate1ResponseMock = (
   ...overrideResponse,
 });
 
-export const getReconnectResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
+export const getCreateCouplePartnerResponseMock = (
+  overrideResponse: Partial<AdminPartnerResponse> = {},
+): AdminPartnerResponse => ({
+  partnerEmail: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  tokens: faker.helpers.arrayElement([
+    {
+      accessToken: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      refreshToken: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
     undefined,
   ]),
   ...overrideResponse,
 });
 
-export const getJoinByInviteCodeResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getCreate2ResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
-    undefined,
-  ]),
-  ...overrideResponse,
-});
-
-export const getUpdateNicknameResponseMock = (
-  overrideResponse: Partial<IdResponse> = {},
-): IdResponse => ({
-  id: faker.helpers.arrayElement([
-    faker.number.int({ min: undefined, max: undefined }),
+export const getClearAllCachesResponseMock = (
+  overrideResponse: Partial<AdminActionResponse> = {},
+): AdminActionResponse => ({
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
     undefined,
   ]),
   ...overrideResponse,
@@ -2644,7 +3135,7 @@ export const getSearchPlacesResponseMock = (
   ...overrideResponse,
 });
 
-export const getGetMeResponseMock = (
+export const getGetMapMeResponseMock = (
   overrideResponse: Partial<MapMeResponse> = {},
 ): MapMeResponse => ({
   location: faker.helpers.arrayElement([
@@ -2853,13 +3344,27 @@ export const getGetAlbumMapInfoResponseMock = (
   ...overrideResponse,
 });
 
-export const getGetCodeResponseMock = (
-  overrideResponse: Partial<InviteCodeResponse> = {},
-): InviteCodeResponse => ({
-  inviteCode: faker.helpers.arrayElement([
-    faker.string.alpha({ length: { min: 10, max: 20 } }),
+export const getGetMyStatusResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
     undefined,
   ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
   ...overrideResponse,
 });
 
@@ -2892,23 +3397,29 @@ export const getGetSelectableAlbumsResponseMock = (
   ...overrideResponse,
 });
 
-export const getGetUsersResponseMock = (): PairLongString[] =>
+export const getGetUsersResponseMock = (): AdminUserSummaryResponse[] =>
   Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
     () => ({
-      first: faker.helpers.arrayElement([
+      id: faker.helpers.arrayElement([
         faker.number.int({ min: undefined, max: undefined }),
         undefined,
       ]),
-      second: faker.helpers.arrayElement([
+      email: faker.helpers.arrayElement([
         faker.string.alpha({ length: { min: 10, max: 20 } }),
         undefined,
       ]),
     }),
   );
 
-export const getDeleteAllByEmailResponseMock = (): string => faker.word.sample();
-
-export const getClearAllCachesResponseMock = (): string => faker.word.sample();
+export const getDeleteAllByEmailResponseMock = (
+  overrideResponse: Partial<AdminActionResponse> = {},
+): AdminActionResponse => ({
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
 
 export const getGetPhotoDetailMockHandler = (
   overrideResponse?:
@@ -3005,6 +3516,34 @@ export const getUpdateProfileImageMockHandler = (
               ? await overrideResponse(info)
               : overrideResponse
             : getUpdateProfileImageResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getUpdateNicknameMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.put(
+    '*/my-page/nickname',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateNicknameResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3172,40 +3711,12 @@ export const getRemoveEmoticonMockHandler = (
   );
 };
 
-export const getCreate1MockHandler = (
-  overrideResponse?:
-    | IdResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/couples',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getCreate1ResponseMock(),
-        ),
-        { status: 201, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
 export const getReconnectMockHandler = (
   overrideResponse?:
-    | IdResponse
+    | CoupleStatusResponse
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
@@ -3230,10 +3741,10 @@ export const getReconnectMockHandler = (
 
 export const getJoinByInviteCodeMockHandler = (
   overrideResponse?:
-    | IdResponse
+    | CoupleStatusResponse
     | ((
         info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
   options?: RequestHandlerOptions,
 ) => {
   return http.post(
@@ -3256,7 +3767,119 @@ export const getJoinByInviteCodeMockHandler = (
   );
 };
 
-export const getCreate2MockHandler = (
+export const getCreateInviteMockHandler = (
+  overrideResponse?:
+    | InviteCodeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodeResponse> | InviteCodeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateInviteResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getVerifyInviteCodeMockHandler = (
+  overrideResponse?:
+    | InviteCodePreviewResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodePreviewResponse> | InviteCodePreviewResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/verify',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getVerifyInviteCodeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getRefreshInviteMockHandler = (
+  overrideResponse?:
+    | InviteCodeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodeResponse> | InviteCodeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/refresh',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getRefreshInviteResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getConfirmInviteCodeMockHandler = (
+  overrideResponse?:
+    | CoupleStatusResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/confirm',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getConfirmInviteCodeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreate1MockHandler = (
   overrideResponse?:
     | IdResponse
     | ((
@@ -3275,7 +3898,7 @@ export const getCreate2MockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getCreate2ResponseMock(),
+            : getCreate1ResponseMock(),
         ),
         { status: 201, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3284,16 +3907,16 @@ export const getCreate2MockHandler = (
   );
 };
 
-export const getUpdateNicknameMockHandler = (
+export const getCreateCouplePartnerMockHandler = (
   overrideResponse?:
-    | IdResponse
+    | AdminPartnerResponse
     | ((
-        info: Parameters<Parameters<typeof http.patch>[1]>[0],
-      ) => Promise<IdResponse> | IdResponse),
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<AdminPartnerResponse> | AdminPartnerResponse),
   options?: RequestHandlerOptions,
 ) => {
-  return http.patch(
-    '*/my-page/nickname',
+  return http.post(
+    '*/admin/couples/partner',
     async (info) => {
       await delay(1000);
 
@@ -3303,7 +3926,35 @@ export const getUpdateNicknameMockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getUpdateNicknameResponseMock(),
+            : getCreateCouplePartnerResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getClearAllCachesMockHandler = (
+  overrideResponse?:
+    | AdminActionResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<AdminActionResponse> | AdminActionResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/admin/cache/clear',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getClearAllCachesResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3415,7 +4066,7 @@ export const getSearchPlacesMockHandler = (
   );
 };
 
-export const getGetMeMockHandler = (
+export const getGetMapMeMockHandler = (
   overrideResponse?:
     | MapMeResponse
     | ((
@@ -3434,7 +4085,7 @@ export const getGetMeMockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getGetMeResponseMock(),
+            : getGetMapMeResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3527,16 +4178,16 @@ export const getGetAlbumMapInfoMockHandler = (
   );
 };
 
-export const getGetCodeMockHandler = (
+export const getGetMyStatusMockHandler = (
   overrideResponse?:
-    | InviteCodeResponse
+    | CoupleStatusResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<InviteCodeResponse> | InviteCodeResponse),
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
-    '*/couples/code',
+    '*/couples/me/status',
     async (info) => {
       await delay(1000);
 
@@ -3546,7 +4197,7 @@ export const getGetCodeMockHandler = (
             ? typeof overrideResponse === 'function'
               ? await overrideResponse(info)
               : overrideResponse
-            : getGetCodeResponseMock(),
+            : getGetMyStatusResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3606,10 +4257,10 @@ export const getGetSelectableAlbumsMockHandler = (
 
 export const getGetUsersMockHandler = (
   overrideResponse?:
-    | PairLongString[]
+    | AdminUserSummaryResponse[]
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
-      ) => Promise<PairLongString[]> | PairLongString[]),
+      ) => Promise<AdminUserSummaryResponse[]> | AdminUserSummaryResponse[]),
   options?: RequestHandlerOptions,
 ) => {
   return http.get(
@@ -3624,58 +4275,6 @@ export const getGetUsersMockHandler = (
               ? await overrideResponse(info)
               : overrideResponse
             : getGetUsersResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getDeleteAllByEmailMockHandler = (
-  overrideResponse?:
-    | string
-    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string> | string),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/admin/delete/:email',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getDeleteAllByEmailResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
-export const getClearAllCachesMockHandler = (
-  overrideResponse?:
-    | string
-    | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<string> | string),
-  options?: RequestHandlerOptions,
-) => {
-  return http.get(
-    '*/admin/cache/clear',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getClearAllCachesResponseMock(),
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
@@ -3723,36 +4322,68 @@ export const getDisconnectMockHandler = (
     options,
   );
 };
+
+export const getDeleteAllByEmailMockHandler = (
+  overrideResponse?:
+    | AdminActionResponse
+    | ((
+        info: Parameters<Parameters<typeof http.delete>[1]>[0],
+      ) => Promise<AdminActionResponse> | AdminActionResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/admin/users/:email',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getDeleteAllByEmailResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
 export const getLokitAPIMock = () => [
   getGetPhotoDetailMockHandler(),
   getUpdateMockHandler(),
   getDeleteMockHandler(),
   getUpdateProfileImageMockHandler(),
+  getUpdateNicknameMockHandler(),
   getCreateMockHandler(),
   getGetCommentsMockHandler(),
   getCreateCommentMockHandler(),
   getGetPresignedUrlMockHandler(),
   getAddEmoticonMockHandler(),
   getRemoveEmoticonMockHandler(),
-  getCreate1MockHandler(),
   getReconnectMockHandler(),
   getJoinByInviteCodeMockHandler(),
-  getCreate2MockHandler(),
-  getUpdateNicknameMockHandler(),
+  getCreateInviteMockHandler(),
+  getVerifyInviteCodeMockHandler(),
+  getRefreshInviteMockHandler(),
+  getConfirmInviteCodeMockHandler(),
+  getCreate1MockHandler(),
+  getCreateCouplePartnerMockHandler(),
+  getClearAllCachesMockHandler(),
   getDelete1MockHandler(),
   getUpdateTitleMockHandler(),
   getGetPhotosMockHandler(),
   getSearchPlacesMockHandler(),
-  getGetMeMockHandler(),
+  getGetMapMeMockHandler(),
   getGetLocationInfoMockHandler(),
   getGetClusterPhotosMockHandler(),
   getGetAlbumMapInfoMockHandler(),
-  getGetCodeMockHandler(),
+  getGetMyStatusMockHandler(),
   getKakaoAuthorizeMockHandler(),
   getGetSelectableAlbumsMockHandler(),
   getGetUsersMockHandler(),
-  getDeleteAllByEmailMockHandler(),
-  getClearAllCachesMockHandler(),
   getWithdrawMockHandler(),
   getDisconnectMockHandler(),
+  getDeleteAllByEmailMockHandler(),
 ];

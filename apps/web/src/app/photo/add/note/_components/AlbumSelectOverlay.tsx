@@ -37,7 +37,11 @@ const AlbumSelectOverlay = ({
   const isSearchResultEmpty = hasSearchQuery && albums.length === 0;
 
   return (
-    <Overlay isOpen={isOpen} onClose={onClose} backdropStyle={{ background: 'rgba(0, 0, 0, 0.8)' }}>
+    <Overlay
+      isOpen={isOpen}
+      onClose={onClose}
+      backdropStyle={{ background: 'rgba(0, 0, 0, 0.8)' }}
+    >
       <Overlay.Content>
         <S.SearchAlbumWrapper>
           <Input

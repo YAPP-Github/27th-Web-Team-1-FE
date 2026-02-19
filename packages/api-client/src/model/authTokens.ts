@@ -6,10 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * 초대 코드 응답
- */
-export interface InviteCodeResponse {
-  inviteCode?: string;
-  expiresAt?: string;
+export interface AuthTokens {
+  accessToken?: string;
+  refreshToken?: string;
 }

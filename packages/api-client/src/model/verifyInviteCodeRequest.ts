@@ -7,13 +7,13 @@
  */
 
 /**
- * 커플 합류 요청
+ * 초대코드 검증 요청
  */
-export interface JoinCoupleRequest {
+export interface VerifyInviteCodeRequest {
   /**
-   * 초대 코드
    * @minLength 6
    * @maxLength 6
+   * @pattern ^\d{6}$
    */
   inviteCode: string;
 }
