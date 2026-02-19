@@ -3,7 +3,12 @@
 import type { PhotoLocation, SelectedPhoto } from '@/app/photo/add/_types/photo';
 import { useToast } from '@/components/toast';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
-import { create, getGetPhotosQueryKey, getPresignedUrl } from '@repo/api-client';
+import {
+  create,
+  getGetMapMeQueryKey,
+  getGetPhotosQueryKey,
+  getPresignedUrl,
+} from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createContext,
@@ -180,6 +185,7 @@ export function PendingPhotosProvider({ children }: PropsWithChildren) {
           });
 
           // 성공 시 쿼리 invalidate
+          queryClient.invalidateQueries({ queryKey: getGetMapMeQueryKey() });
           queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
           if (albumId) {
             queryClient.invalidateQueries({
