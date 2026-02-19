@@ -11,6 +11,7 @@ export const TriggerButton = styled.button`
   background: ${({ theme }) => theme.colors.blueWhite.bg8};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[5]};
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
+  color: ${({ theme }) => theme.colors.gray[100]};
   padding: 11px;
 
   display: flex;
