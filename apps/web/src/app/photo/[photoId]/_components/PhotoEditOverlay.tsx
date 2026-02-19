@@ -1,28 +1,28 @@
 'use client';
 
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useGetPhotoDetail } from '@repo/api-client';
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
-import { usePhotoContext } from '../../_contexts/PhotoContext';
+import { useGetPhotoDetail } from '@repo/api-client';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { STATE_SOURCE } from '../../_constants/stateSource';
-import MemoModal from '../../add/note/_components/MemoModal';
+import { usePhotoContext } from '../../_contexts/PhotoContext';
 import AlbumSelectOverlay from '../../add/note/_components/AlbumSelectOverlay';
 import LocationSelectOverlay from '../../add/note/_components/LocationSelectOverlay';
-import useMemoModal from '../../add/note/_hooks/useMemoModal';
+import MemoModal from '../../add/note/_components/MemoModal';
 import useAlbumModal from '../../add/note/_hooks/useAlbumModal';
 import useLocationModal from '../../add/note/_hooks/useLocationModal';
+import useMemoModal from '../../add/note/_hooks/useMemoModal';
 import * as S from './PhotoEditOverlay.styles';
 
-import CloseIcon from '@/assets/images/close.svg';
-import SuccessIcon from '@/assets/images/success.svg';
-import ArrowRightIcon from '@/assets/images/arrowRight.svg';
-import AlbumIcon from '@/assets/images/album.svg';
-import MapPinIcon from '@/assets/images/mapPin.svg';
 import type { PhotoLocation } from '@/app/photo/add/_types/photo';
+import AlbumIcon from '@/assets/images/album.svg';
+import ArrowRightIcon from '@/assets/images/arrowRight.svg';
+import CloseIcon from '@/assets/images/close.svg';
+import MapPinIcon from '@/assets/images/mapPin.svg';
+import SuccessIcon from '@/assets/images/success.svg';
 
 interface PhotoEditOverlayProps {
   photoId: number;
@@ -165,9 +165,9 @@ export default function PhotoEditOverlay({
 
   const hasLocation = !!photoDetail.address || !!selectedLocation;
   const locationText = selectedLocation
-    ? selectedLocation.placeName ||
-      selectedLocation.roadAddress ||
-      selectedLocation.address
+    ? selectedLocation.roadAddress ||
+      selectedLocation.address ||
+      selectedLocation.placeName
     : photoDetail.address;
 
   const isMemoModified = memo !== (photoDetail.description || '');
@@ -217,6 +217,7 @@ export default function PhotoEditOverlay({
               locationText={locationText}
               isLoading={false}
               hasLocation={hasLocation}
+              onClickLocation={handleAddLocation}
             />
 
             <S.TooltipWrapper>

@@ -1,5 +1,6 @@
 'use client';
 
+import { DEFAULT_ALBUM_TITLE } from '@/constants';
 import { LocationState, MapPin } from '@/types/map.type';
 import { useRef, useState } from 'react';
 import BottomSheet from '../bottomSheet/BottomSheet';
@@ -74,7 +75,7 @@ export default function MapPreview({
 
       <BottomSheet
         context={context}
-        albums={[{ id: 1, title: '전체보기', photoCount: 0 }]}
+        albums={[{ id: 1, title: DEFAULT_ALBUM_TITLE, photoCount: 0 }]}
         albumDetailById={{}}
         displayPhotos={[]}
         onChangeContext={setContext}
