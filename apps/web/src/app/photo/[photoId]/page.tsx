@@ -1,6 +1,6 @@
 'use client';
 
-import AlbumIcon from '@/assets/images/album.svg';
+import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 // TODO: 2차 MVP에서 반영 예정
 // import CommentIcon from '@/assets/images/comment.svg';
 import DateIcon from '@/assets/images/date.svg';
@@ -254,7 +254,7 @@ export default function PhotoViewPage() {
                   text={resolvedDetail?.albumName || '앨범 없음'}
                   variant="white"
                   size="small"
-                  icon={<AlbumIcon width={14} height={14} />}
+                  icon={<AlbumSmallIcon />}
                 />
               )}
               {/* TODO: 2차 MVP에서 반영 예정

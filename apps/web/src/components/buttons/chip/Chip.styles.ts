@@ -18,7 +18,7 @@ const variantStyles = {
 
 const sizeStyles = {
   small: (theme: Theme) => css`
-    ${theme.typography.caption12Bold}
+    ${theme.typography.caption12Regular}
     gap: 6px;
   `,
   medium: (theme: Theme) => css`

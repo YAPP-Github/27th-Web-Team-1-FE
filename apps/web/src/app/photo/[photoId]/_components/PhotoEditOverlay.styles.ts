@@ -150,11 +150,12 @@ export const AlbumButton = styled.button`
 `;
 
 export const AlbumIcon = styled.div`
-  width: 22px;
-  height: 22px;
+  width: 14px;
+  height: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
 `;
 
 export const AlbumText = styled.span`
@@ -191,6 +192,7 @@ export const MapIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
 `;
 
 export const MapPreviewText = styled.span`

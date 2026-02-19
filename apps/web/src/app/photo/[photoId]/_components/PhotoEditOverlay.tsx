@@ -18,7 +18,7 @@ import useMemoModal from '../../add/note/_hooks/useMemoModal';
 import * as S from './PhotoEditOverlay.styles';
 
 import type { PhotoLocation } from '@/app/photo/add/_types/photo';
-import AlbumIcon from '@/assets/images/album.svg';
+import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
@@ -241,7 +241,7 @@ export default function PhotoEditOverlay({
             <S.AlbumButtonWrapper>
               <S.AlbumButton type="button" onClick={handleAlbumSelect}>
                 <S.AlbumIcon>
-                  <AlbumIcon width={22} height={22} />
+                  <AlbumSmallIcon />
                 </S.AlbumIcon>
                 <S.AlbumText>
                   {selectedAlbum?.title || photoDetail.albumName || '앨범 선택...'}
