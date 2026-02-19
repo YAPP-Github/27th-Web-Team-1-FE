@@ -42,6 +42,7 @@ import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
 import WarningIcon from '@/assets/images/warning.svg';
 import { useToast } from '@/components/toast';
+import { useRef } from 'react';
 
 interface PhotoNoteOverlayProps {
   onClose: () => void;
@@ -96,9 +97,11 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   });
 
   const { addPendingPhoto } = usePendingPhotos();
+  const isSubmittingRef = useRef(false);
 
   const handleUpload = () => {
-    if (!selectedPhoto || !hasLocation) return;
+    if (!selectedPhoto || !hasLocation || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
     addPendingPhoto({
       photo: selectedPhoto,
