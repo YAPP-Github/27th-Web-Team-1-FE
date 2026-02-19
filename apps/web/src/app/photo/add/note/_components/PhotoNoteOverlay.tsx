@@ -34,7 +34,7 @@ import LocationSelectOverlay from './LocationSelectOverlay';
 import MemoModal from './MemoModal';
 import * as S from './PhotoNoteOverlay.styles';
 
-import AlbumIcon from '@/assets/images/album.svg';
+import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
 import CloseSmallIcon from '@/assets/images/closeSmall.svg';
@@ -321,9 +321,9 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
 
             <S.AlbumButtonWrapper>
               <S.AlbumChip onClick={handleAlbumSelect}>
-                <S.AlbumIcon>
-                  <AlbumIcon width={22} height={22} />
-                </S.AlbumIcon>
+                <S.AlbumIconWrapper>
+                  <AlbumSmallIcon />
+                </S.AlbumIconWrapper>
                 <S.AlbumText>{selectedAlbum?.title || '앨범 선택...'}</S.AlbumText>
                 {selectedAlbum && (
                   <S.AlbumResetButton
