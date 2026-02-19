@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   useDelete,
   getGetPhotosQueryKey,
+  getGetMapMeQueryKey,
   type AlbumThumbnails,
   type PhotoListResponse,
 } from '@repo/api-client';
@@ -84,6 +85,7 @@ const usePhotoDelete = () => {
 
     try {
       await deletePhotoAsync({ id: photoId });
+      queryClient.invalidateQueries({ queryKey: getGetMapMeQueryKey() });
       queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
       if (albumId) {
         queryClient.invalidateQueries({ queryKey: getGetPhotosQueryKey(albumId) });
