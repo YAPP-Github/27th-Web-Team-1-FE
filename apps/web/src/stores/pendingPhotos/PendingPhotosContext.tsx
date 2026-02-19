@@ -1,6 +1,7 @@
 'use client';
 
 import type { PhotoLocation, SelectedPhoto } from '@/app/photo/add/_types/photo';
+import { useToast } from '@/components/toast';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
 import { create, getGetPhotosQueryKey, getPresignedUrl } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -88,6 +89,7 @@ export function PendingPhotosProvider({ children }: PropsWithChildren) {
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([]);
   const [activePendingId, setActivePendingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const pendingPhotosRef = useRef(pendingPhotos);
   pendingPhotosRef.current = pendingPhotos;
 
@@ -198,10 +200,11 @@ export function PendingPhotosProvider({ children }: PropsWithChildren) {
             status: 'error',
             errorMessage: error instanceof Error ? error.message : 'Upload failed',
           });
+          showToast('사진 업로드에 실패했어요');
         }
       })();
     },
-    [queryClient, updatePending],
+    [queryClient, updatePending, showToast],
   );
 
   const getPendingPhotosByAlbum = useCallback(
