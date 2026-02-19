@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { getMe, getGetMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
+import { getMapMe, getGetMapMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
 import { useEffect, useMemo } from 'react';
 
 interface UseMapMeAlbumsParams {
@@ -37,8 +37,8 @@ export const useMapMeAlbums = ({
 
   // /map/me 데이터 가져오기 (백그라운드)
   const mapMeResponse = useQuery({
-    queryKey: getGetMeQueryKey(params),
-    queryFn: ({ signal }) => getMe(params, signal),
+    queryKey: getGetMapMeQueryKey(params),
+    queryFn: ({ signal }) => getMapMe(params, signal),
     enabled: isValid,
     placeholderData: keepPreviousData,
   });

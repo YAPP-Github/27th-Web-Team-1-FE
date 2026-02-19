@@ -1,4 +1,4 @@
-import { getMe, getGetMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
+import { getMapMe, getGetMapMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useMemo, useRef } from 'react';
 
@@ -19,8 +19,8 @@ export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams
   };
 
   const response = useQuery({
-    queryKey: getGetMeQueryKey(params),
-    queryFn: ({ signal }) => getMe(params, signal),
+    queryKey: getGetMapMeQueryKey(params),
+    queryFn: ({ signal }) => getMapMe(params, signal),
     enabled: isValid,
     placeholderData: keepPreviousData,
   });

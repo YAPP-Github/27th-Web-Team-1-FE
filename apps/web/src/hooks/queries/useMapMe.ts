@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { getMe, getGetMeQueryKey } from '@repo/api-client';
+import { getMapMe, getGetMapMeQueryKey } from '@repo/api-client';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Supercluster from 'supercluster';
 import type { MapPin } from '@/types/map.type';
@@ -53,10 +53,10 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
   );
 
   const response = useQuery({
-    queryKey: getGetMeQueryKey(params),
+    queryKey: getGetMapMeQueryKey(params),
     queryFn: ({ signal }) => {
       const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
-      return getMe(requestParams, signal);
+      return getMapMe(requestParams, signal);
     },
     enabled: isValid,
     placeholderData: keepPreviousData,
