@@ -52,7 +52,7 @@ const usePhotoDelete = () => {
               album.id === albumId
                 ? {
                     ...album,
-                    photoCount: Math.max((album.photoCount ?? 1) - 1, 0),
+                    photoCount: Math.max((album.photoCount ?? 0) - 1, 0),
                     photos: (album.photos ?? []).filter((p) => p.id !== photoId),
                   }
                 : album,
@@ -70,7 +70,7 @@ const usePhotoDelete = () => {
           album.id === albumId
             ? {
                 ...album,
-                photoCount: Math.max((album.photoCount ?? 1) - 1, 0),
+                photoCount: Math.max((album.photoCount ?? 0) - 1, 0),
               }
             : album,
         );
