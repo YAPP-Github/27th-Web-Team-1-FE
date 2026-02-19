@@ -100,34 +100,26 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const handleUpload = () => {
     if (!selectedPhoto || !hasLocation) return;
 
-    uploadPhoto(
-      {
-        photo: selectedPhoto,
-        description: memo || undefined,
-        albumId: selectedAlbum?.id,
-        location:
-          selectedLocation?.latitude != null && selectedLocation?.longitude != null
-            ? {
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude,
-              }
-            : undefined,
-      },
-      {
-        onSuccess: () => {
-          showToast('사진이 추가되었습니다');
-          if (selectedAlbum) {
-            router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
-          } else {
-            router.replace(ROUTES.HOME);
-          }
-        },
-        onError: (error) => {
-          console.error('Upload failed:', error);
-          showToast('사진 추가에 실패했습니다. 다시 시도해주세요');
-        },
-      },
-    );
+    uploadPhoto({
+      photo: selectedPhoto,
+      description: memo || undefined,
+      albumId: selectedAlbum?.id,
+      location:
+        selectedLocation?.latitude != null && selectedLocation?.longitude != null
+          ? {
+              latitude: selectedLocation.latitude,
+              longitude: selectedLocation.longitude,
+            }
+          : undefined,
+    });
+
+    // 낙관적 업데이트: 업로드 완료를 기다리지 않고 즉시 이동
+    showToast('사진이 추가되었습니다');
+    if (selectedAlbum) {
+      router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
+    } else {
+      router.replace(ROUTES.HOME);
+    }
   };
 
   const handleMapPreview = () => {

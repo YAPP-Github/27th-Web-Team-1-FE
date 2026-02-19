@@ -1,7 +1,13 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGetPresignedUrl, useCreate } from '@repo/api-client';
+import {
+  useGetPresignedUrl,
+  useCreate,
+  getGetPhotosQueryKey,
+  type AlbumThumbnails,
+  type PhotoListResponse,
+} from '@repo/api-client';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
 import type { SelectedPhoto, PhotoLocation } from '../../../add/_types/photo';
 
@@ -74,8 +80,94 @@ export const usePhotoUpload = () => {
 
       return createResponse;
     },
-    onSuccess: () => {
+    onMutate: ({ photo, albumId, description, location }) => {
+      // cancelQueries는 fire-and-forget으로 처리 (await하면 setQueryData가 비동기로 밀림)
+      queryClient.cancelQueries({ queryKey: getMapMeAlbumsQueryKey() });
+      if (albumId) {
+        queryClient.cancelQueries({ queryKey: getGetPhotosQueryKey(albumId) });
+      }
+
+      const previousAlbums = queryClient.getQueryData<AlbumThumbnails[]>(
+        getMapMeAlbumsQueryKey(),
+      );
+      const previousPhotos = albumId
+        ? queryClient.getQueryData<PhotoListResponse>(getGetPhotosQueryKey(albumId))
+        : undefined;
+
+      const finalLocation = location ?? photo.location;
+
+      // 앨범 사진 목록 낙관적 업데이트
+      if (albumId) {
+        queryClient.setQueryData<PhotoListResponse>(
+          getGetPhotosQueryKey(albumId),
+          (old) => {
+            if (!old?.albums?.length) return old;
+            return {
+              ...old,
+              albums: old.albums.map((album) =>
+                album.id === albumId
+                  ? {
+                      ...album,
+                      photoCount: (album.photoCount ?? 0) + 1,
+                      photos: [
+                        {
+                          id: -Date.now(),
+                          url: photo.uri,
+                          location: finalLocation
+                            ? {
+                                latitude: finalLocation.latitude,
+                                longitude: finalLocation.longitude,
+                              }
+                            : undefined,
+                          description,
+                          takenAt: photo.createdAt,
+                        },
+                        ...(album.photos ?? []),
+                      ],
+                    }
+                  : album,
+              ),
+            };
+          },
+        );
+      }
+
+      // 앨범 썸네일 목록 낙관적 업데이트
+      if (albumId) {
+        queryClient.setQueryData<AlbumThumbnails[]>(getMapMeAlbumsQueryKey(), (old) => {
+          if (!old) return old;
+          return old.map((album) =>
+            album.id === albumId
+              ? {
+                  ...album,
+                  photoCount: (album.photoCount ?? 0) + 1,
+                  thumbnailUrls: [photo.uri, ...(album.thumbnailUrls ?? [])].slice(0, 4),
+                }
+              : album,
+          );
+        });
+      }
+
+      return { previousAlbums, previousPhotos, albumId };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousAlbums !== undefined) {
+        queryClient.setQueryData(getMapMeAlbumsQueryKey(), context.previousAlbums);
+      }
+      if (context?.albumId && context?.previousPhotos !== undefined) {
+        queryClient.setQueryData(
+          getGetPhotosQueryKey(context.albumId),
+          context.previousPhotos,
+        );
+      }
+    },
+    onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: getMapMeAlbumsQueryKey() });
+      if (variables?.albumId) {
+        queryClient.invalidateQueries({
+          queryKey: getGetPhotosQueryKey(variables.albumId),
+        });
+      }
     },
   });
 };

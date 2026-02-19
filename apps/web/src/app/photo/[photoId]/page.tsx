@@ -226,7 +226,12 @@ export default function PhotoViewPage() {
         isOpen={isDeleteModalOpen}
         isDeleting={isDeleting}
         onClose={closeDeleteModal}
-        onConfirm={() => confirmDelete(displayPhotoId)}
+        onConfirm={() =>
+          confirmDelete({
+            photoId: displayPhotoId,
+            albumId: albumIdFromQuery,
+          })
+        }
       />
     </S.Container>
   );
