@@ -6,7 +6,7 @@ import { ROUTES } from '@/constants';
 import { useGetPhotoDetail } from '@repo/api-client';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { STATE_SOURCE } from '../../_constants/stateSource';
 import { usePhotoContext } from '../../_contexts/PhotoContext';
 import AlbumSelectOverlay from '../../add/note/_components/AlbumSelectOverlay';
@@ -21,6 +21,7 @@ import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
+import CloseSmallIcon from '@/assets/images/closeSmall.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
 
@@ -30,7 +31,7 @@ interface PhotoEditOverlayProps {
   onSave: (data: {
     photoId: number;
     memo?: string;
-    albumId?: number;
+    albumId?: number | null;
     location: PhotoLocation;
   }) => void;
   isSaving?: boolean;
@@ -87,7 +88,18 @@ export default function PhotoEditOverlay({
     openModal: handleAlbumSelect,
     closeModal: handleAlbumModalClose,
     submitAlbum: handleAlbumSubmit,
+    resetAlbum: handleAlbumReset,
   } = useAlbumModal({ stateSource: STATE_SOURCE.EDIT });
+
+  const [isAlbumCleared, setIsAlbumCleared] = useState(false);
+
+  useEffect(() => {
+    if (selectedAlbum) setIsAlbumCleared(false);
+  }, [selectedAlbum]);
+
+  const albumDisplayName = isAlbumCleared
+    ? null
+    : selectedAlbum?.title || photoDetail?.albumName;
 
   const {
     selectedLocation,
@@ -134,7 +146,7 @@ export default function PhotoEditOverlay({
     onSave({
       photoId,
       memo: memo || undefined,
-      albumId: selectedAlbum?.id,
+      albumId: isAlbumCleared ? null : selectedAlbum?.id,
       location: { latitude, longitude },
     });
   };
@@ -171,7 +183,7 @@ export default function PhotoEditOverlay({
     : photoDetail.address;
 
   const isMemoModified = memo !== (photoDetail.description || '');
-  const isAlbumModified = selectedAlbum !== null;
+  const isAlbumModified = selectedAlbum !== null || isAlbumCleared;
   const isLocationModified = selectedLocation !== null;
   const isModified = isMemoModified || isAlbumModified || isLocationModified;
 
@@ -239,13 +251,23 @@ export default function PhotoEditOverlay({
             </S.MemoButton>
 
             <S.AlbumButtonWrapper>
-              <S.AlbumButton type="button" onClick={handleAlbumSelect}>
+              <S.AlbumButton onClick={handleAlbumSelect}>
                 <S.AlbumIcon>
                   <AlbumSmallIcon />
                 </S.AlbumIcon>
-                <S.AlbumText>
-                  {selectedAlbum?.title || photoDetail.albumName || '앨범 선택...'}
-                </S.AlbumText>
+                <S.AlbumText>{albumDisplayName || '앨범 선택...'}</S.AlbumText>
+                {albumDisplayName && (
+                  <S.AlbumResetButton
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAlbumCleared(true);
+                      handleAlbumReset();
+                    }}
+                  >
+                    <CloseSmallIcon />
+                  </S.AlbumResetButton>
+                )}
               </S.AlbumButton>
             </S.AlbumButtonWrapper>
           </S.MemoAlbumOverlay>

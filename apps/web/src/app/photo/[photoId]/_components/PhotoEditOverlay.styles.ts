@@ -134,11 +134,11 @@ export const AlbumButtonWrapper = styled.div`
   display: flex;
 `;
 
-export const AlbumButton = styled.button`
+export const AlbumButton = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 6px 10px;
   background: ${({ theme }) => theme.colors.gray[900]};
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
   border-radius: 8px;
@@ -161,6 +161,21 @@ export const AlbumIcon = styled.div`
 export const AlbumText = styled.span`
   ${({ theme }) => theme.typography.body15Semibold};
   color: ${({ theme }) => theme.colors.gray[0]};
+`;
+
+export const AlbumResetButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.8;
+  }
 `;
 
 export const ActionButtons = styled.div`
