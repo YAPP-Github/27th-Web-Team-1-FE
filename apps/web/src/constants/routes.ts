@@ -16,4 +16,11 @@ export const ROUTES = {
       `/photo/${photoId}?clusterId=${clusterId}`,
     PREVIEW: '/photo/preview',
   },
+  ONBOARDING: {
+    START: '/onboarding',
+    PROFILE: '/onboarding/profile',
+    CONNECT: '/onboarding/connect',
+    VERIFY: '/onboarding/verify',
+    DONE: '/onboarding/done',
+  },
 } as const;
