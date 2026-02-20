@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useGetMyStatus } from '@repo/api-client';
+import { ROUTES } from '@/constants/routes';
 import { useOnboardingContext } from './_contexts/OnboardingContext';
 
 export default function OnboardingLayoutClient({
@@ -22,22 +23,20 @@ export default function OnboardingLayoutClient({
 
     // 이미 커플 연결 완료된 경우 홈으로
     if (coupleStatus?.coupled) {
-      router.replace('/');
+      router.replace(ROUTES.HOME);
       return;
     }
 
     // 경로별 가드 로직
-    const currentPath = pathname;
-
     // profile 완료 전 connect 접근 금지
-    if (currentPath.includes('/connect') && !completedSteps.profile) {
-      router.replace('/onboarding/profile');
+    if (pathname === ROUTES.ONBOARDING.CONNECT && !completedSteps.profile) {
+      router.replace(ROUTES.ONBOARDING.PROFILE);
       return;
     }
 
     // connect 완료 전 verify 접근 금지
-    if (currentPath.includes('/verify') && !completedSteps.connect) {
-      router.replace('/onboarding/connect');
+    if (pathname === ROUTES.ONBOARDING.VERIFY && !completedSteps.connect) {
+      router.replace(ROUTES.ONBOARDING.CONNECT);
       return;
     }
   }, [pathname, coupleStatus, completedSteps, isLoading, router]);
