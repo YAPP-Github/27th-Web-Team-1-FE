@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/buttons/button/Button';
 import Input from '@/components/input/Input';
@@ -23,6 +23,14 @@ export default function ProfilePage() {
     setImageFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleSubmit = useCallback(async () => {
     if (!nickname.trim()) return;
