@@ -16,24 +16,15 @@ export default function OnboardingLayoutClient({
   const { completedSteps } = useOnboardingContext();
 
   useEffect(() => {
-    console.log('useEffect 실행됨, isLoading:', isLoading, 'coupleStatus:', coupleStatus);
-
     if (isLoading) {
-      console.log('아직 로딩 중...');
       return;
     }
 
     // 이미 커플 연결 완료된 경우 홈으로
-    console.log('커플 상태:', coupleStatus);
-    console.log('coupled 값:', coupleStatus?.coupled);
-
     if (coupleStatus?.coupled) {
-      console.log('리다이렉트 전 커플 상태:', coupleStatus);
       router.replace('/');
       return;
     }
-
-    console.log('커플 미완료 상태, onboarding 진행');
 
     // 경로별 가드 로직
     const currentPath = pathname;
