@@ -25,7 +25,7 @@ const slideDown = keyframes`
 
 export const ToastContainer = styled.div`
   position: fixed;
-  bottom: 100px;
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -35,16 +35,26 @@ export const ToastContainer = styled.div`
   pointer-events: none;
 `;
 
-export const ToastItem = styled.div<{ isExiting?: boolean }>`
+export const ToastItem = styled.div<{
+  isExiting?: boolean;
+}>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 14px 20px;
-  background: ${({ theme }) => theme.colors.gray[800]};
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   animation: ${({ isExiting }) => (isExiting ? slideDown : slideUp)} 0.3s ease;
   pointer-events: auto;
+
+  background: ${({ theme }) => theme.colors.gray[800]};
+`;
+
+export const ToastIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 `;
 
 export const ToastText = styled.span`

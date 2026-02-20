@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useCallback, ReactNode } from 'rea
 import Toast, { ToastMessage } from './Toast';
 
 interface ToastContextValue {
-  showToast: (message: string, duration?: number) => void;
+  showToast: (message: string, duration?: number, variant?: 'default' | 'info' | 'warn' | 'success') => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -15,23 +15,26 @@ const EXIT_ANIMATION_DURATION = 300;
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const showToast = useCallback((message: string, duration = TOAST_DURATION) => {
-    const id = `${Date.now()}-${Math.random()}`;
+  const showToast = useCallback(
+    (message: string, duration = TOAST_DURATION, variant?: 'default' | 'info' | 'warn' | 'success') => {
+      const id = `${Date.now()}-${Math.random()}`;
 
-    setToasts((prev) => [...prev, { id, message }]);
+      setToasts((prev) => [...prev, { id, message, variant }]);
 
-    // 퇴장 애니메이션 시작
-    setTimeout(() => {
-      setToasts((prev) =>
-        prev.map((toast) => (toast.id === id ? { ...toast, isExiting: true } : toast)),
-      );
-    }, duration);
+      // 퇴장 애니메이션 시작
+      setTimeout(() => {
+        setToasts((prev) =>
+          prev.map((toast) => (toast.id === id ? { ...toast, isExiting: true } : toast)),
+        );
+      }, duration);
 
-    // 토스트 제거
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, duration + EXIT_ANIMATION_DURATION);
-  }, []);
+      // 토스트 제거
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((toast) => toast.id !== id));
+      }, duration + EXIT_ANIMATION_DURATION);
+    },
+    [],
+  );
 
   return (
     <ToastContext.Provider value={{ showToast }}>
