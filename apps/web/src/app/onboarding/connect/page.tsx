@@ -107,7 +107,7 @@ export default function ConnectPage() {
   }, [markStepCompleted, router]);
 
   const handleShareKakao = useCallback(() => {
-    const kakao = (window as any).Kakao;
+    const kakao = window.Kakao;
     if (kakao && inviteCode?.code) {
       try {
         const isDev = process.env.NODE_ENV === 'development';

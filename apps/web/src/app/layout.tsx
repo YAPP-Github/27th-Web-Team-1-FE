@@ -43,7 +43,7 @@ export default function RootLayout({
       <head>
         <Script
           src="https://developers.kakao.com/sdk/js/kakao.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
       </head>
       <body className={pretendard.variable}>
