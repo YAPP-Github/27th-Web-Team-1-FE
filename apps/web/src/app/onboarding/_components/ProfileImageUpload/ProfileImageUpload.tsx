@@ -28,6 +28,7 @@ export default function ProfileImageUpload({
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
       onImageSelect(file);
+      e.target.value = '';
     }
   };
 
