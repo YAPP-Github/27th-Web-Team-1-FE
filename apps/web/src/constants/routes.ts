@@ -21,6 +21,5 @@ export const ROUTES = {
     PROFILE: '/onboarding/profile',
     CONNECT: '/onboarding/connect',
     VERIFY: '/onboarding/verify',
-    DONE: '/onboarding/done',
   },
 } as const;
