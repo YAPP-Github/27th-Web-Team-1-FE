@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { useGetMyStatus } from '@repo/api-client';
+import { useGetMyStatus, getGetMyStatusQueryKey } from '@repo/api-client';
 import { ROUTES } from '@/constants/routes';
 import { Container } from './Layout.styles';
 
@@ -16,7 +16,10 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   const shouldSkipQuery = isPublicPath || isOnboardingPath;
 
   const { data: coupleStatus, isLoading } = useGetMyStatus({
-    query: { enabled: !shouldSkipQuery } as any,
+    query: {
+      queryKey: getGetMyStatusQueryKey(),
+      enabled: !shouldSkipQuery,
+    },
   });
 
   // 온보딩 미완료 시 리다이렉트 (onboarding, login 경로는 제외)
