@@ -6,12 +6,12 @@ import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 import DateIcon from '@/assets/images/date.svg';
 import Chip from '@/components/buttons/chip/Chip';
 import MenuHeader from '@/components/header/menu/MenuHeader';
+import { usePendingPhotoDetail } from '@/hooks/usePendingPhotosViewModel';
 import { formatDate } from '@/utils/formatDate';
-import { useGetPhotoDetail, getGetPhotoDetailQueryOptions } from '@repo/api-client';
+import { getGetPhotoDetailQueryOptions, useGetPhotoDetail } from '@repo/api-client';
 import { AnimatePresence } from 'framer-motion';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { usePendingPhotoDetail } from '@/hooks/usePendingPhotosViewModel';
 import DeleteConfirmModal from './_components/DeleteConfirmModal';
 import PhotoEditOverlay from './_components/PhotoEditOverlay';
 import {
