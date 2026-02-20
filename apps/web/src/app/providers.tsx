@@ -11,6 +11,7 @@ import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider } from '@repo/api-client';
 import { ToastProvider } from '@/components/toast';
 import { PhotoProvider } from './photo/_contexts/PhotoContext';
+import { OnboardingProvider } from './onboarding/_contexts/OnboardingContext';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
@@ -47,13 +48,34 @@ export function AppProviders({
     };
   }, []);
 
+  // Kakao SDK 초기화
+  useEffect(() => {
+    const initKakao = () => {
+      const kakao = (window as any).Kakao;
+      const javascriptKey = process.env.NEXT_PUBLIC_JAVASCRIPT_KEY;
+
+      if (kakao && javascriptKey && !kakao.isInitialized()) {
+        kakao.init(javascriptKey);
+      }
+    };
+
+    if ((window as any).Kakao) {
+      initKakao();
+    } else {
+      const timer = setTimeout(initKakao, 100);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const content = (
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <QueryClientProvider client={queryClient}>
           <PhotoProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <OnboardingProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </OnboardingProvider>
           </PhotoProvider>
           {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
         </QueryClientProvider>
