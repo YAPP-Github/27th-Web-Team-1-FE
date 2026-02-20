@@ -43,7 +43,7 @@ export default function CodeInput({
 
   const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
-      if (!digits[index] && index > 0) {
+      if (!digits[index]?.trim() && index > 0) {
         inputRefs.current[index - 1]?.focus();
       }
       const newValue = digits
