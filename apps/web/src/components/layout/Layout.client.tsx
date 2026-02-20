@@ -15,7 +15,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   const isOnboardingPath = pathname.startsWith('/onboarding');
   const shouldSkipQuery = isPublicPath || isOnboardingPath;
 
-  const { data: coupleStatus, isLoading } = useGetMyStatus({
+  const { data: coupleStatus, isLoading, isError } = useGetMyStatus({
     query: {
       queryKey: getGetMyStatusQueryKey(),
       enabled: !shouldSkipQuery,
@@ -24,14 +24,14 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
   // 온보딩 미완료 시 리다이렉트 (onboarding, login 경로는 제외)
   useEffect(() => {
-    if (shouldSkipQuery || isLoading) {
+    if (shouldSkipQuery || isLoading || isError) {
       return;
     }
 
     if (!coupleStatus?.coupled) {
       router.replace(ROUTES.ONBOARDING.START);
     }
-  }, [coupleStatus, isLoading, router, shouldSkipQuery]);
+  }, [coupleStatus, isLoading, isError, router, shouldSkipQuery]);
 
   return <Container>{children}</Container>;
 }
