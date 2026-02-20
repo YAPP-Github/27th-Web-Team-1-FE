@@ -12,9 +12,9 @@
 export interface AlbumThumbnails {
   /** 앨범 ID */
   id?: number;
-  /** 앨범 ID */
+  /** 앨범 제목 */
   title?: string;
-  /** 앨범 ID */
+  /** 앨범 사진 수 */
   photoCount?: number;
   /** 앨범 썸네일 사진들 (최대 4장) */
   thumbnailUrls?: string[];

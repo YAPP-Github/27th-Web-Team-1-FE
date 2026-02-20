@@ -11,4 +11,5 @@
  */
 export interface InviteCodeResponse {
   inviteCode?: string;
+  expiresAt?: string;
 }

@@ -6,9 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SearchPlacesParams = {
 /**
- * 검색 키워드
+ * 관리자 작업 공통 응답
  */
-query: string;
-};
+export interface AdminActionResponse {
+  /** 작업 결과 메시지 */
+  message?: string;
+}

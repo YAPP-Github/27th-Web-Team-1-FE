@@ -10,7 +10,7 @@
  * 클러스터 응답
  */
 export interface ClusterResponse {
-  /** 클러스터 ID (줌 레벨 + 그리드 셀 인덱스) */
+  /** 클러스터 ID (줌/셀 + 선택적 그룹/병합줌 토큰) */
   clusterId?: string;
   /** 클러스터 내 사진 개수 */
   count?: number;

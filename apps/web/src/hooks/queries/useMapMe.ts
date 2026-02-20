@@ -1,5 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { getMe, getGetMeQueryKey } from '@repo/api-client';
+import { getMapMe, getGetMapMeQueryKey } from '@repo/api-client';
+import type { ClusterResponse, MapPhotoResponse } from '@repo/api-client';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Supercluster from 'supercluster';
 import type { MapPin } from '@/types/map.type';
@@ -53,10 +54,10 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
   );
 
   const response = useQuery({
-    queryKey: getGetMeQueryKey(params),
+    queryKey: getGetMapMeQueryKey(params),
     queryFn: ({ signal }) => {
       const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
-      return getMe(requestParams, signal);
+      return getMapMe(requestParams, signal);
     },
     enabled: isValid,
     placeholderData: keepPreviousData,
@@ -103,7 +104,7 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
 
     // 줌레벨 < CLIENT_CLUSTERING_MIN_ZOOM: 서버 클러스터 사용
     if (zoom < MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM) {
-      const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster) => ({
+      const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster: ClusterResponse) => ({
         id: 0,
         albumId: 0,
         latitude: cluster.latitude ?? 0,
@@ -138,7 +139,7 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
     const bboxValues = parseBbox(bbox ?? '');
     if (!bboxValues) {
       // bbox가 없으면 개별 핀으로 반환
-      const photoPins: MapPin[] = photos.map((photo) => ({
+      const photoPins: MapPin[] = photos.map((photo: MapPhotoResponse) => ({
         id: photo.id ?? 0,
         albumId: 0,
         latitude: photo.latitude ?? 0,

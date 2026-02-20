@@ -6,9 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SearchPlacesParams = {
 /**
- * 검색 키워드
+ * 파트너 요약 정보
  */
-query: string;
-};
+export interface PartnerSummaryResponse {
+  userId?: number;
+  nickname?: string;
+  profileImageUrl?: string;
+}
