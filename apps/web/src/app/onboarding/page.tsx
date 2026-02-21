@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/constants/routes';
+import { ONBOARDING_START_REDIRECT_DELAY } from '@/constants/onboarding';
 import * as S from './page.styles';
 
 export default function OnboardingPage() {
@@ -11,7 +12,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push(ROUTES.ONBOARDING.PROFILE);
-    }, 2000);
+    }, ONBOARDING_START_REDIRECT_DELAY);
 
     return () => clearTimeout(timer);
   }, [router]);

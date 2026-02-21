@@ -1,0 +1,2 @@
+export const ONBOARDING_START_REDIRECT_DELAY = 2000;
+export const INVITE_CODE_LENGTH = 6;

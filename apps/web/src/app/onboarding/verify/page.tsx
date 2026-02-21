@@ -10,6 +10,7 @@ import { useCodeVerification } from '../_hooks/useCodeVerification';
 import { useOnboardingContext } from '../_contexts/OnboardingContext';
 import { useToast } from '@/components/toast/ToastProvider';
 import { ROUTES } from '@/constants/routes';
+import { INVITE_CODE_LENGTH } from '@/constants/onboarding';
 import DefaultProfile from '@/assets/images/defaultProfile.svg';
 import * as S from './page.styles';
 
@@ -146,7 +147,7 @@ export default function VerifyPage() {
       <OnboardingHeader />
       <S.Content>
         <S.Title>친구 코드 입력</S.Title>
-        <S.Description>친구에게 받은 6자리 코드를 입력하세요</S.Description>
+        <S.Description>친구에게 받은 {INVITE_CODE_LENGTH}자리 코드를 입력하세요</S.Description>
         <CodeInput value={code} onChange={setCode} onComplete={handleCodeComplete} />
       </S.Content>
 
@@ -155,7 +156,7 @@ export default function VerifyPage() {
           text="확인"
           variant="highlight"
           onClick={() => handleCodeComplete(code)}
-          disabled={code.length !== 6}
+          disabled={code.length !== INVITE_CODE_LENGTH}
         />
       </S.ButtonGroup>
     </S.Container>
