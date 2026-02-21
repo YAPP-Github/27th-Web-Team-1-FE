@@ -22,7 +22,7 @@ export default function OnboardingLayoutClient({
     }
 
     // 이미 커플 연결 완료된 경우 홈으로
-    if (coupleStatus?.coupled) {
+    if (coupleStatus?.isCoupled) {
       router.replace(ROUTES.HOME);
       return;
     }

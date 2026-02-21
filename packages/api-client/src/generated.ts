@@ -31,6 +31,7 @@ import type {
   KakaoAuthorizeParams,
   PresignedUrlRequest,
   RemoveEmoticonRequest,
+  SaveNotificationEmailRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
   UpdateNicknameRequest,
@@ -54,6 +55,7 @@ import type {
 
 import type {
   AdminActionResponse,
+  AdminCoupleMigrationResponse,
   AdminPartnerResponse,
   AdminUserSummaryResponse,
   AlbumMapInfoResponse,
@@ -817,6 +819,72 @@ export const useRemoveEmoticon = <TError = ApiResponseErrorDetail | void,
     }
     
 /**
+ * 인증 없이 이메일을 저장합니다. 이미 존재하는 이메일이면 조용히 무시합니다.
+ * @summary 알림 이메일 저장
+ */
+export const saveNotificationEmail = (
+    saveNotificationEmailRequest: SaveNotificationEmailRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<void>(
+      {url: `/emails`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: saveNotificationEmailRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getSaveNotificationEmailMutationOptions = <TError = void | ApiResponseErrorDetail,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveNotificationEmail>>, TError,{data: SaveNotificationEmailRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof saveNotificationEmail>>, TError,{data: SaveNotificationEmailRequest}, TContext> => {
+
+const mutationKey = ['saveNotificationEmail'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveNotificationEmail>>, {data: SaveNotificationEmailRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveNotificationEmail(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveNotificationEmailMutationResult = NonNullable<Awaited<ReturnType<typeof saveNotificationEmail>>>
+    export type SaveNotificationEmailMutationBody = SaveNotificationEmailRequest
+    export type SaveNotificationEmailMutationError = void | ApiResponseErrorDetail
+
+    /**
+ * @summary 알림 이메일 저장
+ */
+export const useSaveNotificationEmail = <TError = void | ApiResponseErrorDetail,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveNotificationEmail>>, TError,{data: SaveNotificationEmailRequest}, TContext>, }
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveNotificationEmail>>,
+        TError,
+        {data: SaveNotificationEmailRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getSaveNotificationEmailMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+/**
  * 연결 해제된 커플에 재연결합니다. 연결 해제 후 31일 이내이며 기존 커플에 최소 1명이 잔존한 경우에만 가능합니다.
  * @summary 커플 재연결
  */
@@ -1332,6 +1400,70 @@ export const useCreateCouplePartner = <TError = void | ApiResponseErrorDetail,
       > => {
 
       const mutationOptions = getCreateCouplePartnerMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+/**
+ * 관리자 키와 사용자 JWT를 이용해 사용자의 과거 커플 데이터(본인 소유 리소스)를 현재 커플로 이관합니다.
+ * @summary 현재 사용자 기준 이전 커플 데이터 이관
+ */
+export const migratePreviousCoupleData = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customFetcher<AdminCoupleMigrationResponse>(
+      {url: `/admin/couples/migrate`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getMigratePreviousCoupleDataMutationOptions = <TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext> => {
+
+const mutationKey = ['migratePreviousCoupleData'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof migratePreviousCoupleData>>, void> = () => {
+          
+
+          return  migratePreviousCoupleData()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MigratePreviousCoupleDataMutationResult = NonNullable<Awaited<ReturnType<typeof migratePreviousCoupleData>>>
+    
+    export type MigratePreviousCoupleDataMutationError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse
+
+    /**
+ * @summary 현재 사용자 기준 이전 커플 데이터 이관
+ */
+export const useMigratePreviousCoupleData = <TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext>, }
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getMigratePreviousCoupleDataMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
@@ -2487,6 +2619,8 @@ export const getCreate1ResponseMock = (overrideResponse: Partial< IdResponse > =
 
 export const getCreateCouplePartnerResponseMock = (overrideResponse: Partial< AdminPartnerResponse > = {}): AdminPartnerResponse => ({partnerEmail: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), tokens: faker.helpers.arrayElement([{accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), ...overrideResponse})
 
+export const getMigratePreviousCoupleDataResponseMock = (overrideResponse: Partial< AdminCoupleMigrationResponse > = {}): AdminCoupleMigrationResponse => ({previousCoupleCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), createdAlbumCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedPhotoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedCommentCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), skippedCommentCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedEmoticonCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), skippedEmoticonCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
+
 export const getClearAllCachesResponseMock = (overrideResponse: Partial< AdminActionResponse > = {}): AdminActionResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
 
 export const getUpdateTitleResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
@@ -2640,6 +2774,16 @@ export const getRemoveEmoticonMockHandler = (overrideResponse?: void | ((info: P
   }, options)
 }
 
+export const getSaveNotificationEmailMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
+  return http.post('*/emails', async (info) => {await delay(1000);
+  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
+    return new HttpResponse(null,
+      { status: 204,
+        
+      })
+  }, options)
+}
+
 export const getReconnectMockHandler = (overrideResponse?: CoupleStatusResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CoupleStatusResponse> | CoupleStatusResponse), options?: RequestHandlerOptions) => {
   return http.post('*/couples/reconnect', async (info) => {await delay(1000);
   
@@ -2731,6 +2875,18 @@ export const getCreateCouplePartnerMockHandler = (overrideResponse?: AdminPartne
     ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
     : getCreateCouplePartnerResponseMock()),
       { status: 201,
+        headers: { 'Content-Type': 'application/json' }
+      })
+  }, options)
+}
+
+export const getMigratePreviousCoupleDataMockHandler = (overrideResponse?: AdminCoupleMigrationResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<AdminCoupleMigrationResponse> | AdminCoupleMigrationResponse), options?: RequestHandlerOptions) => {
+  return http.post('*/admin/couples/migrate', async (info) => {await delay(1000);
+  
+    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
+    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
+    : getMigratePreviousCoupleDataResponseMock()),
+      { status: 200,
         headers: { 'Content-Type': 'application/json' }
       })
   }, options)
@@ -2931,6 +3087,7 @@ export const getLokitAPIMock = () => [
   getGetPresignedUrlMockHandler(),
   getAddEmoticonMockHandler(),
   getRemoveEmoticonMockHandler(),
+  getSaveNotificationEmailMockHandler(),
   getReconnectMockHandler(),
   getJoinByInviteCodeMockHandler(),
   getCreateInviteMockHandler(),
@@ -2939,6 +3096,7 @@ export const getLokitAPIMock = () => [
   getConfirmInviteCodeMockHandler(),
   getCreate1MockHandler(),
   getCreateCouplePartnerMockHandler(),
+  getMigratePreviousCoupleDataMockHandler(),
   getClearAllCachesMockHandler(),
   getDelete1MockHandler(),
   getUpdateTitleMockHandler(),

@@ -8,6 +8,7 @@
 
 export * from './addEmoticonRequest';
 export * from './adminActionResponse';
+export * from './adminCoupleMigrationResponse';
 export * from './adminPartnerResponse';
 export * from './adminUserSummaryResponse';
 export * from './albumMapInfoResponse';
@@ -73,6 +74,7 @@ export * from './presignedUrl';
 export * from './presignedUrlRequest';
 export * from './refreshTokenRequest';
 export * from './removeEmoticonRequest';
+export * from './saveNotificationEmailRequest';
 export * from './searchPlacesParams';
 export * from './selectableAlbum';
 export * from './selectableAlbumResponse';

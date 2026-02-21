@@ -28,7 +28,7 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       return;
     }
 
-    if (!coupleStatus?.coupled) {
+    if (!coupleStatus?.isCoupled) {
       router.replace(ROUTES.ONBOARDING.START);
     }
   }, [coupleStatus, isLoading, isError, router, shouldSkipQuery]);
