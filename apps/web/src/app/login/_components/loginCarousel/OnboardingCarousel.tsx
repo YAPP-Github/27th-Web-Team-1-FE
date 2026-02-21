@@ -5,6 +5,8 @@ import Lock3dIcon from '@/assets/images/lock_3d.svg';
 import Pin3dIcon from '@/assets/images/pin_3d.svg';
 import Puzzle3dIcon from '@/assets/images/puzzle_3d.svg';
 import Location3dIcon from '@/assets/images/location_3d.svg';
+import ChevronLeftIcon from '@/assets/images/chevronLeft.svg';
+import ChevronRightIcon from '@/assets/images/chevronRight.svg';
 import * as S from './OnboardingCarousel.styles';
 
 const SLIDES = [
@@ -35,7 +37,6 @@ const CAROUSEL_SLIDES = [SLIDES[3], ...SLIDES, SLIDES[0]];
 export default function OnboardingCarousel() {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(true);
-  const [touchStartX, setTouchStartX] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -85,26 +86,19 @@ export default function OnboardingCarousel() {
     };
   }, [startAutoPlay]);
 
-  // 스와이프 처리
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    const distance = touchStartX - touchEndX;
-
-    if (Math.abs(distance) > 50) {
-      setIsTransitioning(true);
-      if (distance > 0) {
-        setCurrentIndex((prev) => prev + 1);
-      } else {
-        setCurrentIndex((prev) => prev - 1);
-      }
-    }
-
+  // 이전 슬라이드
+  const handlePrevious = useCallback(() => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
     startAutoPlay();
-  };
+  }, [startAutoPlay]);
+
+  // 다음 슬라이드
+  const handleNext = useCallback(() => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
+    startAutoPlay();
+  }, [startAutoPlay]);
 
   const getDotIndex = () => {
     if (currentIndex === 0) return 3;
@@ -120,27 +114,35 @@ export default function OnboardingCarousel() {
         ))}
       </S.DotContainer>
 
-      <S.CarouselContainer
-        ref={containerRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          transform: `translateX(-${currentIndex * 100}%)`,
-          transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
-        }}
-      >
-        {CAROUSEL_SLIDES.map((slide, idx) => (
-          <S.Slide key={idx}>
-            <S.Content>
-              <S.Title>{slide.title}</S.Title>
-              {slide.description && <S.Description>{slide.description}</S.Description>}
-            </S.Content>
-            <S.IconWrapper>
-              <slide.icon />
-            </S.IconWrapper>
-          </S.Slide>
-        ))}
-      </S.CarouselContainer>
+      <S.CarouselWrapper>
+        <S.ButtonPrev onClick={handlePrevious}>
+          <ChevronLeftIcon />
+        </S.ButtonPrev>
+
+        <S.CarouselContainer
+          ref={containerRef}
+          style={{
+            transform: `translateX(-${currentIndex * 100}%)`,
+            transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
+          }}
+        >
+          {CAROUSEL_SLIDES.map((slide, idx) => (
+            <S.Slide key={idx}>
+              <S.Content>
+                <S.Title>{slide.title}</S.Title>
+                {slide.description && <S.Description>{slide.description}</S.Description>}
+              </S.Content>
+              <S.IconWrapper>
+                <slide.icon />
+              </S.IconWrapper>
+            </S.Slide>
+          ))}
+        </S.CarouselContainer>
+
+        <S.ButtonNext onClick={handleNext}>
+          <ChevronRightIcon />
+        </S.ButtonNext>
+      </S.CarouselWrapper>
     </S.Wrapper>
   );
 }

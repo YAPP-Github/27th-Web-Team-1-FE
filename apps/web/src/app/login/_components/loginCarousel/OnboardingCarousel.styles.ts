@@ -26,6 +26,14 @@ export const Dot = styled.div<{ isActive: boolean }>`
   transition: background-color 0.3s ease;
 `;
 
+export const CarouselWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+`;
+
 export const CarouselContainer = styled.div`
   display: flex;
   width: 100%;
@@ -71,4 +79,56 @@ export const Description = styled.p`
   color: ${({ theme }) => theme.colors.text.secondary};
   white-space: pre-line;
   word-break: keep-all;
+`;
+
+export const ButtonPrev = styled.button`
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[0]};
+  transition: opacity 0.2s ease;
+  z-index: 10;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+export const ButtonNext = styled.button`
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[0]};
+  transition: opacity 0.2s ease;
+  z-index: 10;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 `;
