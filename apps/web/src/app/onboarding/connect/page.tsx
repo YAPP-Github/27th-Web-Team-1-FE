@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { getMyStatus } from '@repo/api-client';
 import Button from '@/components/buttons/button/Button';
 import OnboardingHeader from '../_components/OnboardingHeader/OnboardingHeader';
 import { useInviteCode } from '../_hooks/useInviteCode';
@@ -29,11 +30,8 @@ export default function ConnectPage() {
   useEffect(() => {
     const checkCoupleStatus = async () => {
       try {
-        const response = await fetch('/api/couples/me/status');
-        if (response.ok) {
-          const data = await response.json();
-          setIsCoupled(data.coupled);
-        }
+        const data = await getMyStatus();
+        setIsCoupled(data.coupled ?? false);
       } catch (error) {
         console.error('연결 상태 확인 실패:', error);
       }
