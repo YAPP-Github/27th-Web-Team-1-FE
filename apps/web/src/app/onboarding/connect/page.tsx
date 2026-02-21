@@ -13,7 +13,7 @@ import CopySvg from '@/assets/images/copy.svg';
 import * as S from './page.styles';
 import KakaoSvg from '@/assets/images/kakao.svg';
 
-const COUPLE_STATUS_POLLING_INTERVAL = 5000;
+const COUPLE_STATUS_POLLING_INTERVAL = 3000;
 
 export default function ConnectPage() {
   const router = useRouter();
@@ -167,10 +167,7 @@ export default function ConnectPage() {
             variant="secondary"
             onClick={handleInputCodeClick}
           />
-          <S.StartButtonWrapper
-            isDisabled={!isCoupled}
-            onClick={handleStartClick}
-          >
+          <S.StartButtonWrapper isDisabled={!isCoupled} onClick={handleStartClick}>
             <Button
               text="시작하기"
               variant="highlight"
