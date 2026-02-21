@@ -6,9 +6,9 @@ import {
   useVerifyInviteCode,
   useConfirmInviteCode,
   getGetMyStatusQueryKey,
-  type InviteCodePreviewResponse,
   ApiError,
 } from '@repo/api-client';
+import type { VerifyCodeResult } from '../_types';
 
 export function useCodeVerification() {
   const queryClient = useQueryClient();
@@ -16,13 +16,7 @@ export function useCodeVerification() {
   const { mutateAsync: confirm, isPending: isConfirming } = useConfirmInviteCode();
 
   const verifyCode = useCallback(
-    async (
-      code: string,
-    ): Promise<{
-      success: boolean;
-      data?: InviteCodePreviewResponse;
-      errorCode?: string;
-    }> => {
+    async (code: string): Promise<VerifyCodeResult> => {
       try {
         const result = await verify({ data: { inviteCode: code } });
         return { success: true, data: result };
