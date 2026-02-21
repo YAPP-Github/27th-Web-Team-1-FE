@@ -58,7 +58,6 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
     queryFn: ({ signal }) => {
       const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
       return getMapMe(requestParams, signal);
-      return getMapMe(requestParams, signal);
     },
     enabled: isValid,
     placeholderData: keepPreviousData,

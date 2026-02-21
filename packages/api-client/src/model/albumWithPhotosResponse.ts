@@ -21,4 +21,7 @@ export interface AlbumWithPhotosResponse {
   thumbnailUrl?: string;
   /** 앨범 내 사진 목록 */
   photos?: PhotoResponse[];
+  editable?: boolean;
+  /** 조회자가 해당 앨범을 수정/삭제할 수 있는지 여부 */
+  isEditable?: boolean;
 }

@@ -18,4 +18,7 @@ export interface SelectableAlbum {
   photoCount?: number;
   /** 앨범 썸네일 URL */
   thumbnailUrl?: string;
+  editable?: boolean;
+  /** 조회자가 해당 앨범을 수정/삭제할 수 있는지 여부 */
+  isEditable?: boolean;
 }
