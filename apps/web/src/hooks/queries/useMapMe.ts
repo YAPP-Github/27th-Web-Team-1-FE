@@ -55,7 +55,6 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
 
   const response = useQuery({
     queryKey: getGetMapMeQueryKey(params),
-    queryKey: getGetMapMeQueryKey(params),
     queryFn: ({ signal }) => {
       const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
       return getMapMe(requestParams, signal);
