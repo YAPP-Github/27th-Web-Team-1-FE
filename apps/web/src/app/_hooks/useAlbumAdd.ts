@@ -5,8 +5,6 @@ import {
   ApiError,
   useCreate1,
   getGetMapMeQueryKey,
-  type ApiResponseErrorDetail,
-  type IdResponse,
 } from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
@@ -34,7 +32,7 @@ const useAlbumAdd = (onSuccess?: () => void) => {
           showToast('앨범이 생성되었어요');
           onSuccess?.();
         },
-        onError: (error: ApiResponseErrorDetail | IdResponse) => {
+        onError: (error) => {
           if (error instanceof ApiError) {
             if (error?.code === 409 || error?.data?.errorCode === 'ALBUM_003') {
               showToast('존재하는 앨범명이에요');
