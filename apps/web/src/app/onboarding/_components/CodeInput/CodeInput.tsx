@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from 'react';
 import * as S from './CodeInput.styles';
 
+const CODE_LENGTH = 6;
+
 interface CodeInputProps {
   value: string;
   onChange: (value: string) => void;
@@ -14,7 +16,7 @@ export default function CodeInput({
   value,
   onChange,
   onComplete,
-  length = 6,
+  length = CODE_LENGTH,
 }: CodeInputProps) {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -22,7 +24,8 @@ export default function CodeInput({
   const digits = value.padEnd(length, ' ').split('').slice(0, length);
 
   useEffect(() => {
-    if (value.length === length && /^\d{6}$/.test(value)) {
+    const isAllDigits = /^\d+$/.test(value);
+    if (value.length === length && isAllDigits) {
       onComplete(value);
     }
   }, [value, length, onComplete]);
@@ -62,8 +65,9 @@ export default function CodeInput({
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').trim();
 
-    // 6자리 숫자만 허용
-    if (/^\d{6}$/.test(pastedData)) {
+    // 자리수 확인 및 숫자만 허용
+    const isAllDigits = /^\d+$/.test(pastedData);
+    if (pastedData.length === length && isAllDigits) {
       onChange(pastedData);
       inputRefs.current[length - 1]?.focus();
     }
