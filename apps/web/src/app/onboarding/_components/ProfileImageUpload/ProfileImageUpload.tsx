@@ -3,23 +3,8 @@
 import { useRef, ChangeEvent } from 'react';
 import ProfileIcon from '@/assets/images/defaultProfile.svg';
 import CameraIcon from '@/assets/images/camera.svg';
+import { isAllowedImageType } from '@/constants/image';
 import * as S from './ProfileImageUpload.styles';
-
-/** 허용된 이미지 MIME 타입 (SVG 제외) */
-const ALLOWED_IMAGE_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/heic',
-  'image/heif',
-] as const;
-
-const isAllowedImageType = (file: File): boolean => {
-  return ALLOWED_IMAGE_MIME_TYPES.includes(
-    file.type.toLowerCase() as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
-  );
-};
 
 interface ProfileImageUploadProps {
   imageUrl: string | null;

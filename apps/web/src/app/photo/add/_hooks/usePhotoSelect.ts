@@ -3,22 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import type { SelectedPhoto } from '../_types/photo';
 import { fileToSelectedPhoto } from '../_utils/fileToSelectedPhoto';
-
-/** XSS 방지를 위해 허용된 이미지 MIME 타입 (SVG 제외) */
-const ALLOWED_IMAGE_MIME_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/heic',
-  'image/heif',
-] as const;
-
-const isAllowedImageType = (file: File): boolean => {
-  return ALLOWED_IMAGE_MIME_TYPES.includes(
-    file.type.toLowerCase() as (typeof ALLOWED_IMAGE_MIME_TYPES)[number],
-  );
-};
+import { ALLOWED_IMAGE_MIME_TYPES, isAllowedImageType } from '@/constants/image';
 
 interface UsePhotoSelectOptions {
   onPhotosSelected?: (photos: SelectedPhoto[]) => void;
