@@ -7,6 +7,8 @@ export const Container = styled.div`
 
 export const ImagePreview = styled.div<{ 'data-disabled'?: boolean }>`
   position: relative;
+  width: 100px;
+  height: 100px;
   cursor: ${({ 'data-disabled': disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   overflow: visible;
   padding: 0;
