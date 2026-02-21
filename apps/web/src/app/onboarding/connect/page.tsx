@@ -13,6 +13,8 @@ import CopySvg from '@/assets/images/copy.svg';
 import * as S from './page.styles';
 import KakaoSvg from '@/assets/images/kakao.svg';
 
+const COUPLE_STATUS_POLLING_INTERVAL = 5000;
+
 export default function ConnectPage() {
   const router = useRouter();
   const { showToast } = useToast();
@@ -30,7 +32,7 @@ export default function ConnectPage() {
         const response = await fetch('/api/couples/me/status');
         if (response.ok) {
           const data = await response.json();
-          setIsCoupled(data.coupled === true);
+          setIsCoupled(data.coupled);
         }
       } catch (error) {
         console.error('연결 상태 확인 실패:', error);
@@ -38,7 +40,7 @@ export default function ConnectPage() {
     };
 
     checkCoupleStatus();
-    const interval = setInterval(checkCoupleStatus, 5000);
+    const interval = setInterval(checkCoupleStatus, COUPLE_STATUS_POLLING_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
