@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useGetMyStatus, type CoupleStatusResponse } from '@repo/api-client';
+import type { CoupleStatusResponse } from '@repo/api-client';
 import { ROUTES } from '@/constants/routes';
 import { useOnboardingContext } from './_contexts/OnboardingContext';
 
@@ -15,19 +15,15 @@ export default function OnboardingLayoutClient({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: coupleStatus, isLoading } = useGetMyStatus();
   const { completedSteps } = useOnboardingContext();
 
-  const effectiveCoupleStatus = !isLoading ? coupleStatus : initialCoupleStatus;
-  const isReady = !isLoading || initialCoupleStatus !== undefined;
-
   useEffect(() => {
-    if (!isReady) {
+    if (!initialCoupleStatus) {
       return;
     }
 
     // 이미 커플 연결 완료된 경우 홈으로
-    if (effectiveCoupleStatus?.isCoupled) {
+    if (initialCoupleStatus.isCoupled) {
       router.replace(ROUTES.HOME);
       return;
     }
@@ -44,20 +40,7 @@ export default function OnboardingLayoutClient({
       router.replace(ROUTES.ONBOARDING.CONNECT);
       return;
     }
-  }, [pathname, effectiveCoupleStatus, completedSteps, isReady, router]);
-
-  if (!isReady) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-        }}
-      />
-    );
-  }
+  }, [pathname, initialCoupleStatus, completedSteps, router]);
 
   return <div>{children}</div>;
 }
