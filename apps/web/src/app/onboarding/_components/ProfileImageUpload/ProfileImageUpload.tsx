@@ -53,7 +53,7 @@ export default function ProfileImageUpload({
             <CameraIcon width={14} height={14} />
           </S.CameraIcon>
         </S.CameraButton>
-        {isUploading && <S.LoadingOverlay>업로드 중...</S.LoadingOverlay>}
+        {isUploading && <S.LoadingOverlay />}
       </S.ImagePreview>
       <input
         ref={fileInputRef}

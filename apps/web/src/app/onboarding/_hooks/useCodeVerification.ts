@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useVerifyInviteCode,
   useConfirmInviteCode,
+  getGetMyStatusQueryKey,
   type InviteCodePreviewResponse,
   ApiError,
 } from '@repo/api-client';
@@ -15,6 +17,7 @@ export interface VerifyCodeResult {
 }
 
 export function useCodeVerification() {
+  const queryClient = useQueryClient();
   const { mutateAsync: verify, isPending: isVerifying } = useVerifyInviteCode();
   const { mutateAsync: confirm, isPending: isConfirming } = useConfirmInviteCode();
 
@@ -28,20 +31,21 @@ export function useCodeVerification() {
         return { success: false, errorCode };
       }
     },
-    [verify]
+    [verify],
   );
 
   const confirmCode = useCallback(
     async (code: string) => {
       try {
         await confirm({ data: { inviteCode: code } });
+        queryClient.invalidateQueries({ queryKey: getGetMyStatusQueryKey() });
         return { success: true };
       } catch (error: any) {
         const errorCode = error?.data?.errorCode || error?.code;
         return { success: false, errorCode };
       }
     },
-    [confirm]
+    [confirm, queryClient],
   );
 
   return {
