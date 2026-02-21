@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { ROUTES } from '@/constants/routes';
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get('accessToken');
 
-  if (pathname.startsWith('/onboarding') && !accessToken) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  if (pathname.startsWith(ROUTES.ONBOARDING.START) && !accessToken) {
+    return NextResponse.redirect(new URL(ROUTES.LOGIN, request.url));
   }
 
   return NextResponse.next();
