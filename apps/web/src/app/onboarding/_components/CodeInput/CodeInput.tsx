@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from 'react';
+import { isDigit, isValidInviteCode } from '@/utils/inviteCode';
 import * as S from './CodeInput.styles';
 
 const CODE_LENGTH = 6;
@@ -24,14 +25,13 @@ export default function CodeInput({
   const digits = value.padEnd(length, ' ').split('').slice(0, length);
 
   useEffect(() => {
-    const isAllDigits = /^\d+$/.test(value);
-    if (value.length === length && isAllDigits) {
+    if (isValidInviteCode(value, length)) {
       onComplete(value);
     }
   }, [value, length, onComplete]);
 
   const handleChange = (index: number, digit: string) => {
-    if (digit && !/^\d$/.test(digit)) return;
+    if (digit && !isDigit(digit)) return;
 
     const newValue = digits
       .map((d, i) => (i === index ? digit : d))
@@ -65,9 +65,7 @@ export default function CodeInput({
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').trim();
 
-    // 자리수 확인 및 숫자만 허용
-    const isAllDigits = /^\d+$/.test(pastedData);
-    if (pastedData.length === length && isAllDigits) {
+    if (isValidInviteCode(pastedData, length)) {
       onChange(pastedData);
       inputRefs.current[length - 1]?.focus();
     }
