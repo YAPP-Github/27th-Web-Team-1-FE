@@ -10,25 +10,22 @@ import {
   ApiError,
 } from '@repo/api-client';
 
-export interface VerifyCodeResult {
-  success: boolean;
-  data?: InviteCodePreviewResponse;
-  errorCode?: string;
-}
-
 export function useCodeVerification() {
   const queryClient = useQueryClient();
   const { mutateAsync: verify, isPending: isVerifying } = useVerifyInviteCode();
   const { mutateAsync: confirm, isPending: isConfirming } = useConfirmInviteCode();
 
   const verifyCode = useCallback(
-    async (code: string): Promise<VerifyCodeResult> => {
+    async (code: string): Promise<{ success: boolean; data?: InviteCodePreviewResponse; errorCode?: string }> => {
       try {
         const result = await verify({ data: { inviteCode: code } });
         return { success: true, data: result };
-      } catch (error: any) {
-        const errorCode = error?.data?.errorCode || error?.code;
-        return { success: false, errorCode };
+      } catch (error) {
+        if (error instanceof ApiError) {
+          const errorCode = error?.data?.errorCode || String(error?.code);
+          return { success: false, errorCode };
+        }
+        return { success: false, errorCode: 'UNKNOWN_ERROR' };
       }
     },
     [verify],
@@ -40,9 +37,12 @@ export function useCodeVerification() {
         await confirm({ data: { inviteCode: code } });
         queryClient.invalidateQueries({ queryKey: getGetMyStatusQueryKey() });
         return { success: true };
-      } catch (error: any) {
-        const errorCode = error?.data?.errorCode || error?.code;
-        return { success: false, errorCode };
+      } catch (error) {
+        if (error instanceof ApiError) {
+          const errorCode = error?.data?.errorCode || String(error?.code);
+          return { success: false, errorCode };
+        }
+        return { success: false, errorCode: 'UNKNOWN_ERROR' };
       }
     },
     [confirm, queryClient],
