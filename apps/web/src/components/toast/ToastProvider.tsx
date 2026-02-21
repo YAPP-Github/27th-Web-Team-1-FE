@@ -4,7 +4,11 @@ import { createContext, useContext, useState, useCallback, ReactNode } from 'rea
 import Toast, { ToastMessage } from './Toast';
 
 interface ToastContextValue {
-  showToast: (message: string, duration?: number, variant?: 'default' | 'info' | 'warn' | 'success') => void;
+  showToast: (
+    message: string,
+    duration?: number,
+    variant?: 'default' | 'info' | 'warn' | 'success',
+  ) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -16,7 +20,11 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const showToast = useCallback(
-    (message: string, duration = TOAST_DURATION, variant?: 'default' | 'info' | 'warn' | 'success') => {
+    (
+      message: string,
+      duration = TOAST_DURATION,
+      variant?: 'default' | 'info' | 'warn' | 'success',
+    ) => {
       const id = `${Date.now()}-${Math.random()}`;
 
       setToasts((prev) => [...prev, { id, message, variant }]);

@@ -56,7 +56,7 @@ export function useProfileUpload() {
         setIsUploading(false);
       }
     },
-    [getPresignedUrl, showToast]
+    [getPresignedUrl, showToast],
   );
 
   const saveProfile = useCallback(
@@ -74,7 +74,7 @@ export function useProfileUpload() {
         return false;
       }
     },
-    [updateNickname, updateProfileImage, showToast]
+    [updateNickname, updateProfileImage, showToast],
   );
 
   return {

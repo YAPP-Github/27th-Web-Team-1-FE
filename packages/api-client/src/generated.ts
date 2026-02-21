@@ -5,10 +5,7 @@
  * Lokit API 문서
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryFunction,
@@ -16,7 +13,7 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
+  UseQueryResult,
 } from '@tanstack/react-query';
 
 import type {
@@ -36,21 +33,13 @@ import type {
   UpdateNicknameRequest,
   UpdatePhotoRequest,
   UpdateProfileImageRequest,
-  VerifyInviteCodeRequest
+  VerifyInviteCodeRequest,
 } from './model';
 
-import {
-  faker
-} from '@faker-js/faker';
+import { faker } from '@faker-js/faker';
 
-import {
-  HttpResponse,
-  delay,
-  http
-} from 'msw';
-import type {
-  RequestHandlerOptions
-} from 'msw';
+import { HttpResponse, delay, http } from 'msw';
+import type { RequestHandlerOptions } from 'msw';
 
 import type {
   AdminActionResponse,
@@ -70,16 +59,13 @@ import type {
   PhotoListResponse,
   PlaceSearchResponse,
   PresignedUrl,
-  SelectableAlbumResponse
+  SelectableAlbumResponse,
 } from './model';
 
 import { customFetcher } from './fetcher';
 type AwaitedInput<T> = PromiseLike<T> | T;
 
-      type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
-
-
-
+type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
 /**
  * 
@@ -90,1579 +76,1871 @@ type AwaitedInput<T> = PromiseLike<T> | T;
         
  * @summary 사진 상세 조회
  */
-export const getPhotoDetail = (
-    id: number,
- signal?: AbortSignal
+export const getPhotoDetail = (id: number, signal?: AbortSignal) => {
+  return customFetcher<PhotoDetailResponse>({
+    url: `/photos/${id}`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetPhotoDetailQueryKey = (id?: number) => {
+  return [`/photos/${id}`] as const;
+};
+
+export const getGetPhotoDetailQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+  TError = ApiResponseErrorDetail | void,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<PhotoDetailResponse>(
-      {url: `/photos/${id}`, method: 'GET', signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(id);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({
+    signal,
+  }) => getPhotoDetail(id, signal);
 
-export const getGetPhotoDetailQueryKey = (id?: number,) => {
-    return [
-    `/photos/${id}`
-    ] as const;
-    }
+  return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPhotoDetail>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetPhotoDetailQueryOptions = <TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetPhotoDetailQueryKey(id);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotoDetail>>> = ({ signal }) => getPhotoDetail(id, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetPhotoDetailQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotoDetail>>>
-export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void
-
+export type GetPhotoDetailQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPhotoDetail>>
+>;
+export type GetPhotoDetailQueryError = ApiResponseErrorDetail | void;
 
 /**
  * @summary 사진 상세 조회
  */
 
-export function useGetPhotoDetail<TData = Awaited<ReturnType<typeof getPhotoDetail>>, TError = ApiResponseErrorDetail | void>(
- id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetPhotoDetail<
+  TData = Awaited<ReturnType<typeof getPhotoDetail>>,
+  TError = ApiResponseErrorDetail | void,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotoDetail>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPhotoDetailQueryOptions(id, options);
 
-  const queryOptions = getGetPhotoDetailQueryOptions(id,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 사진의 설명을 수정합니다.
  * @summary 사진 수정
  */
-export const update = (
-    id: number,
-    updatePhotoRequest: UpdatePhotoRequest,
- ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/photos/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updatePhotoRequest
-    },
-      );
-    }
-  
+export const update = (id: number, updatePhotoRequest: UpdatePhotoRequest) => {
+  return customFetcher<IdResponse>({
+    url: `/photos/${id}`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updatePhotoRequest,
+  });
+};
 
+export const getUpdateMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof update>>,
+    TError,
+    { id: number; data: UpdatePhotoRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof update>>,
+  TError,
+  { id: number; data: UpdatePhotoRequest },
+  TContext
+> => {
+  const mutationKey = ['update'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getUpdateMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof update>>, TError,{id: number;data: UpdatePhotoRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof update>>, TError,{id: number;data: UpdatePhotoRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof update>>,
+    { id: number; data: UpdatePhotoRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
 
-const mutationKey = ['update'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return update(id, data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateMutationResult = NonNullable<Awaited<ReturnType<typeof update>>>;
+export type UpdateMutationBody = UpdatePhotoRequest;
+export type UpdateMutationError = ApiResponseErrorDetail | void;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof update>>, {id: number;data: UpdatePhotoRequest}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  update(id,data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateMutationResult = NonNullable<Awaited<ReturnType<typeof update>>>
-    export type UpdateMutationBody = UpdatePhotoRequest
-    export type UpdateMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 사진 수정
  */
-export const useUpdate = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof update>>, TError,{id: number;data: UpdatePhotoRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof update>>,
-        TError,
-        {id: number;data: UpdatePhotoRequest},
-        TContext
-      > => {
+export const useUpdate = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof update>>,
+    TError,
+    { id: number; data: UpdatePhotoRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof update>>,
+  TError,
+  { id: number; data: UpdatePhotoRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateMutationOptions(options);
 
-      const mutationOptions = getUpdateMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 사진을 삭제합니다.
  * @summary 사진 삭제
  */
-export const _delete = (
-    id: number,
- ) => {
-      
-      
-      return customFetcher<void>(
-      {url: `/photos/${id}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const _delete = (id: number) => {
+  return customFetcher<void>({ url: `/photos/${id}`, method: 'DELETE' });
+};
 
+export const getDeleteMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof _delete>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof _delete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ['_delete'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getDeleteMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof _delete>>, TError,{id: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof _delete>>, TError,{id: number}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof _delete>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
 
-const mutationKey = ['_delete'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return _delete(id);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type _DeleteMutationResult = NonNullable<Awaited<ReturnType<typeof _delete>>>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof _delete>>, {id: number}> = (props) => {
-          const {id} = props ?? {};
+export type _DeleteMutationError = ApiResponseErrorDetail | void;
 
-          return  _delete(id,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type _DeleteMutationResult = NonNullable<Awaited<ReturnType<typeof _delete>>>
-    
-    export type _DeleteMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 사진 삭제
  */
-export const useDelete = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof _delete>>, TError,{id: number}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof _delete>>,
-        TError,
-        {id: number},
-        TContext
-      > => {
+export const useDelete = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof _delete>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof _delete>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationOptions = getDeleteMutationOptions(options);
 
-      const mutationOptions = getDeleteMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 사용자의 프로필 사진을 수정합니다.
  * @summary 프로필 사진 수정
  */
 export const updateProfileImage = (
-    updateProfileImageRequest: UpdateProfileImageRequest,
- ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/my-page/profile-image`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateProfileImageRequest
-    },
-      );
-    }
-  
+  updateProfileImageRequest: UpdateProfileImageRequest,
+) => {
+  return customFetcher<IdResponse>({
+    url: `/my-page/profile-image`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateProfileImageRequest,
+  });
+};
 
+export const getUpdateProfileImageMutationOptions = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateProfileImage>>,
+    TError,
+    { data: UpdateProfileImageRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateProfileImage>>,
+  TError,
+  { data: UpdateProfileImageRequest },
+  TContext
+> => {
+  const mutationKey = ['updateProfileImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getUpdateProfileImageMutationOptions = <TError = void | ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfileImage>>, TError,{data: UpdateProfileImageRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateProfileImage>>, TError,{data: UpdateProfileImageRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateProfileImage>>,
+    { data: UpdateProfileImageRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['updateProfileImage'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return updateProfileImage(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateProfileImageMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateProfileImage>>
+>;
+export type UpdateProfileImageMutationBody = UpdateProfileImageRequest;
+export type UpdateProfileImageMutationError = void | ApiResponseErrorDetail | IdResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProfileImage>>, {data: UpdateProfileImageRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  updateProfileImage(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateProfileImageMutationResult = NonNullable<Awaited<ReturnType<typeof updateProfileImage>>>
-    export type UpdateProfileImageMutationBody = UpdateProfileImageRequest
-    export type UpdateProfileImageMutationError = void | ApiResponseErrorDetail | IdResponse
-
-    /**
+/**
  * @summary 프로필 사진 수정
  */
-export const useUpdateProfileImage = <TError = void | ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfileImage>>, TError,{data: UpdateProfileImageRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof updateProfileImage>>,
-        TError,
-        {data: UpdateProfileImageRequest},
-        TContext
-      > => {
+export const useUpdateProfileImage = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateProfileImage>>,
+    TError,
+    { data: UpdateProfileImageRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateProfileImage>>,
+  TError,
+  { data: UpdateProfileImageRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateProfileImageMutationOptions(options);
 
-      const mutationOptions = getUpdateProfileImageMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 사용자의 닉네임을 수정합니다.
  * @summary 닉네임 수정
  */
-export const updateNickname = (
-    updateNicknameRequest: UpdateNicknameRequest,
- ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/my-page/nickname`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: updateNicknameRequest
-    },
-      );
-    }
-  
+export const updateNickname = (updateNicknameRequest: UpdateNicknameRequest) => {
+  return customFetcher<IdResponse>({
+    url: `/my-page/nickname`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateNicknameRequest,
+  });
+};
 
+export const getUpdateNicknameMutationOptions = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNickname>>,
+    TError,
+    { data: UpdateNicknameRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateNickname>>,
+  TError,
+  { data: UpdateNicknameRequest },
+  TContext
+> => {
+  const mutationKey = ['updateNickname'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getUpdateNicknameMutationOptions = <TError = void | ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateNickname>>, TError,{data: UpdateNicknameRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateNickname>>, TError,{data: UpdateNicknameRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateNickname>>,
+    { data: UpdateNicknameRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['updateNickname'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return updateNickname(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateNicknameMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateNickname>>
+>;
+export type UpdateNicknameMutationBody = UpdateNicknameRequest;
+export type UpdateNicknameMutationError = void | ApiResponseErrorDetail | IdResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateNickname>>, {data: UpdateNicknameRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  updateNickname(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateNicknameMutationResult = NonNullable<Awaited<ReturnType<typeof updateNickname>>>
-    export type UpdateNicknameMutationBody = UpdateNicknameRequest
-    export type UpdateNicknameMutationError = void | ApiResponseErrorDetail | IdResponse
-
-    /**
+/**
  * @summary 닉네임 수정
  */
-export const useUpdateNickname = <TError = void | ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateNickname>>, TError,{data: UpdateNicknameRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof updateNickname>>,
-        TError,
-        {data: UpdateNicknameRequest},
-        TContext
-      > => {
+export const useUpdateNickname = <
+  TError = void | ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateNickname>>,
+    TError,
+    { data: UpdateNicknameRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateNickname>>,
+  TError,
+  { data: UpdateNicknameRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateNicknameMutationOptions(options);
 
-      const mutationOptions = getUpdateNicknameMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * S3에 업로드된 사진 정보를 저장합니다.
  * @summary 사진 생성
  */
-export const create = (
-    createPhotoRequest: CreatePhotoRequest,
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/photos`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createPhotoRequest, signal
-    },
-      );
-    }
-  
+export const create = (createPhotoRequest: CreatePhotoRequest, signal?: AbortSignal) => {
+  return customFetcher<IdResponse>({
+    url: `/photos`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: createPhotoRequest,
+    signal,
+  });
+};
 
+export const getCreateMutationOptions = <
+  TError = ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof create>>,
+    TError,
+    { data: CreatePhotoRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof create>>,
+  TError,
+  { data: CreatePhotoRequest },
+  TContext
+> => {
+  const mutationKey = ['create'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getCreateMutationOptions = <TError = ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof create>>, TError,{data: CreatePhotoRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof create>>, TError,{data: CreatePhotoRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof create>>,
+    { data: CreatePhotoRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['create'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return create(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type CreateMutationResult = NonNullable<Awaited<ReturnType<typeof create>>>;
+export type CreateMutationBody = CreatePhotoRequest;
+export type CreateMutationError = ApiResponseErrorDetail | IdResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof create>>, {data: CreatePhotoRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  create(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateMutationResult = NonNullable<Awaited<ReturnType<typeof create>>>
-    export type CreateMutationBody = CreatePhotoRequest
-    export type CreateMutationError = ApiResponseErrorDetail | IdResponse
-
-    /**
+/**
  * @summary 사진 생성
  */
-export const useCreate = <TError = ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof create>>, TError,{data: CreatePhotoRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof create>>,
-        TError,
-        {data: CreatePhotoRequest},
-        TContext
-      > => {
+export const useCreate = <
+  TError = ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof create>>,
+    TError,
+    { data: CreatePhotoRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof create>>,
+  TError,
+  { data: CreatePhotoRequest },
+  TContext
+> => {
+  const mutationOptions = getCreateMutationOptions(options);
 
-      const mutationOptions = getCreateMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 사진의 댓글 목록을 이모지 정보와 함께 조회합니다.
  * @summary 댓글 목록 조회
  */
-export const getComments = (
-    photoId: number,
- signal?: AbortSignal
+export const getComments = (photoId: number, signal?: AbortSignal) => {
+  return customFetcher<CommentListResponse>({
+    url: `/photos/${photoId}/comments`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetCommentsQueryKey = (photoId?: number) => {
+  return [`/photos/${photoId}/comments`] as const;
+};
+
+export const getGetCommentsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getComments>>,
+  TError = ApiResponseErrorDetail,
+>(
+  photoId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getComments>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<CommentListResponse>(
-      {url: `/photos/${photoId}/comments`, method: 'GET', signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetCommentsQueryKey(photoId);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getComments>>> = ({ signal }) =>
+    getComments(photoId, signal);
 
-export const getGetCommentsQueryKey = (photoId?: number,) => {
-    return [
-    `/photos/${photoId}/comments`
-    ] as const;
-    }
+  return { queryKey, queryFn, enabled: !!photoId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getComments>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetCommentsQueryOptions = <TData = Awaited<ReturnType<typeof getComments>>, TError = ApiResponseErrorDetail>(photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComments>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetCommentsQueryKey(photoId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getComments>>> = ({ signal }) => getComments(photoId, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(photoId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getComments>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof getComments>>>
-export type GetCommentsQueryError = ApiResponseErrorDetail
-
+export type GetCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof getComments>>>;
+export type GetCommentsQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 댓글 목록 조회
  */
 
-export function useGetComments<TData = Awaited<ReturnType<typeof getComments>>, TError = ApiResponseErrorDetail>(
- photoId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComments>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetComments<
+  TData = Awaited<ReturnType<typeof getComments>>,
+  TError = ApiResponseErrorDetail,
+>(
+  photoId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getComments>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCommentsQueryOptions(photoId, options);
 
-  const queryOptions = getGetCommentsQueryOptions(photoId,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 사진에 댓글을 작성합니다.
  * @summary 댓글 생성
  */
 export const createComment = (
-    photoId: number,
-    createCommentRequest: CreateCommentRequest,
- signal?: AbortSignal
+  photoId: number,
+  createCommentRequest: CreateCommentRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/photos/${photoId}/comments`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: createCommentRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<IdResponse>({
+    url: `/photos/${photoId}/comments`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: createCommentRequest,
+    signal,
+  });
+};
 
+export const getCreateCommentMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createComment>>,
+    TError,
+    { photoId: number; data: CreateCommentRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createComment>>,
+  TError,
+  { photoId: number; data: CreateCommentRequest },
+  TContext
+> => {
+  const mutationKey = ['createComment'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getCreateCommentMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{photoId: number;data: CreateCommentRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{photoId: number;data: CreateCommentRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createComment>>,
+    { photoId: number; data: CreateCommentRequest }
+  > = (props) => {
+    const { photoId, data } = props ?? {};
 
-const mutationKey = ['createComment'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return createComment(photoId, data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type CreateCommentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createComment>>
+>;
+export type CreateCommentMutationBody = CreateCommentRequest;
+export type CreateCommentMutationError = ApiResponseErrorDetail | void;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createComment>>, {photoId: number;data: CreateCommentRequest}> = (props) => {
-          const {photoId,data} = props ?? {};
-
-          return  createComment(photoId,data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateCommentMutationResult = NonNullable<Awaited<ReturnType<typeof createComment>>>
-    export type CreateCommentMutationBody = CreateCommentRequest
-    export type CreateCommentMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 댓글 생성
  */
-export const useCreateComment = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createComment>>, TError,{photoId: number;data: CreateCommentRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof createComment>>,
-        TError,
-        {photoId: number;data: CreateCommentRequest},
-        TContext
-      > => {
+export const useCreateComment = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createComment>>,
+    TError,
+    { photoId: number; data: CreateCommentRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createComment>>,
+  TError,
+  { photoId: number; data: CreateCommentRequest },
+  TContext
+> => {
+  const mutationOptions = getCreateCommentMutationOptions(options);
 
-      const mutationOptions = getCreateCommentMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * S3에 사진을 업로드하기 위한 presigned URL을 발급합니다.
  * @summary Presigned URL 발급
  */
 export const getPresignedUrl = (
-    presignedUrlRequest: PresignedUrlRequest,
- signal?: AbortSignal
+  presignedUrlRequest: PresignedUrlRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<PresignedUrl>(
-      {url: `/photos/presigned-url`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: presignedUrlRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<PresignedUrl>({
+    url: `/photos/presigned-url`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: presignedUrlRequest,
+    signal,
+  });
+};
 
+export const getGetPresignedUrlMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getPresignedUrl>>,
+    TError,
+    { data: PresignedUrlRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof getPresignedUrl>>,
+  TError,
+  { data: PresignedUrlRequest },
+  TContext
+> => {
+  const mutationKey = ['getPresignedUrl'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getGetPresignedUrlMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getPresignedUrl>>, TError,{data: PresignedUrlRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof getPresignedUrl>>, TError,{data: PresignedUrlRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof getPresignedUrl>>,
+    { data: PresignedUrlRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['getPresignedUrl'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return getPresignedUrl(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type GetPresignedUrlMutationResult = NonNullable<
+  Awaited<ReturnType<typeof getPresignedUrl>>
+>;
+export type GetPresignedUrlMutationBody = PresignedUrlRequest;
+export type GetPresignedUrlMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getPresignedUrl>>, {data: PresignedUrlRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  getPresignedUrl(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type GetPresignedUrlMutationResult = NonNullable<Awaited<ReturnType<typeof getPresignedUrl>>>
-    export type GetPresignedUrlMutationBody = PresignedUrlRequest
-    export type GetPresignedUrlMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary Presigned URL 발급
  */
-export const useGetPresignedUrl = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getPresignedUrl>>, TError,{data: PresignedUrlRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof getPresignedUrl>>,
-        TError,
-        {data: PresignedUrlRequest},
-        TContext
-      > => {
+export const useGetPresignedUrl = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof getPresignedUrl>>,
+    TError,
+    { data: PresignedUrlRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof getPresignedUrl>>,
+  TError,
+  { data: PresignedUrlRequest },
+  TContext
+> => {
+  const mutationOptions = getGetPresignedUrlMutationOptions(options);
 
-      const mutationOptions = getGetPresignedUrlMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 댓글에 이모지를 추가합니다. 사용자당 댓글당 최대 10개의 서로 다른 이모지를 추가할 수 있습니다.
  * @summary 이모지 추가
  */
 export const addEmoticon = (
-    commentId: number,
-    addEmoticonRequest: AddEmoticonRequest,
- signal?: AbortSignal
+  commentId: number,
+  addEmoticonRequest: AddEmoticonRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/photos/comments/${commentId}/emoticons`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: addEmoticonRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<IdResponse>({
+    url: `/photos/comments/${commentId}/emoticons`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: addEmoticonRequest,
+    signal,
+  });
+};
 
+export const getAddEmoticonMutationOptions = <
+  TError = void | ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addEmoticon>>,
+    TError,
+    { commentId: number; data: AddEmoticonRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof addEmoticon>>,
+  TError,
+  { commentId: number; data: AddEmoticonRequest },
+  TContext
+> => {
+  const mutationKey = ['addEmoticon'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getAddEmoticonMutationOptions = <TError = void | ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addEmoticon>>, TError,{commentId: number;data: AddEmoticonRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof addEmoticon>>, TError,{commentId: number;data: AddEmoticonRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof addEmoticon>>,
+    { commentId: number; data: AddEmoticonRequest }
+  > = (props) => {
+    const { commentId, data } = props ?? {};
 
-const mutationKey = ['addEmoticon'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return addEmoticon(commentId, data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type AddEmoticonMutationResult = NonNullable<
+  Awaited<ReturnType<typeof addEmoticon>>
+>;
+export type AddEmoticonMutationBody = AddEmoticonRequest;
+export type AddEmoticonMutationError = void | ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addEmoticon>>, {commentId: number;data: AddEmoticonRequest}> = (props) => {
-          const {commentId,data} = props ?? {};
-
-          return  addEmoticon(commentId,data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AddEmoticonMutationResult = NonNullable<Awaited<ReturnType<typeof addEmoticon>>>
-    export type AddEmoticonMutationBody = AddEmoticonRequest
-    export type AddEmoticonMutationError = void | ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 이모지 추가
  */
-export const useAddEmoticon = <TError = void | ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addEmoticon>>, TError,{commentId: number;data: AddEmoticonRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof addEmoticon>>,
-        TError,
-        {commentId: number;data: AddEmoticonRequest},
-        TContext
-      > => {
+export const useAddEmoticon = <
+  TError = void | ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addEmoticon>>,
+    TError,
+    { commentId: number; data: AddEmoticonRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof addEmoticon>>,
+  TError,
+  { commentId: number; data: AddEmoticonRequest },
+  TContext
+> => {
+  const mutationOptions = getAddEmoticonMutationOptions(options);
 
-      const mutationOptions = getAddEmoticonMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 댓글에서 이모지를 제거합니다.
  * @summary 이모지 제거
  */
 export const removeEmoticon = (
-    commentId: number,
-    removeEmoticonRequest: RemoveEmoticonRequest,
- ) => {
-      
-      
-      return customFetcher<void>(
-      {url: `/photos/comments/${commentId}/emoticons`, method: 'DELETE',
-      headers: {'Content-Type': 'application/json', },
-      data: removeEmoticonRequest
-    },
-      );
-    }
-  
+  commentId: number,
+  removeEmoticonRequest: RemoveEmoticonRequest,
+) => {
+  return customFetcher<void>({
+    url: `/photos/comments/${commentId}/emoticons`,
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    data: removeEmoticonRequest,
+  });
+};
 
+export const getRemoveEmoticonMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeEmoticon>>,
+    TError,
+    { commentId: number; data: RemoveEmoticonRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeEmoticon>>,
+  TError,
+  { commentId: number; data: RemoveEmoticonRequest },
+  TContext
+> => {
+  const mutationKey = ['removeEmoticon'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getRemoveEmoticonMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeEmoticon>>, TError,{commentId: number;data: RemoveEmoticonRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof removeEmoticon>>, TError,{commentId: number;data: RemoveEmoticonRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeEmoticon>>,
+    { commentId: number; data: RemoveEmoticonRequest }
+  > = (props) => {
+    const { commentId, data } = props ?? {};
 
-const mutationKey = ['removeEmoticon'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return removeEmoticon(commentId, data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type RemoveEmoticonMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeEmoticon>>
+>;
+export type RemoveEmoticonMutationBody = RemoveEmoticonRequest;
+export type RemoveEmoticonMutationError = ApiResponseErrorDetail | void;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeEmoticon>>, {commentId: number;data: RemoveEmoticonRequest}> = (props) => {
-          const {commentId,data} = props ?? {};
-
-          return  removeEmoticon(commentId,data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RemoveEmoticonMutationResult = NonNullable<Awaited<ReturnType<typeof removeEmoticon>>>
-    export type RemoveEmoticonMutationBody = RemoveEmoticonRequest
-    export type RemoveEmoticonMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 이모지 제거
  */
-export const useRemoveEmoticon = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeEmoticon>>, TError,{commentId: number;data: RemoveEmoticonRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof removeEmoticon>>,
-        TError,
-        {commentId: number;data: RemoveEmoticonRequest},
-        TContext
-      > => {
+export const useRemoveEmoticon = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeEmoticon>>,
+    TError,
+    { commentId: number; data: RemoveEmoticonRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof removeEmoticon>>,
+  TError,
+  { commentId: number; data: RemoveEmoticonRequest },
+  TContext
+> => {
+  const mutationOptions = getRemoveEmoticonMutationOptions(options);
 
-      const mutationOptions = getRemoveEmoticonMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 연결 해제된 커플에 재연결합니다. 연결 해제 후 31일 이내이며 기존 커플에 최소 1명이 잔존한 경우에만 가능합니다.
  * @summary 커플 재연결
  */
-export const reconnect = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<CoupleStatusResponse>(
-      {url: `/couples/reconnect`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const reconnect = (signal?: AbortSignal) => {
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/reconnect`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getReconnectMutationOptions = <
+  TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof reconnect>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<Awaited<ReturnType<typeof reconnect>>, TError, void, TContext> => {
+  const mutationKey = ['reconnect'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getReconnectMutationOptions = <TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reconnect>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof reconnect>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof reconnect>>,
+    void
+  > = () => {
+    return reconnect();
+  };
 
-const mutationKey = ['reconnect'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type ReconnectMutationResult = NonNullable<Awaited<ReturnType<typeof reconnect>>>;
 
+export type ReconnectMutationError = void | ApiResponseErrorDetail | CoupleStatusResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reconnect>>, void> = () => {
-          
-
-          return  reconnect()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ReconnectMutationResult = NonNullable<Awaited<ReturnType<typeof reconnect>>>
-    
-    export type ReconnectMutationError = void | ApiResponseErrorDetail | CoupleStatusResponse
-
-    /**
+/**
  * @summary 커플 재연결
  */
-export const useReconnect = <TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reconnect>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof reconnect>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useReconnect = <
+  TError = void | ApiResponseErrorDetail | CoupleStatusResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof reconnect>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<Awaited<ReturnType<typeof reconnect>>, TError, void, TContext> => {
+  const mutationOptions = getReconnectMutationOptions(options);
 
-      const mutationOptions = getReconnectMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 초대 코드를 통해 커플에 합류합니다.
  * @summary 초대 코드로 커플 합류
  */
 export const joinByInviteCode = (
-    joinCoupleRequest: JoinCoupleRequest,
- signal?: AbortSignal
+  joinCoupleRequest: JoinCoupleRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<CoupleStatusResponse>(
-      {url: `/couples/join`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: joinCoupleRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/join`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: joinCoupleRequest,
+    signal,
+  });
+};
 
+export const getJoinByInviteCodeMutationOptions = <
+  TError = ApiResponseErrorDetail | CoupleStatusResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof joinByInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof joinByInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationKey = ['joinByInviteCode'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getJoinByInviteCodeMutationOptions = <TError = ApiResponseErrorDetail | CoupleStatusResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof joinByInviteCode>>, TError,{data: JoinCoupleRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof joinByInviteCode>>, TError,{data: JoinCoupleRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof joinByInviteCode>>,
+    { data: JoinCoupleRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['joinByInviteCode'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return joinByInviteCode(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type JoinByInviteCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof joinByInviteCode>>
+>;
+export type JoinByInviteCodeMutationBody = JoinCoupleRequest;
+export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | CoupleStatusResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof joinByInviteCode>>, {data: JoinCoupleRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  joinByInviteCode(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type JoinByInviteCodeMutationResult = NonNullable<Awaited<ReturnType<typeof joinByInviteCode>>>
-    export type JoinByInviteCodeMutationBody = JoinCoupleRequest
-    export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | CoupleStatusResponse
-
-    /**
+/**
  * @summary 초대 코드로 커플 합류
  */
-export const useJoinByInviteCode = <TError = ApiResponseErrorDetail | CoupleStatusResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof joinByInviteCode>>, TError,{data: JoinCoupleRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof joinByInviteCode>>,
-        TError,
-        {data: JoinCoupleRequest},
-        TContext
-      > => {
+export const useJoinByInviteCode = <
+  TError = ApiResponseErrorDetail | CoupleStatusResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof joinByInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof joinByInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationOptions = getJoinByInviteCodeMutationOptions(options);
 
-      const mutationOptions = getJoinByInviteCodeMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 초대코드를 생성하거나 활성 코드가 있으면 재사용합니다. 코드 만료 시간은 24시간입니다.
  * @summary 초대코드 생성
  */
-export const createInvite = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<InviteCodeResponse>(
-      {url: `/couples/invites`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const createInvite = (signal?: AbortSignal) => {
+  return customFetcher<InviteCodeResponse>({
+    url: `/couples/invites`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getCreateInviteMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['createInvite'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getCreateInviteMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvite>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createInvite>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createInvite>>,
+    void
+  > = () => {
+    return createInvite();
+  };
 
-const mutationKey = ['createInvite'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type CreateInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createInvite>>
+>;
 
+export type CreateInviteMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createInvite>>, void> = () => {
-          
-
-          return  createInvite()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateInviteMutationResult = NonNullable<Awaited<ReturnType<typeof createInvite>>>
-    
-    export type CreateInviteMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 초대코드 생성
  */
-export const useCreateInvite = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createInvite>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof createInvite>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useCreateInvite = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getCreateInviteMutationOptions(options);
 
-      const mutationOptions = getCreateInviteMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 코드 유효성을 확인하고 초대자 최소 정보를 미리보기로 제공합니다.
  * @summary 초대코드 검증
  */
 export const verifyInviteCode = (
-    verifyInviteCodeRequest: VerifyInviteCodeRequest,
- signal?: AbortSignal
+  verifyInviteCodeRequest: VerifyInviteCodeRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<InviteCodePreviewResponse>(
-      {url: `/couples/invites/verify`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: verifyInviteCodeRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<InviteCodePreviewResponse>({
+    url: `/couples/invites/verify`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: verifyInviteCodeRequest,
+    signal,
+  });
+};
 
+export const getVerifyInviteCodeMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    TError,
+    { data: VerifyInviteCodeRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof verifyInviteCode>>,
+  TError,
+  { data: VerifyInviteCodeRequest },
+  TContext
+> => {
+  const mutationKey = ['verifyInviteCode'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getVerifyInviteCodeMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyInviteCode>>, TError,{data: VerifyInviteCodeRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof verifyInviteCode>>, TError,{data: VerifyInviteCodeRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    { data: VerifyInviteCodeRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['verifyInviteCode'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return verifyInviteCode(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type VerifyInviteCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof verifyInviteCode>>
+>;
+export type VerifyInviteCodeMutationBody = VerifyInviteCodeRequest;
+export type VerifyInviteCodeMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyInviteCode>>, {data: VerifyInviteCodeRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  verifyInviteCode(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type VerifyInviteCodeMutationResult = NonNullable<Awaited<ReturnType<typeof verifyInviteCode>>>
-    export type VerifyInviteCodeMutationBody = VerifyInviteCodeRequest
-    export type VerifyInviteCodeMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 초대코드 검증
  */
-export const useVerifyInviteCode = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyInviteCode>>, TError,{data: VerifyInviteCodeRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof verifyInviteCode>>,
-        TError,
-        {data: VerifyInviteCodeRequest},
-        TContext
-      > => {
+export const useVerifyInviteCode = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifyInviteCode>>,
+    TError,
+    { data: VerifyInviteCodeRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof verifyInviteCode>>,
+  TError,
+  { data: VerifyInviteCodeRequest },
+  TContext
+> => {
+  const mutationOptions = getVerifyInviteCodeMutationOptions(options);
 
-      const mutationOptions = getVerifyInviteCodeMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 기존 활성 코드를 폐기하고 새 코드를 재발급합니다. 만료 시간은 24시간입니다.
  * @summary 초대코드 갱신
  */
-export const refreshInvite = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<InviteCodeResponse>(
-      {url: `/couples/invites/refresh`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const refreshInvite = (signal?: AbortSignal) => {
+  return customFetcher<InviteCodeResponse>({
+    url: `/couples/invites/refresh`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getRefreshInviteMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof refreshInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['refreshInvite'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getRefreshInviteMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshInvite>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof refreshInvite>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    void
+  > = () => {
+    return refreshInvite();
+  };
 
-const mutationKey = ['refreshInvite'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type RefreshInviteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof refreshInvite>>
+>;
 
+export type RefreshInviteMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof refreshInvite>>, void> = () => {
-          
-
-          return  refreshInvite()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RefreshInviteMutationResult = NonNullable<Awaited<ReturnType<typeof refreshInvite>>>
-    
-    export type RefreshInviteMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 초대코드 갱신
  */
-export const useRefreshInvite = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshInvite>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof refreshInvite>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useRefreshInvite = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshInvite>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof refreshInvite>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getRefreshInviteMutationOptions(options);
 
-      const mutationOptions = getRefreshInviteMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 초대코드를 사용해 커플 연결을 확정합니다.
  * @summary 커플 연결 확정
  */
 export const confirmInviteCode = (
-    joinCoupleRequest: JoinCoupleRequest,
- signal?: AbortSignal
+  joinCoupleRequest: JoinCoupleRequest,
+  signal?: AbortSignal,
 ) => {
-      
-      
-      return customFetcher<CoupleStatusResponse>(
-      {url: `/couples/invites/confirm`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: joinCoupleRequest, signal
-    },
-      );
-    }
-  
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/invites/confirm`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: joinCoupleRequest,
+    signal,
+  });
+};
 
+export const getConfirmInviteCodeMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof confirmInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationKey = ['confirmInviteCode'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getConfirmInviteCodeMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmInviteCode>>, TError,{data: JoinCoupleRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof confirmInviteCode>>, TError,{data: JoinCoupleRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    { data: JoinCoupleRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['confirmInviteCode'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return confirmInviteCode(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type ConfirmInviteCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof confirmInviteCode>>
+>;
+export type ConfirmInviteCodeMutationBody = JoinCoupleRequest;
+export type ConfirmInviteCodeMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmInviteCode>>, {data: JoinCoupleRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  confirmInviteCode(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ConfirmInviteCodeMutationResult = NonNullable<Awaited<ReturnType<typeof confirmInviteCode>>>
-    export type ConfirmInviteCodeMutationBody = JoinCoupleRequest
-    export type ConfirmInviteCodeMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 커플 연결 확정
  */
-export const useConfirmInviteCode = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmInviteCode>>, TError,{data: JoinCoupleRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof confirmInviteCode>>,
-        TError,
-        {data: JoinCoupleRequest},
-        TContext
-      > => {
+export const useConfirmInviteCode = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmInviteCode>>,
+    TError,
+    { data: JoinCoupleRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof confirmInviteCode>>,
+  TError,
+  { data: JoinCoupleRequest },
+  TContext
+> => {
+  const mutationOptions = getConfirmInviteCodeMutationOptions(options);
 
-      const mutationOptions = getConfirmInviteCodeMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 새로운 앨범을 생성합니다.
  * @summary 앨범 생성
  */
-export const create1 = (
-    albumRequest: AlbumRequest,
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/albums`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: albumRequest, signal
-    },
-      );
-    }
-  
+export const create1 = (albumRequest: AlbumRequest, signal?: AbortSignal) => {
+  return customFetcher<IdResponse>({
+    url: `/albums`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: albumRequest,
+    signal,
+  });
+};
 
+export const getCreate1MutationOptions = <
+  TError = ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof create1>>,
+    TError,
+    { data: AlbumRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof create1>>,
+  TError,
+  { data: AlbumRequest },
+  TContext
+> => {
+  const mutationKey = ['create1'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getCreate1MutationOptions = <TError = ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof create1>>, TError,{data: AlbumRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof create1>>, TError,{data: AlbumRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof create1>>,
+    { data: AlbumRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-const mutationKey = ['create1'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return create1(data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>;
+export type Create1MutationBody = AlbumRequest;
+export type Create1MutationError = ApiResponseErrorDetail | IdResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof create1>>, {data: AlbumRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  create1(data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type Create1MutationResult = NonNullable<Awaited<ReturnType<typeof create1>>>
-    export type Create1MutationBody = AlbumRequest
-    export type Create1MutationError = ApiResponseErrorDetail | IdResponse
-
-    /**
+/**
  * @summary 앨범 생성
  */
-export const useCreate1 = <TError = ApiResponseErrorDetail | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof create1>>, TError,{data: AlbumRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof create1>>,
-        TError,
-        {data: AlbumRequest},
-        TContext
-      > => {
+export const useCreate1 = <
+  TError = ApiResponseErrorDetail | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof create1>>,
+    TError,
+    { data: AlbumRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof create1>>,
+  TError,
+  { data: AlbumRequest },
+  TContext
+> => {
+  const mutationOptions = getCreate1MutationOptions(options);
 
-      const mutationOptions = getCreate1MutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 파트너 유저 1명을 생성(또는 재사용)하고 파트너 JWT를 발급합니다.
  * @summary 개발용 커플 테스트 파트너 생성
  */
-export const createCouplePartner = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<AdminPartnerResponse>(
-      {url: `/admin/couples/partner`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const createCouplePartner = (signal?: AbortSignal) => {
+  return customFetcher<AdminPartnerResponse>({
+    url: `/admin/couples/partner`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getCreateCouplePartnerMutationOptions = <
+  TError = void | ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createCouplePartner>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createCouplePartner>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['createCouplePartner'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getCreateCouplePartnerMutationOptions = <TError = void | ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCouplePartner>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createCouplePartner>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createCouplePartner>>,
+    void
+  > = () => {
+    return createCouplePartner();
+  };
 
-const mutationKey = ['createCouplePartner'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type CreateCouplePartnerMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createCouplePartner>>
+>;
 
+export type CreateCouplePartnerMutationError = void | ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCouplePartner>>, void> = () => {
-          
-
-          return  createCouplePartner()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateCouplePartnerMutationResult = NonNullable<Awaited<ReturnType<typeof createCouplePartner>>>
-    
-    export type CreateCouplePartnerMutationError = void | ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 개발용 커플 테스트 파트너 생성
  */
-export const useCreateCouplePartner = <TError = void | ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCouplePartner>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof createCouplePartner>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useCreateCouplePartner = <
+  TError = void | ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createCouplePartner>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createCouplePartner>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getCreateCouplePartnerMutationOptions(options);
 
-      const mutationOptions = getCreateCouplePartnerMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 관리자 키와 사용자 JWT를 이용해 사용자의 과거 커플 데이터(본인 소유 리소스)를 현재 커플로 이관합니다.
  * @summary 현재 사용자 기준 이전 커플 데이터 이관
  */
-export const migratePreviousCoupleData = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<AdminCoupleMigrationResponse>(
-      {url: `/admin/couples/migrate`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const migratePreviousCoupleData = (signal?: AbortSignal) => {
+  return customFetcher<AdminCoupleMigrationResponse>({
+    url: `/admin/couples/migrate`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getMigratePreviousCoupleDataMutationOptions = <
+  TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['migratePreviousCoupleData'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getMigratePreviousCoupleDataMutationOptions = <TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+    void
+  > = () => {
+    return migratePreviousCoupleData();
+  };
 
-const mutationKey = ['migratePreviousCoupleData'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type MigratePreviousCoupleDataMutationResult = NonNullable<
+  Awaited<ReturnType<typeof migratePreviousCoupleData>>
+>;
 
+export type MigratePreviousCoupleDataMutationError =
+  | ApiResponseErrorDetail
+  | void
+  | AdminCoupleMigrationResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof migratePreviousCoupleData>>, void> = () => {
-          
-
-          return  migratePreviousCoupleData()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type MigratePreviousCoupleDataMutationResult = NonNullable<Awaited<ReturnType<typeof migratePreviousCoupleData>>>
-    
-    export type MigratePreviousCoupleDataMutationError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse
-
-    /**
+/**
  * @summary 현재 사용자 기준 이전 커플 데이터 이관
  */
-export const useMigratePreviousCoupleData = <TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migratePreviousCoupleData>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof migratePreviousCoupleData>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useMigratePreviousCoupleData = <
+  TError = ApiResponseErrorDetail | void | AdminCoupleMigrationResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof migratePreviousCoupleData>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getMigratePreviousCoupleDataMutationOptions(options);
 
-      const mutationOptions = getMigratePreviousCoupleDataMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 서버 캐시를 즉시 비웁니다.
  * @summary 전체 캐시 강제 비우기
  */
-export const clearAllCaches = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<AdminActionResponse>(
-      {url: `/admin/cache/clear`, method: 'POST', signal
-    },
-      );
-    }
-  
+export const clearAllCaches = (signal?: AbortSignal) => {
+  return customFetcher<AdminActionResponse>({
+    url: `/admin/cache/clear`,
+    method: 'POST',
+    signal,
+  });
+};
 
+export const getClearAllCachesMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof clearAllCaches>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['clearAllCaches'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getClearAllCachesMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    void
+  > = () => {
+    return clearAllCaches();
+  };
 
-const mutationKey = ['clearAllCaches'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type ClearAllCachesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof clearAllCaches>>
+>;
 
+export type ClearAllCachesMutationError = ApiResponseErrorDetail | void;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearAllCaches>>, void> = () => {
-          
-
-          return  clearAllCaches()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ClearAllCachesMutationResult = NonNullable<Awaited<ReturnType<typeof clearAllCaches>>>
-    
-    export type ClearAllCachesMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 전체 캐시 강제 비우기
  */
-export const useClearAllCaches = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearAllCaches>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof clearAllCaches>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useClearAllCaches = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof clearAllCaches>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof clearAllCaches>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getClearAllCachesMutationOptions(options);
 
-      const mutationOptions = getClearAllCachesMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 앨범을 삭제합니다.
  * @summary 앨범 삭제
  */
-export const delete1 = (
-    id: number,
- ) => {
-      
-      
-      return customFetcher<void>(
-      {url: `/albums/${id}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const delete1 = (id: number) => {
+  return customFetcher<void>({ url: `/albums/${id}`, method: 'DELETE' });
+};
 
+export const getDelete1MutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof delete1>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof delete1>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ['delete1'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getDelete1MutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof delete1>>, TError,{id: number}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof delete1>>, TError,{id: number}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof delete1>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
 
-const mutationKey = ['delete1'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return delete1(id);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type Delete1MutationResult = NonNullable<Awaited<ReturnType<typeof delete1>>>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof delete1>>, {id: number}> = (props) => {
-          const {id} = props ?? {};
+export type Delete1MutationError = ApiResponseErrorDetail | void;
 
-          return  delete1(id,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type Delete1MutationResult = NonNullable<Awaited<ReturnType<typeof delete1>>>
-    
-    export type Delete1MutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 앨범 삭제
  */
-export const useDelete1 = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof delete1>>, TError,{id: number}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof delete1>>,
-        TError,
-        {id: number},
-        TContext
-      > => {
+export const useDelete1 = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof delete1>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof delete1>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationOptions = getDelete1MutationOptions(options);
 
-      const mutationOptions = getDelete1MutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 앨범의 제목을 수정합니다.
  * @summary 앨범 제목 수정
  */
 export const updateTitle = (
-    id: number,
-    updateAlbumTitleRequest: UpdateAlbumTitleRequest,
- ) => {
-      
-      
-      return customFetcher<IdResponse>(
-      {url: `/albums/${id}`, method: 'PATCH',
-      headers: {'Content-Type': 'application/json', },
-      data: updateAlbumTitleRequest
-    },
-      );
-    }
-  
+  id: number,
+  updateAlbumTitleRequest: UpdateAlbumTitleRequest,
+) => {
+  return customFetcher<IdResponse>({
+    url: `/albums/${id}`,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateAlbumTitleRequest,
+  });
+};
 
+export const getUpdateTitleMutationOptions = <
+  TError = ApiResponseErrorDetail | void | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateTitle>>,
+    TError,
+    { id: number; data: UpdateAlbumTitleRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateTitle>>,
+  TError,
+  { id: number; data: UpdateAlbumTitleRequest },
+  TContext
+> => {
+  const mutationKey = ['updateTitle'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getUpdateTitleMutationOptions = <TError = ApiResponseErrorDetail | void | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTitle>>, TError,{id: number;data: UpdateAlbumTitleRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateTitle>>, TError,{id: number;data: UpdateAlbumTitleRequest}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateTitle>>,
+    { id: number; data: UpdateAlbumTitleRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
 
-const mutationKey = ['updateTitle'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return updateTitle(id, data);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateTitleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateTitle>>
+>;
+export type UpdateTitleMutationBody = UpdateAlbumTitleRequest;
+export type UpdateTitleMutationError = ApiResponseErrorDetail | void | IdResponse;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateTitle>>, {id: number;data: UpdateAlbumTitleRequest}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  updateTitle(id,data,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateTitleMutationResult = NonNullable<Awaited<ReturnType<typeof updateTitle>>>
-    export type UpdateTitleMutationBody = UpdateAlbumTitleRequest
-    export type UpdateTitleMutationError = ApiResponseErrorDetail | void | IdResponse
-
-    /**
+/**
  * @summary 앨범 제목 수정
  */
-export const useUpdateTitle = <TError = ApiResponseErrorDetail | void | IdResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTitle>>, TError,{id: number;data: UpdateAlbumTitleRequest}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof updateTitle>>,
-        TError,
-        {id: number;data: UpdateAlbumTitleRequest},
-        TContext
-      > => {
+export const useUpdateTitle = <
+  TError = ApiResponseErrorDetail | void | IdResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateTitle>>,
+    TError,
+    { id: number; data: UpdateAlbumTitleRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateTitle>>,
+  TError,
+  { id: number; data: UpdateAlbumTitleRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateTitleMutationOptions(options);
 
-      const mutationOptions = getUpdateTitleMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 앨범별로 그룹화된 사진 목록을 조회합니다. (카카오/인스타그램 스타일)
  * @summary 사진 목록 조회
  */
-export const getPhotos = (
-    albumId: number,
- signal?: AbortSignal
+export const getPhotos = (albumId: number, signal?: AbortSignal) => {
+  return customFetcher<PhotoListResponse>({
+    url: `/photos/album/${albumId}`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetPhotosQueryKey = (albumId?: number) => {
+  return [`/photos/album/${albumId}`] as const;
+};
+
+export const getGetPhotosQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPhotos>>,
+  TError = ApiResponseErrorDetail,
+>(
+  albumId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<PhotoListResponse>(
-      {url: `/photos/album/${albumId}`, method: 'GET', signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetPhotosQueryKey(albumId);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotos>>> = ({ signal }) =>
+    getPhotos(albumId, signal);
 
-export const getGetPhotosQueryKey = (albumId?: number,) => {
-    return [
-    `/photos/album/${albumId}`
-    ] as const;
-    }
+  return { queryKey, queryFn, enabled: !!albumId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPhotos>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetPhotosQueryOptions = <TData = Awaited<ReturnType<typeof getPhotos>>, TError = ApiResponseErrorDetail>(albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetPhotosQueryKey(albumId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPhotos>>> = ({ signal }) => getPhotos(albumId, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(albumId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotos>>>
-export type GetPhotosQueryError = ApiResponseErrorDetail
-
+export type GetPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof getPhotos>>>;
+export type GetPhotosQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 사진 목록 조회
  */
 
-export function useGetPhotos<TData = Awaited<ReturnType<typeof getPhotos>>, TError = ApiResponseErrorDetail>(
- albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetPhotos<
+  TData = Awaited<ReturnType<typeof getPhotos>>,
+  TError = ApiResponseErrorDetail,
+>(
+  albumId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getPhotos>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPhotosQueryOptions(albumId, options);
 
-  const queryOptions = getGetPhotosQueryOptions(albumId,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 
@@ -1674,72 +1952,70 @@ export function useGetPhotos<TData = Awaited<ReturnType<typeof getPhotos>>, TErr
         
  * @summary 장소 검색
  */
-export const searchPlaces = (
-    params: SearchPlacesParams,
- signal?: AbortSignal
+export const searchPlaces = (params: SearchPlacesParams, signal?: AbortSignal) => {
+  return customFetcher<PlaceSearchResponse>({
+    url: `/map/places/search`,
+    method: 'GET',
+    params,
+    signal,
+  });
+};
+
+export const getSearchPlacesQueryKey = (params?: SearchPlacesParams) => {
+  return [`/map/places/search`, ...(params ? [params] : [])] as const;
+};
+
+export const getSearchPlacesQueryOptions = <
+  TData = Awaited<ReturnType<typeof searchPlaces>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: SearchPlacesParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<PlaceSearchResponse>(
-      {url: `/map/places/search`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getSearchPlacesQueryKey(params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPlaces>>> = ({ signal }) =>
+    searchPlaces(params, signal);
 
-export const getSearchPlacesQueryKey = (params?: SearchPlacesParams,) => {
-    return [
-    `/map/places/search`, ...(params ? [params]: [])
-    ] as const;
-    }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof searchPlaces>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getSearchPlacesQueryOptions = <TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail>(params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getSearchPlacesQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPlaces>>> = ({ signal }) => searchPlaces(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type SearchPlacesQueryResult = NonNullable<Awaited<ReturnType<typeof searchPlaces>>>
-export type SearchPlacesQueryError = ApiResponseErrorDetail
-
+export type SearchPlacesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchPlaces>>
+>;
+export type SearchPlacesQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 장소 검색
  */
 
-export function useSearchPlaces<TData = Awaited<ReturnType<typeof searchPlaces>>, TError = ApiResponseErrorDetail>(
- params: SearchPlacesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useSearchPlaces<
+  TData = Awaited<ReturnType<typeof searchPlaces>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: SearchPlacesParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof searchPlaces>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getSearchPlacesQueryOptions(params, options);
 
-  const queryOptions = getSearchPlacesQueryOptions(params,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 
@@ -1751,72 +2027,63 @@ export function useSearchPlaces<TData = Awaited<ReturnType<typeof searchPlaces>>
         
  * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
  */
-export const getMapMe = (
-    params: GetMapMeParams,
- signal?: AbortSignal
+export const getMapMe = (params: GetMapMeParams, signal?: AbortSignal) => {
+  return customFetcher<MapMeResponse>({ url: `/map/me`, method: 'GET', params, signal });
+};
+
+export const getGetMapMeQueryKey = (params?: GetMapMeParams) => {
+  return [`/map/me`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetMapMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMapMe>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetMapMeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<MapMeResponse>(
-      {url: `/map/me`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetMapMeQueryKey(params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMapMe>>> = ({ signal }) =>
+    getMapMe(params, signal);
 
-export const getGetMapMeQueryKey = (params?: GetMapMeParams,) => {
-    return [
-    `/map/me`, ...(params ? [params]: [])
-    ] as const;
-    }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMapMe>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetMapMeQueryOptions = <TData = Awaited<ReturnType<typeof getMapMe>>, TError = ApiResponseErrorDetail>(params: GetMapMeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetMapMeQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMapMe>>> = ({ signal }) => getMapMe(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetMapMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMapMe>>>
-export type GetMapMeQueryError = ApiResponseErrorDetail
-
+export type GetMapMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMapMe>>>;
+export type GetMapMeQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 지도 ME 조회 (홈 + 사진 조회 통합)
  */
 
-export function useGetMapMe<TData = Awaited<ReturnType<typeof getMapMe>>, TError = ApiResponseErrorDetail>(
- params: GetMapMeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetMapMe<
+  TData = Awaited<ReturnType<typeof getMapMe>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetMapMeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMapMe>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMapMeQueryOptions(params, options);
 
-  const queryOptions = getGetMapMeQueryOptions(params,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 
@@ -1828,72 +2095,71 @@ export function useGetMapMe<TData = Awaited<ReturnType<typeof getMapMe>>, TError
         
  * @summary 위치 정보 조회
  */
-export const getLocationInfo = (
-    params: GetLocationInfoParams,
- signal?: AbortSignal
+export const getLocationInfo = (params: GetLocationInfoParams, signal?: AbortSignal) => {
+  return customFetcher<LocationInfoResponse>({
+    url: `/map/location`,
+    method: 'GET',
+    params,
+    signal,
+  });
+};
+
+export const getGetLocationInfoQueryKey = (params?: GetLocationInfoParams) => {
+  return [`/map/location`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetLocationInfoQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLocationInfo>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetLocationInfoParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<LocationInfoResponse>(
-      {url: `/map/location`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetLocationInfoQueryKey(params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getLocationInfo>>> = ({
+    signal,
+  }) => getLocationInfo(params, signal);
 
-export const getGetLocationInfoQueryKey = (params?: GetLocationInfoParams,) => {
-    return [
-    `/map/location`, ...(params ? [params]: [])
-    ] as const;
-    }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLocationInfo>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetLocationInfoQueryOptions = <TData = Awaited<ReturnType<typeof getLocationInfo>>, TError = ApiResponseErrorDetail>(params: GetLocationInfoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetLocationInfoQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLocationInfo>>> = ({ signal }) => getLocationInfo(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetLocationInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getLocationInfo>>>
-export type GetLocationInfoQueryError = ApiResponseErrorDetail
-
+export type GetLocationInfoQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLocationInfo>>
+>;
+export type GetLocationInfoQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 위치 정보 조회
  */
 
-export function useGetLocationInfo<TData = Awaited<ReturnType<typeof getLocationInfo>>, TError = ApiResponseErrorDetail>(
- params: GetLocationInfoParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetLocationInfo<
+  TData = Awaited<ReturnType<typeof getLocationInfo>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params: GetLocationInfoParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getLocationInfo>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetLocationInfoQueryOptions(params, options);
 
-  const queryOptions = getGetLocationInfoQueryOptions(params,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 
@@ -1906,71 +2172,70 @@ export function useGetLocationInfo<TData = Awaited<ReturnType<typeof getLocation
         
  * @summary 클러스터 내 사진 목록 조회
  */
-export const getClusterPhotos = (
-    clusterId: string,
- signal?: AbortSignal
+export const getClusterPhotos = (clusterId: string, signal?: AbortSignal) => {
+  return customFetcher<ClusterPhotoResponse[]>({
+    url: `/map/clusters/${clusterId}/photos`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetClusterPhotosQueryKey = (clusterId?: string) => {
+  return [`/map/clusters/${clusterId}/photos`] as const;
+};
+
+export const getGetClusterPhotosQueryOptions = <
+  TData = Awaited<ReturnType<typeof getClusterPhotos>>,
+  TError = ApiResponseErrorDetail,
+>(
+  clusterId: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<ClusterPhotoResponse[]>(
-      {url: `/map/clusters/${clusterId}/photos`, method: 'GET', signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetClusterPhotosQueryKey(clusterId);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getClusterPhotos>>> = ({
+    signal,
+  }) => getClusterPhotos(clusterId, signal);
 
-export const getGetClusterPhotosQueryKey = (clusterId?: string,) => {
-    return [
-    `/map/clusters/${clusterId}/photos`
-    ] as const;
-    }
+  return { queryKey, queryFn, enabled: !!clusterId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getClusterPhotos>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetClusterPhotosQueryOptions = <TData = Awaited<ReturnType<typeof getClusterPhotos>>, TError = ApiResponseErrorDetail>(clusterId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetClusterPhotosQueryKey(clusterId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClusterPhotos>>> = ({ signal }) => getClusterPhotos(clusterId, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(clusterId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetClusterPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof getClusterPhotos>>>
-export type GetClusterPhotosQueryError = ApiResponseErrorDetail
-
+export type GetClusterPhotosQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getClusterPhotos>>
+>;
+export type GetClusterPhotosQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 클러스터 내 사진 목록 조회
  */
 
-export function useGetClusterPhotos<TData = Awaited<ReturnType<typeof getClusterPhotos>>, TError = ApiResponseErrorDetail>(
- clusterId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetClusterPhotos<
+  TData = Awaited<ReturnType<typeof getClusterPhotos>>,
+  TError = ApiResponseErrorDetail,
+>(
+  clusterId: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getClusterPhotos>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetClusterPhotosQueryOptions(clusterId, options);
 
-  const queryOptions = getGetClusterPhotosQueryOptions(clusterId,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 
@@ -1981,1023 +2246,2269 @@ export function useGetClusterPhotos<TData = Awaited<ReturnType<typeof getCluster
         
  * @summary 앨범 지도 정보 조회
  */
-export const getAlbumMapInfo = (
-    albumId: number,
- signal?: AbortSignal
+export const getAlbumMapInfo = (albumId: number, signal?: AbortSignal) => {
+  return customFetcher<AlbumMapInfoResponse>({
+    url: `/map/albums/${albumId}`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getGetAlbumMapInfoQueryKey = (albumId?: number) => {
+  return [`/map/albums/${albumId}`] as const;
+};
+
+export const getGetAlbumMapInfoQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAlbumMapInfo>>,
+  TError = ApiResponseErrorDetail,
+>(
+  albumId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<AlbumMapInfoResponse>(
-      {url: `/map/albums/${albumId}`, method: 'GET', signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetAlbumMapInfoQueryKey(albumId);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAlbumMapInfo>>> = ({
+    signal,
+  }) => getAlbumMapInfo(albumId, signal);
 
-export const getGetAlbumMapInfoQueryKey = (albumId?: number,) => {
-    return [
-    `/map/albums/${albumId}`
-    ] as const;
-    }
+  return { queryKey, queryFn, enabled: !!albumId, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAlbumMapInfo>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getGetAlbumMapInfoQueryOptions = <TData = Awaited<ReturnType<typeof getAlbumMapInfo>>, TError = ApiResponseErrorDetail>(albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetAlbumMapInfoQueryKey(albumId);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAlbumMapInfo>>> = ({ signal }) => getAlbumMapInfo(albumId, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(albumId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetAlbumMapInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getAlbumMapInfo>>>
-export type GetAlbumMapInfoQueryError = ApiResponseErrorDetail
-
+export type GetAlbumMapInfoQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAlbumMapInfo>>
+>;
+export type GetAlbumMapInfoQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 앨범 지도 정보 조회
  */
 
-export function useGetAlbumMapInfo<TData = Awaited<ReturnType<typeof getAlbumMapInfo>>, TError = ApiResponseErrorDetail>(
- albumId: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetAlbumMapInfo<
+  TData = Awaited<ReturnType<typeof getAlbumMapInfo>>,
+  TError = ApiResponseErrorDetail,
+>(
+  albumId: number,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getAlbumMapInfo>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAlbumMapInfoQueryOptions(albumId, options);
 
-  const queryOptions = getGetAlbumMapInfoQueryOptions(albumId,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 현재 로그인 사용자의 커플 연결 상태를 조회합니다.
  * @summary 내 커플 상태 조회
  */
-export const getMyStatus = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<CoupleStatusResponse>(
-      {url: `/couples/me/status`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-
+export const getMyStatus = (signal?: AbortSignal) => {
+  return customFetcher<CoupleStatusResponse>({
+    url: `/couples/me/status`,
+    method: 'GET',
+    signal,
+  });
+};
 
 export const getGetMyStatusQueryKey = () => {
-    return [
-    `/couples/me/status`
-    ] as const;
-    }
+  return [`/couples/me/status`] as const;
+};
 
-    
-export const getGetMyStatusQueryOptions = <TData = Awaited<ReturnType<typeof getMyStatus>>, TError = ApiResponseErrorDetail>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>, }
-) => {
+export const getGetMyStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMyStatus>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetMyStatusQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetMyStatusQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyStatus>>> = ({ signal }) =>
+    getMyStatus(signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMyStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyStatus>>> = ({ signal }) => getMyStatus(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetMyStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getMyStatus>>>
-export type GetMyStatusQueryError = ApiResponseErrorDetail
-
+export type GetMyStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getMyStatus>>>;
+export type GetMyStatusQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 내 커플 상태 조회
  */
 
-export function useGetMyStatus<TData = Awaited<ReturnType<typeof getMyStatus>>, TError = ApiResponseErrorDetail>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetMyStatus<
+  TData = Awaited<ReturnType<typeof getMyStatus>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStatus>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMyStatusQueryOptions(options);
 
-  const queryOptions = getGetMyStatusQueryOptions(options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 카카오 OAuth 인증 페이지로 리다이렉트합니다. redirect 파라미터로 로그인 후 돌아갈 프론트엔드 URL을 지정할 수 있습니다.
  * @summary 카카오 로그인 페이지로 리다이렉트
  */
-export const kakaoAuthorize = (
-    params?: KakaoAuthorizeParams,
- signal?: AbortSignal
+export const kakaoAuthorize = (params?: KakaoAuthorizeParams, signal?: AbortSignal) => {
+  return customFetcher<unknown>({ url: `/auth/kakao`, method: 'GET', params, signal });
+};
+
+export const getKakaoAuthorizeQueryKey = (params?: KakaoAuthorizeParams) => {
+  return [`/auth/kakao`, ...(params ? [params] : [])] as const;
+};
+
+export const getKakaoAuthorizeQueryOptions = <
+  TData = Awaited<ReturnType<typeof kakaoAuthorize>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params?: KakaoAuthorizeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>;
+  },
 ) => {
-      
-      
-      return customFetcher<unknown>(
-      {url: `/auth/kakao`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getKakaoAuthorizeQueryKey(params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof kakaoAuthorize>>> = ({
+    signal,
+  }) => kakaoAuthorize(params, signal);
 
-export const getKakaoAuthorizeQueryKey = (params?: KakaoAuthorizeParams,) => {
-    return [
-    `/auth/kakao`, ...(params ? [params]: [])
-    ] as const;
-    }
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof kakaoAuthorize>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    
-export const getKakaoAuthorizeQueryOptions = <TData = Awaited<ReturnType<typeof kakaoAuthorize>>, TError = ApiResponseErrorDetail>(params?: KakaoAuthorizeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getKakaoAuthorizeQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof kakaoAuthorize>>> = ({ signal }) => kakaoAuthorize(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type KakaoAuthorizeQueryResult = NonNullable<Awaited<ReturnType<typeof kakaoAuthorize>>>
-export type KakaoAuthorizeQueryError = ApiResponseErrorDetail
-
+export type KakaoAuthorizeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof kakaoAuthorize>>
+>;
+export type KakaoAuthorizeQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 카카오 로그인 페이지로 리다이렉트
  */
 
-export function useKakaoAuthorize<TData = Awaited<ReturnType<typeof kakaoAuthorize>>, TError = ApiResponseErrorDetail>(
- params?: KakaoAuthorizeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useKakaoAuthorize<
+  TData = Awaited<ReturnType<typeof kakaoAuthorize>>,
+  TError = ApiResponseErrorDetail,
+>(
+  params?: KakaoAuthorizeParams,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof kakaoAuthorize>>, TError, TData>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getKakaoAuthorizeQueryOptions(params, options);
 
-  const queryOptions = getKakaoAuthorizeQueryOptions(params,options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 사용자가 선택할 수 있는 앨범 목록을 조회합니다.
  * @summary 선택 가능한 앨범 조회
  */
-export const getSelectableAlbums = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<SelectableAlbumResponse>(
-      {url: `/albums/selectable`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-
+export const getSelectableAlbums = (signal?: AbortSignal) => {
+  return customFetcher<SelectableAlbumResponse>({
+    url: `/albums/selectable`,
+    method: 'GET',
+    signal,
+  });
+};
 
 export const getGetSelectableAlbumsQueryKey = () => {
-    return [
-    `/albums/selectable`
-    ] as const;
-    }
+  return [`/albums/selectable`] as const;
+};
 
-    
-export const getGetSelectableAlbumsQueryOptions = <TData = Awaited<ReturnType<typeof getSelectableAlbums>>, TError = ApiResponseErrorDetail>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>, }
-) => {
+export const getGetSelectableAlbumsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSelectableAlbums>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetSelectableAlbumsQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSelectableAlbumsQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getSelectableAlbums>>> = ({
+    signal,
+  }) => getSelectableAlbums(signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSelectableAlbums>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSelectableAlbums>>> = ({ signal }) => getSelectableAlbums(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetSelectableAlbumsQueryResult = NonNullable<Awaited<ReturnType<typeof getSelectableAlbums>>>
-export type GetSelectableAlbumsQueryError = ApiResponseErrorDetail
-
+export type GetSelectableAlbumsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSelectableAlbums>>
+>;
+export type GetSelectableAlbumsQueryError = ApiResponseErrorDetail;
 
 /**
  * @summary 선택 가능한 앨범 조회
  */
 
-export function useGetSelectableAlbums<TData = Awaited<ReturnType<typeof getSelectableAlbums>>, TError = ApiResponseErrorDetail>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetSelectableAlbums<
+  TData = Awaited<ReturnType<typeof getSelectableAlbums>>,
+  TError = ApiResponseErrorDetail,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getSelectableAlbums>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetSelectableAlbumsQueryOptions(options);
 
-  const queryOptions = getGetSelectableAlbumsQueryOptions(options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * DB에 저장된 사용자 ID/이메일 목록을 조회합니다.
  * @summary 전체 사용자 목록 조회
  */
-export const getUsers = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customFetcher<AdminUserSummaryResponse[]>(
-      {url: `/admin/users`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-
+export const getUsers = (signal?: AbortSignal) => {
+  return customFetcher<AdminUserSummaryResponse[]>({
+    url: `/admin/users`,
+    method: 'GET',
+    signal,
+  });
+};
 
 export const getGetUsersQueryKey = () => {
-    return [
-    `/admin/users`
-    ] as const;
-    }
+  return [`/admin/users`] as const;
+};
 
-    
-export const getGetUsersQueryOptions = <TData = Awaited<ReturnType<typeof getUsers>>, TError = ApiResponseErrorDetail | void>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>, }
-) => {
+export const getGetUsersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getUsers>>,
+  TError = ApiResponseErrorDetail | void,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetUsersQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetUsersQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsers>>> = ({ signal }) =>
+    getUsers(signal);
 
-  
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getUsers>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsers>>> = ({ signal }) => getUsers(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getUsers>>>
-export type GetUsersQueryError = ApiResponseErrorDetail | void
-
+export type GetUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getUsers>>>;
+export type GetUsersQueryError = ApiResponseErrorDetail | void;
 
 /**
  * @summary 전체 사용자 목록 조회
  */
 
-export function useGetUsers<TData = Awaited<ReturnType<typeof getUsers>>, TError = ApiResponseErrorDetail | void>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>, }
-  
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+export function useGetUsers<
+  TData = Awaited<ReturnType<typeof getUsers>>,
+  TError = ApiResponseErrorDetail | void,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getUsers>>, TError, TData>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetUsersQueryOptions(options);
 
-  const queryOptions = getGetUsersQueryOptions(options)
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
 
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-
 
 /**
  * 현재 로그인한 사용자의 계정을 탈퇴 처리합니다. 탈퇴 전 반드시 커플 연결 끊기가 완료되어야 하며, 계정 상태가 WITHDRAWN으로 변경되고 세션/토큰이 무효화됩니다.
  * @summary 회원 탈퇴
  */
-export const withdraw = (
-    
- ) => {
-      
-      
-      return customFetcher<unknown>(
-      {url: `/users/me`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const withdraw = () => {
+  return customFetcher<unknown>({ url: `/users/me`, method: 'DELETE' });
+};
 
+export const getWithdrawMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof withdraw>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<Awaited<ReturnType<typeof withdraw>>, TError, void, TContext> => {
+  const mutationKey = ['withdraw'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getWithdrawMutationOptions = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdraw>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof withdraw>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof withdraw>>, void> = () => {
+    return withdraw();
+  };
 
-const mutationKey = ['withdraw'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type WithdrawMutationResult = NonNullable<Awaited<ReturnType<typeof withdraw>>>;
 
+export type WithdrawMutationError = ApiResponseErrorDetail;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof withdraw>>, void> = () => {
-          
-
-          return  withdraw()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type WithdrawMutationResult = NonNullable<Awaited<ReturnType<typeof withdraw>>>
-    
-    export type WithdrawMutationError = ApiResponseErrorDetail
-
-    /**
+/**
  * @summary 회원 탈퇴
  */
-export const useWithdraw = <TError = ApiResponseErrorDetail,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof withdraw>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof withdraw>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useWithdraw = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof withdraw>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<Awaited<ReturnType<typeof withdraw>>, TError, void, TContext> => {
+  const mutationOptions = getWithdrawMutationOptions(options);
 
-      const mutationOptions = getWithdrawMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 현재 커플 연결을 해제합니다. 31일 이내 재연결이 가능합니다.
  * @summary 커플 연결 끊기
  */
-export const disconnect = (
-    
- ) => {
-      
-      
-      return customFetcher<void>(
-      {url: `/couples/me`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const disconnect = () => {
+  return customFetcher<void>({ url: `/couples/me`, method: 'DELETE' });
+};
 
+export const getDisconnectMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disconnect>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof disconnect>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ['disconnect'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getDisconnectMutationOptions = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disconnect>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof disconnect>>, TError,void, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof disconnect>>,
+    void
+  > = () => {
+    return disconnect();
+  };
 
-const mutationKey = ['disconnect'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+  return { mutationFn, ...mutationOptions };
+};
 
-      
+export type DisconnectMutationResult = NonNullable<
+  Awaited<ReturnType<typeof disconnect>>
+>;
 
+export type DisconnectMutationError = ApiResponseErrorDetail | void;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disconnect>>, void> = () => {
-          
-
-          return  disconnect()
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DisconnectMutationResult = NonNullable<Awaited<ReturnType<typeof disconnect>>>
-    
-    export type DisconnectMutationError = ApiResponseErrorDetail | void
-
-    /**
+/**
  * @summary 커플 연결 끊기
  */
-export const useDisconnect = <TError = ApiResponseErrorDetail | void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disconnect>>, TError,void, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof disconnect>>,
-        TError,
-        void,
-        TContext
-      > => {
+export const useDisconnect = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof disconnect>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<Awaited<ReturnType<typeof disconnect>>, TError, void, TContext> => {
+  const mutationOptions = getDisconnectMutationOptions(options);
 
-      const mutationOptions = getDisconnectMutationOptions(options);
+  return useMutation(mutationOptions);
+};
 
-      return useMutation(mutationOptions);
-    }
-    
 /**
  * 사용자와 연결된 커플/앨범/사진/토큰 데이터를 함께 삭제합니다.
  * @summary 이메일 기준 사용자 데이터 전체 삭제
  */
-export const deleteAllByEmail = (
-    email: string,
- ) => {
-      
-      
-      return customFetcher<AdminActionResponse>(
-      {url: `/admin/users/${email}`, method: 'DELETE'
-    },
-      );
-    }
-  
+export const deleteAllByEmail = (email: string) => {
+  return customFetcher<AdminActionResponse>({
+    url: `/admin/users/${email}`,
+    method: 'DELETE',
+  });
+};
 
+export const getDeleteAllByEmailMutationOptions = <
+  TError = ApiResponseErrorDetail | void | AdminActionResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    TError,
+    { email: string },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError,
+  { email: string },
+  TContext
+> => {
+  const mutationKey = ['deleteAllByEmail'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-export const getDeleteAllByEmailMutationOptions = <TError = ApiResponseErrorDetail | void | AdminActionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError,{email: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError,{email: string}, TContext> => {
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    { email: string }
+  > = (props) => {
+    const { email } = props ?? {};
 
-const mutationKey = ['deleteAllByEmail'];
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+    return deleteAllByEmail(email);
+  };
 
-      
+  return { mutationFn, ...mutationOptions };
+};
 
+export type DeleteAllByEmailMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAllByEmail>>
+>;
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAllByEmail>>, {email: string}> = (props) => {
-          const {email} = props ?? {};
+export type DeleteAllByEmailMutationError =
+  | ApiResponseErrorDetail
+  | void
+  | AdminActionResponse;
 
-          return  deleteAllByEmail(email,)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteAllByEmailMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAllByEmail>>>
-    
-    export type DeleteAllByEmailMutationError = ApiResponseErrorDetail | void | AdminActionResponse
-
-    /**
+/**
  * @summary 이메일 기준 사용자 데이터 전체 삭제
  */
-export const useDeleteAllByEmail = <TError = ApiResponseErrorDetail | void | AdminActionResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAllByEmail>>, TError,{email: string}, TContext>, }
- ): UseMutationResult<
-        Awaited<ReturnType<typeof deleteAllByEmail>>,
-        TError,
-        {email: string},
-        TContext
-      > => {
-
-      const mutationOptions = getDeleteAllByEmailMutationOptions(options);
-
-      return useMutation(mutationOptions);
-    }
-
-
-export const getGetPhotoDetailResponseMock = (overrideResponse: Partial< PhotoDetailResponse > = {}): PhotoDetailResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), albumName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), uploaderProfileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
-
-export const getUpdateResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getUpdateProfileImageResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getUpdateNicknameResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getCreateResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getGetCommentsResponseMock = (overrideResponse: Partial< CommentListResponse > = {}): CommentListResponse => ({comments: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), userId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), userName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), userProfileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), content: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), commentedAt: faker.helpers.arrayElement([faker.date.past().toISOString().split('T')[0], undefined]), emoticons: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({emoji: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), count: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), reacted: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), ...overrideResponse})
-
-export const getCreateCommentResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getGetPresignedUrlResponseMock = (overrideResponse: Partial< PresignedUrl > = {}): PresignedUrl => ({presignedUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), objectUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
-
-export const getAddEmoticonResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getReconnectResponseMock = (overrideResponse: Partial< CoupleStatusResponse > = {}): CoupleStatusResponse => ({partnerSummary: faker.helpers.arrayElement([{userId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), profileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
-
-export const getJoinByInviteCodeResponseMock = (overrideResponse: Partial< CoupleStatusResponse > = {}): CoupleStatusResponse => ({partnerSummary: faker.helpers.arrayElement([{userId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), profileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
-
-export const getCreateInviteResponseMock = (overrideResponse: Partial< InviteCodeResponse > = {}): InviteCodeResponse => ({inviteCode: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), expiresAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), ...overrideResponse})
-
-export const getVerifyInviteCodeResponseMock = (overrideResponse: Partial< InviteCodePreviewResponse > = {}): InviteCodePreviewResponse => ({inviterUserId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), profileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
-
-export const getRefreshInviteResponseMock = (overrideResponse: Partial< InviteCodeResponse > = {}): InviteCodeResponse => ({inviteCode: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), expiresAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), ...overrideResponse})
-
-export const getConfirmInviteCodeResponseMock = (overrideResponse: Partial< CoupleStatusResponse > = {}): CoupleStatusResponse => ({partnerSummary: faker.helpers.arrayElement([{userId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), profileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
-
-export const getCreate1ResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getCreateCouplePartnerResponseMock = (overrideResponse: Partial< AdminPartnerResponse > = {}): AdminPartnerResponse => ({partnerEmail: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), tokens: faker.helpers.arrayElement([{accessToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), refreshToken: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), ...overrideResponse})
-
-export const getMigratePreviousCoupleDataResponseMock = (overrideResponse: Partial< AdminCoupleMigrationResponse > = {}): AdminCoupleMigrationResponse => ({previousCoupleCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), createdAlbumCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedPhotoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedCommentCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), skippedCommentCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), movedEmoticonCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), skippedEmoticonCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getClearAllCachesResponseMock = (overrideResponse: Partial< AdminActionResponse > = {}): AdminActionResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
-
-export const getUpdateTitleResponseMock = (overrideResponse: Partial< IdResponse > = {}): IdResponse => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), ...overrideResponse})
-
-export const getGetPhotosResponseMock = (overrideResponse: Partial< PhotoListResponse > = {}): PhotoListResponse => ({albums: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), title: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), location: faker.helpers.arrayElement([{longitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), latitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), description: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), ...overrideResponse})
-
-export const getSearchPlacesResponseMock = (overrideResponse: Partial< PlaceSearchResponse > = {}): PlaceSearchResponse => ({places: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadAddress: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2}), category: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})), undefined]), ...overrideResponse})
-
-export const getGetMapMeResponseMock = (overrideResponse: Partial< MapMeResponse > = {}): MapMeResponse => ({location: faker.helpers.arrayElement([{address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), regionName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), boundingBox: faker.helpers.arrayElement([{west: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), south: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), east: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), north: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), totalHistoryCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), albums: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), title: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrls: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => (faker.string.alpha({length: {min: 10, max: 20}}))), undefined])})), undefined]), dataVersion: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), clusters: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({clusterId: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), count: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2})})), undefined]), photos: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2}), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined])})), undefined]), ...overrideResponse})
-
-export const getGetLocationInfoResponseMock = (overrideResponse: Partial< LocationInfoResponse > = {}): LocationInfoResponse => ({address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), roadName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), placeName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), regionName: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
-
-export const getGetClusterPhotosResponseMock = (): ClusterPhotoResponse[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), url: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), longitude: faker.number.float({min: 124, max: 132, fractionDigits: 2}), latitude: faker.number.float({min: 33, max: 39, fractionDigits: 2}), takenAt: faker.helpers.arrayElement([`${faker.date.past().toISOString().split('.')[0]}Z`, undefined]), address: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
-
-export const getGetAlbumMapInfoResponseMock = (overrideResponse: Partial< AlbumMapInfoResponse > = {}): AlbumMapInfoResponse => ({albumId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), centerLongitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), centerLatitude: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), boundingBox: faker.helpers.arrayElement([{west: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), south: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), east: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined]), north: faker.helpers.arrayElement([faker.number.float({min: undefined, max: undefined, fractionDigits: 2}), undefined])}, undefined]), ...overrideResponse})
-
-export const getGetMyStatusResponseMock = (overrideResponse: Partial< CoupleStatusResponse > = {}): CoupleStatusResponse => ({partnerSummary: faker.helpers.arrayElement([{userId: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), nickname: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), profileImageUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])}, undefined]), coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), ...overrideResponse})
-
-export const getGetSelectableAlbumsResponseMock = (overrideResponse: Partial< SelectableAlbumResponse > = {}): SelectableAlbumResponse => ({albums: faker.helpers.arrayElement([Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), title: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), photoCount: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), thumbnailUrl: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]), isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined])})), undefined]), ...overrideResponse})
-
-export const getGetUsersResponseMock = (): AdminUserSummaryResponse[] => (Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(() => ({id: faker.helpers.arrayElement([faker.number.int({min: undefined, max: undefined}), undefined]), email: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined])})))
-
-export const getDeleteAllByEmailResponseMock = (overrideResponse: Partial< AdminActionResponse > = {}): AdminActionResponse => ({message: faker.helpers.arrayElement([faker.string.alpha({length: {min: 10, max: 20}}), undefined]), ...overrideResponse})
-
-
-export const getGetPhotoDetailMockHandler = (overrideResponse?: PhotoDetailResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PhotoDetailResponse> | PhotoDetailResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/photos/:id', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetPhotoDetailResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getUpdateMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.put('*/photos/:id', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getUpdateResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getDeleteMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.delete('*/photos/:id', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 204,
-        
-      })
-  }, options)
-}
-
-export const getUpdateProfileImageMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.put('*/my-page/profile-image', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getUpdateProfileImageResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getUpdateNicknameMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.put>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.put('*/my-page/nickname', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getUpdateNicknameResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getCreateMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/photos', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getCreateResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetCommentsMockHandler = (overrideResponse?: CommentListResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CommentListResponse> | CommentListResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/photos/:photoId/comments', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetCommentsResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getCreateCommentMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/photos/:photoId/comments', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getCreateCommentResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetPresignedUrlMockHandler = (overrideResponse?: PresignedUrl | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<PresignedUrl> | PresignedUrl), options?: RequestHandlerOptions) => {
-  return http.post('*/photos/presigned-url', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetPresignedUrlResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getAddEmoticonMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/photos/comments/:commentId/emoticons', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getAddEmoticonResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getRemoveEmoticonMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.delete('*/photos/comments/:commentId/emoticons', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 204,
-        
-      })
-  }, options)
-}
-
-export const getReconnectMockHandler = (overrideResponse?: CoupleStatusResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CoupleStatusResponse> | CoupleStatusResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/reconnect', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getReconnectResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getJoinByInviteCodeMockHandler = (overrideResponse?: CoupleStatusResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CoupleStatusResponse> | CoupleStatusResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/join', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getJoinByInviteCodeResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getCreateInviteMockHandler = (overrideResponse?: InviteCodeResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<InviteCodeResponse> | InviteCodeResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/invites', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getCreateInviteResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getVerifyInviteCodeMockHandler = (overrideResponse?: InviteCodePreviewResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<InviteCodePreviewResponse> | InviteCodePreviewResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/invites/verify', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getVerifyInviteCodeResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getRefreshInviteMockHandler = (overrideResponse?: InviteCodeResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<InviteCodeResponse> | InviteCodeResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/invites/refresh', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getRefreshInviteResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getConfirmInviteCodeMockHandler = (overrideResponse?: CoupleStatusResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<CoupleStatusResponse> | CoupleStatusResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/couples/invites/confirm', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getConfirmInviteCodeResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getCreate1MockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/albums', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getCreate1ResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getCreateCouplePartnerMockHandler = (overrideResponse?: AdminPartnerResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<AdminPartnerResponse> | AdminPartnerResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/admin/couples/partner', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getCreateCouplePartnerResponseMock()),
-      { status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getMigratePreviousCoupleDataMockHandler = (overrideResponse?: AdminCoupleMigrationResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<AdminCoupleMigrationResponse> | AdminCoupleMigrationResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/admin/couples/migrate', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getMigratePreviousCoupleDataResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getClearAllCachesMockHandler = (overrideResponse?: AdminActionResponse | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<AdminActionResponse> | AdminActionResponse), options?: RequestHandlerOptions) => {
-  return http.post('*/admin/cache/clear', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getClearAllCachesResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getDelete1MockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.delete('*/albums/:id', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 204,
-        
-      })
-  }, options)
-}
-
-export const getUpdateTitleMockHandler = (overrideResponse?: IdResponse | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<IdResponse> | IdResponse), options?: RequestHandlerOptions) => {
-  return http.patch('*/albums/:id', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getUpdateTitleResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetPhotosMockHandler = (overrideResponse?: PhotoListResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PhotoListResponse> | PhotoListResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/photos/album/:albumId', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetPhotosResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getSearchPlacesMockHandler = (overrideResponse?: PlaceSearchResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<PlaceSearchResponse> | PlaceSearchResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/map/places/search', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getSearchPlacesResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetMapMeMockHandler = (overrideResponse?: MapMeResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<MapMeResponse> | MapMeResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/map/me', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetMapMeResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetLocationInfoMockHandler = (overrideResponse?: LocationInfoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<LocationInfoResponse> | LocationInfoResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/map/location', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetLocationInfoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetClusterPhotosMockHandler = (overrideResponse?: ClusterPhotoResponse[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<ClusterPhotoResponse[]> | ClusterPhotoResponse[]), options?: RequestHandlerOptions) => {
-  return http.get('*/map/clusters/:clusterId/photos', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetClusterPhotosResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetAlbumMapInfoMockHandler = (overrideResponse?: AlbumMapInfoResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AlbumMapInfoResponse> | AlbumMapInfoResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/map/albums/:albumId', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetAlbumMapInfoResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetMyStatusMockHandler = (overrideResponse?: CoupleStatusResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<CoupleStatusResponse> | CoupleStatusResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/couples/me/status', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetMyStatusResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getKakaoAuthorizeMockHandler = (overrideResponse?: unknown | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<unknown> | unknown), options?: RequestHandlerOptions) => {
-  return http.get('*/auth/kakao', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 200,
-        
-      })
-  }, options)
-}
-
-export const getGetSelectableAlbumsMockHandler = (overrideResponse?: SelectableAlbumResponse | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<SelectableAlbumResponse> | SelectableAlbumResponse), options?: RequestHandlerOptions) => {
-  return http.get('*/albums/selectable', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetSelectableAlbumsResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getGetUsersMockHandler = (overrideResponse?: AdminUserSummaryResponse[] | ((info: Parameters<Parameters<typeof http.get>[1]>[0]) => Promise<AdminUserSummaryResponse[]> | AdminUserSummaryResponse[]), options?: RequestHandlerOptions) => {
-  return http.get('*/admin/users', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getGetUsersResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
-
-export const getWithdrawMockHandler = (overrideResponse?: unknown | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<unknown> | unknown), options?: RequestHandlerOptions) => {
-  return http.delete('*/users/me', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 200,
-        
-      })
-  }, options)
-}
-
-export const getDisconnectMockHandler = (overrideResponse?: void | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void), options?: RequestHandlerOptions) => {
-  return http.delete('*/couples/me', async (info) => {await delay(1000);
-  if (typeof overrideResponse === 'function') {await overrideResponse(info); }
-    return new HttpResponse(null,
-      { status: 204,
-        
-      })
-  }, options)
-}
-
-export const getDeleteAllByEmailMockHandler = (overrideResponse?: AdminActionResponse | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<AdminActionResponse> | AdminActionResponse), options?: RequestHandlerOptions) => {
-  return http.delete('*/admin/users/:email', async (info) => {await delay(1000);
-  
-    return new HttpResponse(JSON.stringify(overrideResponse !== undefined
-    ? (typeof overrideResponse === "function" ? await overrideResponse(info) : overrideResponse)
-    : getDeleteAllByEmailResponseMock()),
-      { status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      })
-  }, options)
-}
+export const useDeleteAllByEmail = <
+  TError = ApiResponseErrorDetail | void | AdminActionResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAllByEmail>>,
+    TError,
+    { email: string },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteAllByEmail>>,
+  TError,
+  { email: string },
+  TContext
+> => {
+  const mutationOptions = getDeleteAllByEmailMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getGetPhotoDetailResponseMock = (
+  overrideResponse: Partial<PhotoDetailResponse> = {},
+): PhotoDetailResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  url: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  takenAt: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    undefined,
+  ]),
+  albumName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  uploaderName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  uploaderProfileImageUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  address: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  description: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  longitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    undefined,
+  ]),
+  latitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    undefined,
+  ]),
+  editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getUpdateResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateProfileImageResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateNicknameResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getCreateResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetCommentsResponseMock = (
+  overrideResponse: Partial<CommentListResponse> = {},
+): CommentListResponse => ({
+  comments: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        userId: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        userName: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        userProfileImageUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        content: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        commentedAt: faker.helpers.arrayElement([
+          faker.date.past().toISOString().split('T')[0],
+          undefined,
+        ]),
+        emoticons: faker.helpers.arrayElement([
+          Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1,
+          ).map(() => ({
+            emoji: faker.helpers.arrayElement([
+              faker.string.alpha({ length: { min: 10, max: 20 } }),
+              undefined,
+            ]),
+            count: faker.helpers.arrayElement([
+              faker.number.int({ min: undefined, max: undefined }),
+              undefined,
+            ]),
+            reacted: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+            editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+            isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+          })),
+          undefined,
+        ]),
+        editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+        isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getCreateCommentResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetPresignedUrlResponseMock = (
+  overrideResponse: Partial<PresignedUrl> = {},
+): PresignedUrl => ({
+  presignedUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  objectUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getAddEmoticonResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getReconnectResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getJoinByInviteCodeResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getCreateInviteResponseMock = (
+  overrideResponse: Partial<InviteCodeResponse> = {},
+): InviteCodeResponse => ({
+  inviteCode: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  expiresAt: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getVerifyInviteCodeResponseMock = (
+  overrideResponse: Partial<InviteCodePreviewResponse> = {},
+): InviteCodePreviewResponse => ({
+  inviterUserId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  nickname: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  profileImageUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getRefreshInviteResponseMock = (
+  overrideResponse: Partial<InviteCodeResponse> = {},
+): InviteCodeResponse => ({
+  inviteCode: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  expiresAt: faker.helpers.arrayElement([
+    `${faker.date.past().toISOString().split('.')[0]}Z`,
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getConfirmInviteCodeResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getCreate1ResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getCreateCouplePartnerResponseMock = (
+  overrideResponse: Partial<AdminPartnerResponse> = {},
+): AdminPartnerResponse => ({
+  partnerEmail: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  tokens: faker.helpers.arrayElement([
+    {
+      accessToken: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      refreshToken: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getMigratePreviousCoupleDataResponseMock = (
+  overrideResponse: Partial<AdminCoupleMigrationResponse> = {},
+): AdminCoupleMigrationResponse => ({
+  previousCoupleCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  createdAlbumCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  movedPhotoCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  movedCommentCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  skippedCommentCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  movedEmoticonCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  skippedEmoticonCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getClearAllCachesResponseMock = (
+  overrideResponse: Partial<AdminActionResponse> = {},
+): AdminActionResponse => ({
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getUpdateTitleResponseMock = (
+  overrideResponse: Partial<IdResponse> = {},
+): IdResponse => ({
+  id: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetPhotosResponseMock = (
+  overrideResponse: Partial<PhotoListResponse> = {},
+): PhotoListResponse => ({
+  albums: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        title: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        photoCount: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        photos: faker.helpers.arrayElement([
+          Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1,
+          ).map(() => ({
+            id: faker.helpers.arrayElement([
+              faker.number.int({ min: undefined, max: undefined }),
+              undefined,
+            ]),
+            url: faker.helpers.arrayElement([
+              faker.string.alpha({ length: { min: 10, max: 20 } }),
+              undefined,
+            ]),
+            location: faker.helpers.arrayElement([
+              {
+                longitude: faker.helpers.arrayElement([
+                  faker.number.float({
+                    min: undefined,
+                    max: undefined,
+                    fractionDigits: 2,
+                  }),
+                  undefined,
+                ]),
+                latitude: faker.helpers.arrayElement([
+                  faker.number.float({
+                    min: undefined,
+                    max: undefined,
+                    fractionDigits: 2,
+                  }),
+                  undefined,
+                ]),
+              },
+              undefined,
+            ]),
+            description: faker.helpers.arrayElement([
+              faker.string.alpha({ length: { min: 10, max: 20 } }),
+              undefined,
+            ]),
+            takenAt: faker.helpers.arrayElement([
+              `${faker.date.past().toISOString().split('.')[0]}Z`,
+              undefined,
+            ]),
+            editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+            isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+          })),
+          undefined,
+        ]),
+        editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+        isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getSearchPlacesResponseMock = (
+  overrideResponse: Partial<PlaceSearchResponse> = {},
+): PlaceSearchResponse => ({
+  places: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        placeName: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        address: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        roadAddress: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+        category: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetMapMeResponseMock = (
+  overrideResponse: Partial<MapMeResponse> = {},
+): MapMeResponse => ({
+  location: faker.helpers.arrayElement([
+    {
+      address: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      roadName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      placeName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      regionName: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  boundingBox: faker.helpers.arrayElement([
+    {
+      west: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      south: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      east: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      north: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  totalHistoryCount: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  albums: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        title: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        photoCount: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrls: faker.helpers.arrayElement([
+          Array.from(
+            { length: faker.number.int({ min: 1, max: 10 }) },
+            (_, i) => i + 1,
+          ).map(() => faker.string.alpha({ length: { min: 10, max: 20 } })),
+          undefined,
+        ]),
+      }),
+    ),
+    undefined,
+  ]),
+  dataVersion: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  clusters: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        clusterId: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        count: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+      }),
+    ),
+    undefined,
+  ]),
+  photos: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+        latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+        takenAt: faker.helpers.arrayElement([
+          `${faker.date.past().toISOString().split('.')[0]}Z`,
+          undefined,
+        ]),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetLocationInfoResponseMock = (
+  overrideResponse: Partial<LocationInfoResponse> = {},
+): LocationInfoResponse => ({
+  address: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  roadName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  placeName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  regionName: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetClusterPhotosResponseMock = (): ClusterPhotoResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+    () => ({
+      id: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      url: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      longitude: faker.number.float({ min: 124, max: 132, fractionDigits: 2 }),
+      latitude: faker.number.float({ min: 33, max: 39, fractionDigits: 2 }),
+      takenAt: faker.helpers.arrayElement([
+        `${faker.date.past().toISOString().split('.')[0]}Z`,
+        undefined,
+      ]),
+      address: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    }),
+  );
+
+export const getGetAlbumMapInfoResponseMock = (
+  overrideResponse: Partial<AlbumMapInfoResponse> = {},
+): AlbumMapInfoResponse => ({
+  albumId: faker.helpers.arrayElement([
+    faker.number.int({ min: undefined, max: undefined }),
+    undefined,
+  ]),
+  centerLongitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    undefined,
+  ]),
+  centerLatitude: faker.helpers.arrayElement([
+    faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+    undefined,
+  ]),
+  boundingBox: faker.helpers.arrayElement([
+    {
+      west: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      south: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      east: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+      north: faker.helpers.arrayElement([
+        faker.number.float({ min: undefined, max: undefined, fractionDigits: 2 }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetMyStatusResponseMock = (
+  overrideResponse: Partial<CoupleStatusResponse> = {},
+): CoupleStatusResponse => ({
+  partnerSummary: faker.helpers.arrayElement([
+    {
+      userId: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      nickname: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+      profileImageUrl: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    },
+    undefined,
+  ]),
+  coupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+  ...overrideResponse,
+});
+
+export const getGetSelectableAlbumsResponseMock = (
+  overrideResponse: Partial<SelectableAlbumResponse> = {},
+): SelectableAlbumResponse => ({
+  albums: faker.helpers.arrayElement([
+    Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+      () => ({
+        id: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        title: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        photoCount: faker.helpers.arrayElement([
+          faker.number.int({ min: undefined, max: undefined }),
+          undefined,
+        ]),
+        thumbnailUrl: faker.helpers.arrayElement([
+          faker.string.alpha({ length: { min: 10, max: 20 } }),
+          undefined,
+        ]),
+        editable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+        isEditable: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
+      }),
+    ),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetUsersResponseMock = (): AdminUserSummaryResponse[] =>
+  Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+    () => ({
+      id: faker.helpers.arrayElement([
+        faker.number.int({ min: undefined, max: undefined }),
+        undefined,
+      ]),
+      email: faker.helpers.arrayElement([
+        faker.string.alpha({ length: { min: 10, max: 20 } }),
+        undefined,
+      ]),
+    }),
+  );
+
+export const getDeleteAllByEmailResponseMock = (
+  overrideResponse: Partial<AdminActionResponse> = {},
+): AdminActionResponse => ({
+  message: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  ...overrideResponse,
+});
+
+export const getGetPhotoDetailMockHandler = (
+  overrideResponse?:
+    | PhotoDetailResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<PhotoDetailResponse> | PhotoDetailResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPhotoDetailResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getUpdateMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.put(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getDeleteMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/photos/:id',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
+
+export const getUpdateProfileImageMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.put(
+    '*/my-page/profile-image',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateProfileImageResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getUpdateNicknameMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.put>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.put(
+    '*/my-page/nickname',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateNicknameResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreateMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/photos',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetCommentsMockHandler = (
+  overrideResponse?:
+    | CommentListResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<CommentListResponse> | CommentListResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/photos/:photoId/comments',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetCommentsResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreateCommentMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/photos/:photoId/comments',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateCommentResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetPresignedUrlMockHandler = (
+  overrideResponse?:
+    | PresignedUrl
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<PresignedUrl> | PresignedUrl),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/photos/presigned-url',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPresignedUrlResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getAddEmoticonMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/photos/comments/:commentId/emoticons',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getAddEmoticonResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getRemoveEmoticonMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/photos/comments/:commentId/emoticons',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
+
+export const getReconnectMockHandler = (
+  overrideResponse?:
+    | CoupleStatusResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/reconnect',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getReconnectResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getJoinByInviteCodeMockHandler = (
+  overrideResponse?:
+    | CoupleStatusResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/join',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getJoinByInviteCodeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreateInviteMockHandler = (
+  overrideResponse?:
+    | InviteCodeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodeResponse> | InviteCodeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateInviteResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getVerifyInviteCodeMockHandler = (
+  overrideResponse?:
+    | InviteCodePreviewResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodePreviewResponse> | InviteCodePreviewResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/verify',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getVerifyInviteCodeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getRefreshInviteMockHandler = (
+  overrideResponse?:
+    | InviteCodeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<InviteCodeResponse> | InviteCodeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/refresh',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getRefreshInviteResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getConfirmInviteCodeMockHandler = (
+  overrideResponse?:
+    | CoupleStatusResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/couples/invites/confirm',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getConfirmInviteCodeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreate1MockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/albums',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreate1ResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getCreateCouplePartnerMockHandler = (
+  overrideResponse?:
+    | AdminPartnerResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<AdminPartnerResponse> | AdminPartnerResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/admin/couples/partner',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getCreateCouplePartnerResponseMock(),
+        ),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getMigratePreviousCoupleDataMockHandler = (
+  overrideResponse?:
+    | AdminCoupleMigrationResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<AdminCoupleMigrationResponse> | AdminCoupleMigrationResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/admin/couples/migrate',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getMigratePreviousCoupleDataResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getClearAllCachesMockHandler = (
+  overrideResponse?:
+    | AdminActionResponse
+    | ((
+        info: Parameters<Parameters<typeof http.post>[1]>[0],
+      ) => Promise<AdminActionResponse> | AdminActionResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/admin/cache/clear',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getClearAllCachesResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getDelete1MockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/albums/:id',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
+
+export const getUpdateTitleMockHandler = (
+  overrideResponse?:
+    | IdResponse
+    | ((
+        info: Parameters<Parameters<typeof http.patch>[1]>[0],
+      ) => Promise<IdResponse> | IdResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.patch(
+    '*/albums/:id',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getUpdateTitleResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetPhotosMockHandler = (
+  overrideResponse?:
+    | PhotoListResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<PhotoListResponse> | PhotoListResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/photos/album/:albumId',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetPhotosResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getSearchPlacesMockHandler = (
+  overrideResponse?:
+    | PlaceSearchResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<PlaceSearchResponse> | PlaceSearchResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/places/search',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getSearchPlacesResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetMapMeMockHandler = (
+  overrideResponse?:
+    | MapMeResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<MapMeResponse> | MapMeResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/me',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetMapMeResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetLocationInfoMockHandler = (
+  overrideResponse?:
+    | LocationInfoResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<LocationInfoResponse> | LocationInfoResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/location',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetLocationInfoResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetClusterPhotosMockHandler = (
+  overrideResponse?:
+    | ClusterPhotoResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<ClusterPhotoResponse[]> | ClusterPhotoResponse[]),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/clusters/:clusterId/photos',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetClusterPhotosResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetAlbumMapInfoMockHandler = (
+  overrideResponse?:
+    | AlbumMapInfoResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<AlbumMapInfoResponse> | AlbumMapInfoResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/map/albums/:albumId',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetAlbumMapInfoResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetMyStatusMockHandler = (
+  overrideResponse?:
+    | CoupleStatusResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/couples/me/status',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetMyStatusResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getKakaoAuthorizeMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/auth/kakao',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 200 });
+    },
+    options,
+  );
+};
+
+export const getGetSelectableAlbumsMockHandler = (
+  overrideResponse?:
+    | SelectableAlbumResponse
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<SelectableAlbumResponse> | SelectableAlbumResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/albums/selectable',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetSelectableAlbumsResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getGetUsersMockHandler = (
+  overrideResponse?:
+    | AdminUserSummaryResponse[]
+    | ((
+        info: Parameters<Parameters<typeof http.get>[1]>[0],
+      ) => Promise<AdminUserSummaryResponse[]> | AdminUserSummaryResponse[]),
+  options?: RequestHandlerOptions,
+) => {
+  return http.get(
+    '*/admin/users',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getGetUsersResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
+
+export const getWithdrawMockHandler = (
+  overrideResponse?:
+    | unknown
+    | ((
+        info: Parameters<Parameters<typeof http.delete>[1]>[0],
+      ) => Promise<unknown> | unknown),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/users/me',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 200 });
+    },
+    options,
+  );
+};
+
+export const getDisconnectMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.delete>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/couples/me',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
+
+export const getDeleteAllByEmailMockHandler = (
+  overrideResponse?:
+    | AdminActionResponse
+    | ((
+        info: Parameters<Parameters<typeof http.delete>[1]>[0],
+      ) => Promise<AdminActionResponse> | AdminActionResponse),
+  options?: RequestHandlerOptions,
+) => {
+  return http.delete(
+    '*/admin/users/:email',
+    async (info) => {
+      await delay(1000);
+
+      return new HttpResponse(
+        JSON.stringify(
+          overrideResponse !== undefined
+            ? typeof overrideResponse === 'function'
+              ? await overrideResponse(info)
+              : overrideResponse
+            : getDeleteAllByEmailResponseMock(),
+        ),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    },
+    options,
+  );
+};
 export const getLokitAPIMock = () => [
   getGetPhotoDetailMockHandler(),
   getUpdateMockHandler(),
@@ -3034,5 +4545,5 @@ export const getLokitAPIMock = () => [
   getGetUsersMockHandler(),
   getWithdrawMockHandler(),
   getDisconnectMockHandler(),
-  getDeleteAllByEmailMockHandler()
-]
+  getDeleteAllByEmailMockHandler(),
+];

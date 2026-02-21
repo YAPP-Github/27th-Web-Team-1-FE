@@ -15,7 +15,11 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   const isOnboardingPath = pathname.startsWith('/onboarding');
   const shouldSkipQuery = isPublicPath || isOnboardingPath;
 
-  const { data: coupleStatus, isLoading, isError } = useGetMyStatus({
+  const {
+    data: coupleStatus,
+    isLoading,
+    isError,
+  } = useGetMyStatus({
     query: {
       queryKey: getGetMyStatusQueryKey(),
       enabled: !shouldSkipQuery,
