@@ -1,8 +1,9 @@
 'use client';
 
-import Button from '@/components/buttons/button/Button';
+import KakaoIcon from '@/assets/images/kakao.svg';
 import { API_URL } from '@/constants/apiUrl';
 import * as S from './page.styles';
+import OnboardingCarousel from './_components/loginCarousel/OnboardingCarousel';
 
 export default function LoginPage() {
   const handleKakaoLogin = () => {
@@ -11,15 +12,14 @@ export default function LoginPage() {
   };
 
   return (
-    <S.Container>
-      <S.Card>
-        <div>
-          <S.Title>로그인</S.Title>
-        </div>
-        <S.Footer>
-          <Button text="카카오로 시작하기" onClick={handleKakaoLogin} />
-        </S.Footer>
-      </S.Card>
-    </S.Container>
+    <S.Wrapper>
+      <OnboardingCarousel />
+      <S.ButtonWrapper>
+        <S.KakaoButton onClick={handleKakaoLogin}>
+          <KakaoIcon width={16} height={16} />
+          <span>카카오로 시작하기</span>
+        </S.KakaoButton>
+      </S.ButtonWrapper>
+    </S.Wrapper>
   );
 }
