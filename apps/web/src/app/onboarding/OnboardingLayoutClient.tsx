@@ -54,5 +54,5 @@ export default function OnboardingLayoutClient({
     );
   }
 
-  return <div key={pathname}>{children}</div>;
+  return <div>{children}</div>;
 }
