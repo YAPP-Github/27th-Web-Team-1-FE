@@ -1,7 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ApiError, useCreate1, getGetMapMeQueryKey, type ApiResponseErrorDetail, type IdResponse } from '@repo/api-client';
+import {
+  ApiError,
+  useCreate1,
+  getGetMapMeQueryKey,
+  type ApiResponseErrorDetail,
+  type IdResponse,
+} from '@repo/api-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/toast';
 import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';

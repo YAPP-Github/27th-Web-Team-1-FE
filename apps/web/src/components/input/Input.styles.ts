@@ -45,6 +45,7 @@ const baseInputStyles = (theme: Theme) => css`
   background: transparent;
   border: none;
   outline: none;
+  font-family: inherit;
   color: ${theme.colors.gray[100]};
   ${theme.typography.body16Regular}
 
@@ -58,10 +59,16 @@ export const StyledInput = styled.input`
   height: ${SIZES.INPUT_HEIGHT}px;
 `;
 
+export const SearchIconWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+`;
+
 export const SearchIcon = styled(SearchSvg)`
   width: ${SIZES.SEARCH_ICON}px;
   height: ${SIZES.SEARCH_ICON}px;
-  flex-shrink: 0;
 
   path {
     fill: ${({ theme }) => theme.colors.gray[400]};

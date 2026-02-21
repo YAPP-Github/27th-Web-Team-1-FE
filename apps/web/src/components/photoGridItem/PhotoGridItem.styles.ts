@@ -51,6 +51,53 @@ export const Month = styled.span`
   line-height: 1;
 `;
 
+export const ProgressOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+`;
+
+export const ProgressBarTrack = styled.div`
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 1.5px;
+  overflow: hidden;
+`;
+
+export const ProgressBarFill = styled.div`
+  height: 100%;
+  background: ${({ theme }) => theme.colors.gray[0]};
+  border-radius: 1.5px;
+  transition: width 0.3s ease;
+`;
+
+export const ErrorOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ErrorText = styled.span`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.status.red[200]};
+  color: ${({ theme }) => theme.colors.gray[0]};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ${({ theme }) => theme.typography.caption12Regular}
+  font-weight: 700;
+`;
+
 export const Fallback = styled.div`
   width: 100%;
   height: 100%;

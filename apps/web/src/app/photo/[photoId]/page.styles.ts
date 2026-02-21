@@ -172,6 +172,47 @@ export const ThumbnailImage = styled.img`
   object-fit: cover;
 `;
 
+export const ProgressBarWrapper = styled.div`
+  margin-top: 16px;
+`;
+
+export const ProgressBarTrack = styled.div`
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1.5px;
+  overflow: hidden;
+`;
+
+export const ProgressBarFill = styled.div`
+  height: 100%;
+  background: ${({ theme }) => theme.colors.gray[0]};
+  border-radius: 1.5px;
+  transition: width 0.3s ease;
+`;
+
+export const ProgressLabel = styled.span`
+  ${({ theme }) => theme.typography.caption12Regular}
+  color: ${({ theme }) => theme.colors.gray[300]};
+  margin-top: 6px;
+  display: block;
+`;
+
+export const CancelUploadButton = styled.button`
+  ${({ theme }) => theme.typography.body14Semibold}
+  color: ${({ theme }) => theme.colors.status.red[200]};
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-top: 8px;
+  align-self: flex-start;
+
+  &:active {
+    opacity: 0.7;
+  }
+`;
+
 export const LoadingContainer = styled.div`
   display: flex;
   align-items: center;

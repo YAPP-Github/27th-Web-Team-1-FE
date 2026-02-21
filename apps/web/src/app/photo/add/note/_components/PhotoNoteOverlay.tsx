@@ -20,6 +20,7 @@
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
+import { usePendingPhotos } from '@/stores/pendingPhotos/PendingPhotosContext';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { usePhotoContext } from '../../../_contexts/PhotoContext';
@@ -27,14 +28,13 @@ import { PHOTO_NOTE_OVERLAY_ANIMATION_DURATION } from '../../_constants';
 import useAlbumModal from '../_hooks/useAlbumModal';
 import useLocationModal from '../_hooks/useLocationModal';
 import useMemoModal from '../_hooks/useMemoModal';
-import { usePhotoUpload } from '../_hooks/usePhotoUpload';
 import { useReverseGeocode } from '../_hooks/useReverseGeocode';
 import AlbumSelectOverlay from './AlbumSelectOverlay';
 import LocationSelectOverlay from './LocationSelectOverlay';
 import MemoModal from './MemoModal';
 import * as S from './PhotoNoteOverlay.styles';
 
-import AlbumIcon from '@/assets/images/album.svg';
+import AlbumSmallIcon from '@/assets/images/albumSmall.svg';
 import ArrowRightIcon from '@/assets/images/arrowRight.svg';
 import CloseIcon from '@/assets/images/close.svg';
 import CloseSmallIcon from '@/assets/images/closeSmall.svg';
@@ -42,6 +42,9 @@ import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
 import WarningIcon from '@/assets/images/warning.svg';
 import { useToast } from '@/components/toast';
+import { getCurrentPosition } from '@/utils/getCurrentPosition';
+import { getLocationInfo } from '@repo/api-client';
+import { useEffect, useRef } from 'react';
 
 interface PhotoNoteOverlayProps {
   onClose: () => void;
@@ -50,7 +53,7 @@ interface PhotoNoteOverlayProps {
 export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const router = useRouter();
   const { showToast } = useToast();
-  const { selectedPhoto, selectedPhotoRect } = usePhotoContext();
+  const { selectedPhoto, selectedPhotoRect, updatePhotoNoteState } = usePhotoContext();
   const {
     memo,
     tempMemo,
@@ -95,39 +98,67 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
     longitude: selectedPhoto?.location?.longitude,
   });
 
-  const { mutate: uploadPhoto, isPending: isUploading } = usePhotoUpload();
+  const { addPendingPhoto } = usePendingPhotos();
+  const isSubmittingRef = useRef(false);
+  const hasAttemptedDefaultLocation = useRef(false);
+
+  // 사진에 EXIF 위치 정보가 없고, 수동 선택 위치도 없으면 현재 위치를 기본값으로 설정
+  useEffect(() => {
+    if (hasAttemptedDefaultLocation.current) return;
+    if (!selectedPhoto) return;
+    if (selectedPhoto.location) return;
+    if (selectedLocation) return;
+
+    hasAttemptedDefaultLocation.current = true;
+
+    (async () => {
+      const position = await getCurrentPosition();
+      if (!position) return;
+
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const locationInfo = await getLocationInfo({ latitude, longitude });
+        updatePhotoNoteState({
+          selectedLocation: {
+            latitude,
+            longitude,
+            address: locationInfo.address,
+            roadAddress: locationInfo.roadName,
+            placeName: locationInfo.placeName,
+          },
+        });
+      } catch {
+        updatePhotoNoteState({
+          selectedLocation: { latitude, longitude },
+        });
+      }
+    })();
+  }, [selectedPhoto, selectedLocation, updatePhotoNoteState]);
 
   const handleUpload = () => {
-    if (!selectedPhoto || !hasLocation) return;
+    if (!selectedPhoto || !hasLocation || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
-    uploadPhoto(
-      {
-        photo: selectedPhoto,
-        description: memo || undefined,
-        albumId: selectedAlbum?.id,
-        location:
-          selectedLocation?.latitude != null && selectedLocation?.longitude != null
-            ? {
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude,
-              }
-            : undefined,
-      },
-      {
-        onSuccess: () => {
-          showToast('사진이 추가되었습니다');
-          if (selectedAlbum) {
-            router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
-          } else {
-            router.replace(ROUTES.HOME);
-          }
-        },
-        onError: (error) => {
-          console.error('Upload failed:', error);
-          showToast('사진 추가에 실패했습니다. 다시 시도해주세요');
-        },
-      },
-    );
+    addPendingPhoto({
+      photo: selectedPhoto,
+      description: memo || undefined,
+      albumId: selectedAlbum?.id,
+      location:
+        selectedLocation?.latitude != null && selectedLocation?.longitude != null
+          ? {
+              latitude: selectedLocation.latitude,
+              longitude: selectedLocation.longitude,
+            }
+          : undefined,
+    });
+
+    showToast('사진이 추가되었어요');
+    if (selectedAlbum) {
+      router.replace(ROUTES.ALBUM.DETAIL(selectedAlbum.id));
+    } else {
+      router.replace(ROUTES.HOME);
+    }
   };
 
   const handleMapPreview = () => {
@@ -158,11 +189,11 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const hasLocation = hasPhotoLocation || hasSelectedLocation;
 
   const locationText =
-    selectedLocation?.placeName ||
     selectedLocation?.roadAddress ||
     selectedLocation?.address ||
-    addressData?.placeName ||
-    addressData?.address;
+    selectedLocation?.placeName ||
+    addressData?.address ||
+    addressData?.placeName;
 
   /**
    * scale 애니메이션을 위한 초기값과 transform-origin 계산
@@ -247,6 +278,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
               locationText={locationText}
               isLoading={isAddressLoading}
               hasLocation={hasLocation}
+              onClickLocation={handleAddLocation}
             />
 
             {/* 말풍선 */}
@@ -289,9 +321,9 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
 
             <S.AlbumButtonWrapper>
               <S.AlbumChip onClick={handleAlbumSelect}>
-                <S.AlbumIcon>
-                  <AlbumIcon width={22} height={22} />
-                </S.AlbumIcon>
+                <S.AlbumIconWrapper>
+                  <AlbumSmallIcon />
+                </S.AlbumIconWrapper>
                 <S.AlbumText>{selectedAlbum?.title || '앨범 선택...'}</S.AlbumText>
                 {selectedAlbum && (
                   <S.AlbumResetButton
@@ -323,11 +355,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
               <S.MapPreviewText>지도뷰 미리보기</S.MapPreviewText>
             </S.MapPreviewButton>
 
-            <S.UploadButton
-              type="button"
-              onClick={handleUpload}
-              disabled={isUploading || !hasLocation}
-            >
+            <S.UploadButton type="button" onClick={handleUpload} disabled={!hasLocation}>
               <S.UploadIcon>
                 <ArrowRightIcon width={24} height={24} />
               </S.UploadIcon>

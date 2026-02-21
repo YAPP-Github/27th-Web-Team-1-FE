@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import MapView, { type MapViewHandle } from './MapView';
-import BottomSheet from '../bottomSheet/BottomSheet';
-import MenuHeader from '../header/menu/MenuHeader';
+import { DEFAULT_ALBUM_TITLE } from '@/constants';
 import { LocationState, MapPin } from '@/types/map.type';
+import { useRef, useState } from 'react';
+import BottomSheet from '../bottomSheet/BottomSheet';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '../bottomSheet/constants';
+import MenuHeader from '../header/menu/MenuHeader';
 import * as S from './MapPreview.styles';
+import MapView, { type MapViewHandle } from './MapView';
 
 const DEFAULT_ZOOM = 17;
 
@@ -74,8 +75,9 @@ export default function MapPreview({
 
       <BottomSheet
         context={context}
-        albums={[{ id: 1, title: '전체보기', photoCount: 0 }]}
+        albums={[{ id: 1, title: DEFAULT_ALBUM_TITLE, photoCount: 0 }]}
         albumDetailById={{}}
+        displayPhotos={[]}
         onChangeContext={setContext}
         onSelectAlbum={() => {}}
         onGoToCurrentLocation={handleGoToCurrentLocation}

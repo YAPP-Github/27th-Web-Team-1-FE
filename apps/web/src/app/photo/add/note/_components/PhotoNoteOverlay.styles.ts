@@ -147,7 +147,7 @@ export const AlbumChip = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 6px 10px;
   background: ${({ theme }) => theme.colors.gray[900]};
   border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
   border-radius: 8px;
@@ -158,12 +158,14 @@ export const AlbumChip = styled.div`
   }
 `;
 
-export const AlbumIcon = styled.div`
-  width: 22px;
-  height: 22px;
+export const AlbumIconWrapper = styled.div`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
 `;
 
 export const AlbumText = styled.span`

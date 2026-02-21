@@ -7,7 +7,7 @@ import type { PhotoLocation } from '@/app/photo/add/_types/photo';
 interface EditData {
   photoId: number;
   memo?: string;
-  albumId?: number;
+  albumId?: number | null;
   location: PhotoLocation;
 }
 
@@ -46,12 +46,11 @@ const usePhotoEdit = () => {
   };
 
   const saveEdit = (data: EditData) => {
-    // TODO: API 스펙 변경 후 타입 단언 제거 (albumId optional 지원 예정)
     updatePhoto({
       id: data.photoId,
       data: {
         description: data.memo,
-        albumId: data.albumId as number,
+        albumId: data.albumId as number | undefined,
         latitude: data.location.latitude,
         longitude: data.location.longitude,
       },

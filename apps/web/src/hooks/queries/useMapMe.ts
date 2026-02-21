@@ -55,8 +55,10 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
 
   const response = useQuery({
     queryKey: getGetMapMeQueryKey(params),
+    queryKey: getGetMapMeQueryKey(params),
     queryFn: ({ signal }) => {
       const requestParams = lastDataVersion ? { ...params, lastDataVersion } : params;
+      return getMapMe(requestParams, signal);
       return getMapMe(requestParams, signal);
     },
     enabled: isValid,
@@ -104,16 +106,18 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
 
     // 줌레벨 < CLIENT_CLUSTERING_MIN_ZOOM: 서버 클러스터 사용
     if (zoom < MAP_CLUSTERING_CONFIG.CLIENT_CLUSTERING_MIN_ZOOM) {
-      const clusterPins: MapPin[] = (data.clusters ?? []).map((cluster: ClusterResponse) => ({
-        id: 0,
-        albumId: 0,
-        latitude: cluster.latitude ?? 0,
-        longitude: cluster.longitude ?? 0,
-        imageUrl: cluster.thumbnailUrl ?? '',
-        imageCount: cluster.count ?? 1,
-        clusterId: cluster.clusterId ?? '',
-        isCluster: true,
-      }));
+      const clusterPins: MapPin[] = (data.clusters ?? []).map(
+        (cluster: ClusterResponse) => ({
+          id: 0,
+          albumId: 0,
+          latitude: cluster.latitude ?? 0,
+          longitude: cluster.longitude ?? 0,
+          imageUrl: cluster.thumbnailUrl ?? '',
+          imageCount: cluster.count ?? 1,
+          clusterId: cluster.clusterId ?? '',
+          isCluster: true,
+        }),
+      );
       return {
         mapPins: clusterPins,
         clusterExpansionData: clusterExpansionCacheRef.current,

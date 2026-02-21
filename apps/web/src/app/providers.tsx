@@ -11,6 +11,7 @@ import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider } from '@repo/api-client';
 import { ToastProvider } from '@/components/toast';
 import { PhotoProvider } from './photo/_contexts/PhotoContext';
+import { PendingPhotosProvider } from '@/stores/pendingPhotos/PendingPhotosContext';
 
 export type AppProvidersProps = PropsWithChildren<{
   showDevtools?: boolean;
@@ -72,7 +73,9 @@ export function AppProviders({
         <GlobalStyles />
         <QueryClientProvider client={queryClient}>
           <PhotoProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <PendingPhotosProvider>{children}</PendingPhotosProvider>
+            </ToastProvider>
           </PhotoProvider>
           {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
         </QueryClientProvider>

@@ -10,6 +10,7 @@ import * as S from '../page.styles';
 import { useMapRouteViewState } from '../_hooks/useMapRouteViewState';
 import { useMapRouteSheetContext } from '../_hooks/useMapRouteSheetContext';
 import { useMapRouteData } from '../_hooks/useMapRouteData';
+import { usePendingPhotosViewModel } from '@/hooks/usePendingPhotosViewModel';
 import {
   calculatePhotoCount,
   calculateCenterFromAlbumPhotos,
@@ -49,6 +50,12 @@ export default function MapRoute() {
     sheetContext,
     selectedAlbumId,
   });
+
+  // Pending 사진 merge (앨범 리스트 + 앨범 상세)
+  const { albumList: mergedAlbumList, displayPhotos } = usePendingPhotosViewModel(
+    albumList,
+    albumDetail,
+  );
 
   // 모달 상태 관리
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -196,9 +203,10 @@ export default function MapRoute() {
 
       <MapRouteBottomSection
         sheetContext={sheetContext}
-        albumList={albumList}
+        albumList={mergedAlbumList}
         albumDetailById={albumDetailById}
         photoCount={photoCount}
+        displayPhotos={displayPhotos}
         onChangeContext={setSheetContext}
         onSelectAlbum={handleSelectAlbum}
         onGoToCurrentLocation={handleGoToCurrentLocation}

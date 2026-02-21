@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 import {
   useGetPhotoDetail,
+  getGetPhotoDetailQueryOptions,
   useGetPhotos,
   useGetSelectableAlbums,
   useGetClusterPhotos,
+  getGetClusterPhotosQueryOptions,
   getGetSelectableAlbumsQueryKey,
   getGetPhotosQueryKey,
   type PhotoResponse,
@@ -16,6 +18,8 @@ interface UsePhotoDataProps {
   photoId: number;
   albumIdFromQuery?: number;
   clusterIdFromQuery?: string;
+  /** false이면 모든 API 호출 건너뜀 (pending 사진 모드) */
+  enabled?: boolean;
 }
 
 const convertClusterPhotoToPhotoResponse = (
@@ -43,6 +47,7 @@ const usePhotoData = ({
   photoId,
   albumIdFromQuery,
   clusterIdFromQuery,
+  enabled = true,
 }: UsePhotoDataProps) => {
   // 클라이언트 클러스터 여부 판별
   const isClientCluster = clusterIdFromQuery?.startsWith(
@@ -71,18 +76,30 @@ const usePhotoData = ({
   // 클라이언트 클러스터가 아닌 경우에만 API 호출
   // 또는 클라이언트 클러스터이지만 sessionStorage에 데이터가 없으면 API 호출 (fallback)
   const shouldFetchPhotoDetail =
-    !isClientCluster || (!clientClusterPhotoDetail && isClientCluster);
+    enabled && (!isClientCluster || (!clientClusterPhotoDetail && isClientCluster));
 
+  const photoDetailId = shouldFetchPhotoDetail ? photoId : 0;
   const { data: apiPhotoDetail, isLoading: isApiLoading } = useGetPhotoDetail(
-    shouldFetchPhotoDetail ? photoId : 0,
+    photoDetailId,
+    {
+      query: {
+        ...getGetPhotoDetailQueryOptions(photoDetailId),
+        enabled: shouldFetchPhotoDetail,
+      },
+    },
   );
 
   const photoDetail = clientClusterPhotoDetail || apiPhotoDetail;
   const isPhotoLoading = shouldFetchPhotoDetail ? isApiLoading : false;
 
-  const { data: serverClusterPhotosData } = useGetClusterPhotos(
-    isClientCluster || !clusterIdFromQuery ? '' : clusterIdFromQuery,
-  );
+  const clusterIdForFetch =
+    isClientCluster || !clusterIdFromQuery ? '' : clusterIdFromQuery;
+  const { data: serverClusterPhotosData } = useGetClusterPhotos(clusterIdForFetch, {
+    query: {
+      ...getGetClusterPhotosQueryOptions(clusterIdForFetch),
+      enabled: enabled && !isClientCluster && !!clusterIdFromQuery,
+    },
+  });
 
   const clusterPhotosData = isClientCluster
     ? clientClusterPhotosData
@@ -94,7 +111,11 @@ const usePhotoData = ({
     query: {
       queryKey: getGetSelectableAlbumsQueryKey(),
       enabled:
-        !albumIdFromQuery && !clusterIdFromQuery && !isClientCluster && !!photoDetail,
+        enabled &&
+        !albumIdFromQuery &&
+        !clusterIdFromQuery &&
+        !isClientCluster &&
+        !!photoDetail,
     },
   });
 
@@ -122,7 +143,7 @@ const usePhotoData = ({
   const { data: albumPhotos } = useGetPhotos(albumId ?? 0, {
     query: {
       queryKey: getGetPhotosQueryKey(albumId),
-      enabled: !!albumId && !clusterIdFromQuery,
+      enabled: enabled && !!albumId && !clusterIdFromQuery,
     },
   });
 
