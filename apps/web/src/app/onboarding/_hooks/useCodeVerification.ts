@@ -31,10 +31,10 @@ export function useCodeVerification() {
     [verify],
   );
 
-  const confirmCode = useCallback(
+  const joinCode = useCallback(
     async (code: string) => {
       try {
-        await confirm({ data: { inviteCode: code } });
+        await join({ data: { inviteCode: code } });
         queryClient.invalidateQueries({ queryKey: getGetMyStatusQueryKey() });
         return { success: true };
       } catch (error) {
@@ -45,13 +45,13 @@ export function useCodeVerification() {
         return { success: false, errorCode: 'UNKNOWN_ERROR' };
       }
     },
-    [confirm, queryClient],
+    [join, queryClient],
   );
 
   return {
     verifyCode,
-    confirmCode,
+    joinCode,
     isVerifying,
-    isConfirming,
+    isJoining,
   };
 }

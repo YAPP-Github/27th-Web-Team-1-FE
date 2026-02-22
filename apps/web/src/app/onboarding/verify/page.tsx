@@ -25,7 +25,7 @@ export default function VerifyPage() {
   const [hasProfileImageError, setHasProfileImageError] = useState(false);
   const { verifiedPartner, setVerifiedPartner, markStepCompleted } =
     useOnboardingContext();
-  const { verifyCode, confirmCode, isConfirming } = useCodeVerification();
+  const { verifyCode, joinCode, isJoining } = useCodeVerification();
 
   // 뒤로가기 시 재검증 방지
   const hasVerifiedRef = useRef(false);
@@ -73,7 +73,7 @@ export default function VerifyPage() {
   );
 
   const handleConfirm = useCallback(async () => {
-    const result = await confirmCode(code);
+    const result = await joinCode(code);
     if (result.success) {
       markStepCompleted('verify');
 
@@ -84,7 +84,7 @@ export default function VerifyPage() {
       showToast('잘못된 코드예요', 3000, 'warn');
       handleRetry();
     }
-  }, [code, confirmCode, markStepCompleted, router, showToast, handleRetry]);
+  }, [code, joinCode, markStepCompleted, router, showToast, handleRetry]);
 
   const handleNotFriendRetry = useCallback(() => {
     setIsNotFriendModalOpen(false);
@@ -128,7 +128,7 @@ export default function VerifyPage() {
               text="함께할래요!"
               variant="highlight"
               onClick={handleConfirm}
-              disabled={isConfirming}
+              disabled={isJoining}
             />
           </S.ButtonGroup>
         </S.Container>
