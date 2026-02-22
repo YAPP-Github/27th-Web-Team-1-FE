@@ -85,7 +85,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
               });
             }
           }}
-          mapStyle="mapbox://styles/lokit1220/cml27lu9f000q01rbhwde42se"
+          mapStyle="mapbox://styles/lokit1220/cmlw3jkac004901sn54qi73ge"
         >
           <GeolocateControl
             ref={geolocateControlRef}
