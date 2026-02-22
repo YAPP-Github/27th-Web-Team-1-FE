@@ -15,7 +15,6 @@ export const ROUTES = {
       albumId ? `/photo/${photoId}?albumId=${albumId}` : `/photo/${photoId}`,
     VIEW_WITH_CLUSTER: (photoId: number, clusterId: string) =>
       `/photo/${photoId}?clusterId=${clusterId}`,
-    PREVIEW: '/photo/preview',
   },
   ONBOARDING: {
     START: '/onboarding',
