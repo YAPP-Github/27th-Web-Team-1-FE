@@ -5,9 +5,10 @@ import styles from './CoupleInfoContainer.module.css';
 export default function CoupleInfoContainer() {
   return (
     <section className={styles.wrapper}>
-      <ProfileContainer isMe />
+      {/* TODO: API 연동 후 실제 유저 데이터로 교체 */}
+      <ProfileContainer isMe username="지수" />
       <LoveIcon />
-      <ProfileContainer />
+      <ProfileContainer username="연인" />
     </section>
   );
 }

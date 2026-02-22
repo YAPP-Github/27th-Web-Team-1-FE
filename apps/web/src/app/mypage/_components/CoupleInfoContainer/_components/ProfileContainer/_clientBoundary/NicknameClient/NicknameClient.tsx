@@ -1,5 +1,6 @@
 'use client';
 
+import EditIcon from '@/assets/images/edit.svg';
 import * as S from './NicknameClient.styles';
 
 interface NicknameClientProps {
@@ -7,5 +8,16 @@ interface NicknameClientProps {
 }
 
 export default function NicknameClient({ username }: NicknameClientProps) {
-  return <S.Text>{username ?? ''}</S.Text>;
+  const handleNicknameEdit = () => {
+    // TODO: 닉네임 수정 로직 구현
+  };
+
+  return (
+    <S.Wrapper onClick={handleNicknameEdit}>
+      <S.Text>{username ?? ''}</S.Text>
+      <S.EditIcon>
+        <EditIcon width={12} height={12} />
+      </S.EditIcon>
+    </S.Wrapper>
+  );
 }

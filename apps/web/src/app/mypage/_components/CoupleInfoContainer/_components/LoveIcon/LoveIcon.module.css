@@ -2,4 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ff4d5f; /* status.red.200 */
+  margin-bottom: 24px;
 }

@@ -57,6 +57,7 @@ export const CameraButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
+  color: ${({ theme }) => theme.colors.gray[100]};
 `;
 
 export const CameraIcon = styled.div`
