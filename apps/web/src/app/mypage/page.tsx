@@ -9,7 +9,7 @@ import styles from './page.module.css';
 
 export default function MyPage() {
   return (
-    <div className={styles.wrapper}>
+    <main className={styles.wrapper}>
       <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
       <HeaderClient />
       <div className={styles.coupleInfo}>
@@ -25,6 +25,6 @@ export default function MyPage() {
       <div className={styles.footer}>
         <Footer />
       </div>
-    </div>
+    </main>
   );
 }
