@@ -48,6 +48,7 @@ export const MapRouteBottomSection = ({
         albums={albumList}
         albumDetailById={albumDetailById}
         displayPhotos={displayPhotos}
+        photoCount={photoCount}
         onChangeContext={onChangeContext}
         onSelectAlbum={onSelectAlbum}
         onGoToCurrentLocation={onGoToCurrentLocation}
