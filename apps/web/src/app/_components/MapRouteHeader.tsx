@@ -7,17 +7,14 @@ import {
 } from '@/components/bottomSheet/constants';
 import { ExploreHeader, MenuHeader } from '@/components/header';
 import { DEFAULT_ALBUM_TITLE, ROUTES } from '@/constants';
-import type { LocationInfoResponse } from '@repo/api-client';
 
 interface MapRouteHeaderProps {
   sheetContext: SheetContext;
   selectedAlbumTitle: string | undefined;
-  clusterLocationData: LocationInfoResponse | undefined;
   address: string | null;
   onCloseAlbumDetail: () => void;
   onOpenAlbumRename: () => void;
   onOpenAlbumDelete: () => void;
-  onCloseClusterDetail: () => void;
 }
 
 /**
@@ -29,12 +26,10 @@ interface MapRouteHeaderProps {
 export const MapRouteHeader = ({
   sheetContext,
   selectedAlbumTitle,
-  clusterLocationData,
   address,
   onCloseAlbumDetail,
   onOpenAlbumRename,
   onOpenAlbumDelete,
-  onCloseClusterDetail,
 }: MapRouteHeaderProps) => {
   const router = useRouter();
   if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
@@ -54,16 +49,6 @@ export const MapRouteHeader = ({
           </MenuHeader.Menu>
         )}
       </MenuHeader>
-    );
-  }
-
-  if (sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL) {
-    return (
-      <MenuHeader
-        title={clusterLocationData?.address ?? '위치 로딩 중...'}
-        onClickBack={onCloseClusterDetail}
-        showMenu={false}
-      />
     );
   }
 

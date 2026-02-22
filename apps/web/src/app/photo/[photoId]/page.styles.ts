@@ -134,6 +134,12 @@ export const SliderWrapper = styled.div`
   margin-right: -16px;
 `;
 
+export const MapPreviewButtonWrapper = styled.div`
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+`;
+
 export const ThumbnailSlider = styled.div`
   display: flex;
   align-items: center;

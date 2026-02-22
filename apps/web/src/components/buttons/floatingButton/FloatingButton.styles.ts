@@ -18,6 +18,13 @@ export const Wrapper = styled.button`
   }
 `;
 
+export const IconWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.gray[400]};
+`;
+
 export const TextContainer = styled.p`
   margin: 0;
   ${({ theme }) => theme.typography.body15Medium}
