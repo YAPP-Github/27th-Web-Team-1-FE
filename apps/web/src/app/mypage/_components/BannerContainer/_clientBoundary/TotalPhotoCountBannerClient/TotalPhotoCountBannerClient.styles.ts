@@ -6,10 +6,11 @@ export const Wrapper = styled.div<{ $photoUrl?: string }>`
   justify-content: space-between;
   padding: 8px 16px;
   border-radius: 12px;
+  overflow: hidden;
   border: 1px solid rgba(226, 230, 255, 0.1);
   background: ${({ $photoUrl }) =>
     $photoUrl
-      ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url(${$photoUrl}) lightgray 0px -100.294px / 100% 539.918% no-repeat`
+      ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url(${$photoUrl}) center / cover no-repeat`
       : 'rgba(226, 230, 255, 0.05)'};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[40]};
   cursor: pointer;
