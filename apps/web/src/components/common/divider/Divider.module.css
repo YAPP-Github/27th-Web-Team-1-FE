@@ -1,0 +1,5 @@
+.divider {
+  width: 100%;
+  height: 10px;
+  background: rgba(226, 230, 255, 0.1); /* blueWhite.border10 */
+}
