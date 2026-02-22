@@ -13,7 +13,7 @@ import type { VerifyCodeResult } from '../_types';
 export function useCodeVerification() {
   const queryClient = useQueryClient();
   const { mutateAsync: verify, isPending: isVerifying } = useVerifyInviteCode();
-  const { mutateAsync: confirm, isPending: isConfirming } = useJoinByInviteCode();
+  const { mutateAsync: join, isPending: isJoining } = useJoinByInviteCode();
 
   const verifyCode = useCallback(
     async (code: string): Promise<VerifyCodeResult> => {
