@@ -10,11 +10,19 @@ export default function MyPage() {
   return (
     <div className={styles.wrapper}>
       <HeaderClient />
-      <CoupleInfoContainer />
-      <BannerContainer />
-      <Divider />
+      <div className={styles.coupleInfo}>
+        <CoupleInfoContainer />
+      </div>
+      <div className={styles.banner}>
+        <BannerContainer />
+      </div>
+      <div className={styles.divider}>
+        <Divider />
+      </div>
       <MenuContainer />
-      <Footer />
+      <div className={styles.footer}>
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -2,5 +2,22 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background-color: #242426;
+  background-color: #242426; /* gray.1000 */
+}
+
+.coupleInfo {
+  margin-top: 32px;
+}
+
+.banner {
+  margin-top: 28px;
+}
+
+.divider {
+  margin-top: 32px;
+}
+
+.footer {
+  margin-top: auto;
+  padding-bottom: 22px;
 }

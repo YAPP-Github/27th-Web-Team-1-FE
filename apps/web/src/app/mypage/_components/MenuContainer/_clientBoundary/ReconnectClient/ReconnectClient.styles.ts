@@ -4,7 +4,7 @@ export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 16px;
+  padding: 20px;
   background-color: ${({ theme }) => theme.colors.gray[1000]};
   cursor: pointer;
 `;
