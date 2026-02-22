@@ -22,4 +22,5 @@ export const ROUTES = {
     CONNECT: '/onboarding/connect',
     VERIFY: '/onboarding/verify',
   },
+  MYPAGE: '/mypage',
 } as const;
