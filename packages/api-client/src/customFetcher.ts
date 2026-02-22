@@ -188,6 +188,10 @@ export async function customFetcher<TResponse>(
   });
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+
     let errorResponse: ApiErrorResponse;
     try {
       errorResponse = (await response.json()) as ApiErrorResponse;
