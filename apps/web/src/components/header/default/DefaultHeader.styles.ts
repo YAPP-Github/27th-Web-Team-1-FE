@@ -21,6 +21,20 @@ export const IconButton = styled.button`
   }
 `;
 
+export const CircleIconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.blueWhite.bg8};
+  border: 1px solid ${({ theme }) => theme.colors.blueWhite.border10};
+  backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[5]};
+  color: ${({ theme }) => theme.colors.gray[100]};
+  cursor: pointer;
+`;
+
 export const TextButton = styled.button<{ disabled?: boolean }>`
   ${({ theme }) => theme.typography.body18Semibold}
   padding: 8px 12px;

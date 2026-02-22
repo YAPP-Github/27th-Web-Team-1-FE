@@ -15,6 +15,8 @@ export interface DefaultHeaderProps {
   buttonText?: string;
   /** 텍스트 버튼 비활성화 여부 */
   disabled?: boolean;
+  /** 뒤로가기 버튼 스타일 변형 */
+  backButtonVariant?: 'default' | 'circle';
 }
 
 const DefaultHeader = ({
@@ -23,14 +25,17 @@ const DefaultHeader = ({
   onClickButton,
   buttonText,
   disabled = false,
+  backButtonVariant = 'default',
 }: DefaultHeaderProps) => {
+  const BackButton = backButtonVariant === 'circle' ? S.CircleIconButton : S.IconButton;
+
   return (
     <HeaderBase
       transparent
       left={
-        <S.IconButton type="button" onClick={onClickBack}>
+        <BackButton type="button" onClick={onClickBack}>
           <ChevronLeftIcon width={ICON_SIZE} height={ICON_SIZE} />
-        </S.IconButton>
+        </BackButton>
       }
       center={<BaseS.Title>{title}</BaseS.Title>}
       right={
