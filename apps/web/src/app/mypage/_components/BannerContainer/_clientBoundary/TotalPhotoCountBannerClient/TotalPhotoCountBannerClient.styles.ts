@@ -1,13 +1,16 @@
 import styled from '@emotion/styled';
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.div<{ $photoUrl?: string }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
   border-radius: 12px;
   border: 1px solid rgba(226, 230, 255, 0.1);
-  background: ${({ theme }) => theme.colors.blueWhite.bg5};
+  background: ${({ $photoUrl }) =>
+    $photoUrl
+      ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url(${$photoUrl}) lightgray 0px -100.294px / 100% 539.918% no-repeat`
+      : 'rgba(226, 230, 255, 0.05)'};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[40]};
   cursor: pointer;
 `;
@@ -23,17 +26,8 @@ export const Caption = styled.span`
   color: ${({ theme }) => theme.colors.gray[200]};
 `;
 
-export const DdayRow = styled.span`
+export const CountRow = styled.span`
   ${({ theme }) => theme.typography.heading24Bold}
-  display: flex;
-  gap: 2px;
-`;
-
-export const DdayPrefix = styled.span`
-  color: ${({ theme }) => theme.colors.gray[300]};
-`;
-
-export const DdayNumber = styled.span`
   color: ${({ theme }) => theme.colors.gray[0]};
 `;
 
