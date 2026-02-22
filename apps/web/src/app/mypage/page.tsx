@@ -4,11 +4,13 @@ import BannerContainer from './_components/BannerContainer/BannerContainer';
 import Divider from '@/components/common/divider/Divider';
 import MenuContainer from './_components/MenuContainer/MenuContainer';
 import Footer from './_components/Footer/Footer';
+import { PAGE_TITLE } from './constants';
 import styles from './page.module.css';
 
 export default function MyPage() {
   return (
     <div className={styles.wrapper}>
+      <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
       <HeaderClient />
       <div className={styles.coupleInfo}>
         <CoupleInfoContainer />
