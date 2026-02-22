@@ -19,7 +19,7 @@ export default function ProfileImageClient({ profileUrl }: ProfileImageClientPro
       ) : (
         <S.Placeholder />
       )}
-      <S.CameraButton>
+      <S.CameraButton type="button">
         <CameraIcon width={14} height={14} />
       </S.CameraButton>
     </S.Wrapper>
