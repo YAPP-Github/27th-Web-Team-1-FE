@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useVerifyInviteCode,
-  useConfirmInviteCode,
+  useJoinByInviteCode,
   getGetMyStatusQueryKey,
   ApiError,
 } from '@repo/api-client';
@@ -13,7 +13,7 @@ import type { VerifyCodeResult } from '../_types';
 export function useCodeVerification() {
   const queryClient = useQueryClient();
   const { mutateAsync: verify, isPending: isVerifying } = useVerifyInviteCode();
-  const { mutateAsync: confirm, isPending: isConfirming } = useConfirmInviteCode();
+  const { mutateAsync: confirm, isPending: isConfirming } = useJoinByInviteCode();
 
   const verifyCode = useCallback(
     async (code: string): Promise<VerifyCodeResult> => {
