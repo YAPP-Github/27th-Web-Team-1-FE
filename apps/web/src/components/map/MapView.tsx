@@ -90,7 +90,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
           onMoveEnd={() => {
             isProgrammaticMoveRef.current = false;
           }}
-          mapStyle="mapbox://styles/lokit1220/cmlw3jkac004901sn54qi73ge"
+          mapStyle="mapbox://styles/lokit1220/cmlw1c5hh004w01sqblp751wd"
         >
           <GeolocateControl
             ref={geolocateControlRef}
