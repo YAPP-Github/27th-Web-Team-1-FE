@@ -66,6 +66,7 @@ export * from './loginResponse';
 export * from './mapMeResponse';
 export * from './mapPhotoResponse';
 export * from './mapPhotosResponse';
+export * from './myPageResponse';
 export * from './pairLongString';
 export * from './partnerSummaryResponse';
 export * from './partnerSummaryResponse';

@@ -12,6 +12,6 @@ import type { PartnerSummaryResponse } from './partnerSummaryResponse';
  */
 export interface CoupleStatusResponse {
   partnerSummary?: PartnerSummaryResponse;
-  coupled?: boolean;
+  /** 커플 연결 여부 */
   isCoupled?: boolean;
 }

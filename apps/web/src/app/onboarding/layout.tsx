@@ -1,10 +1,10 @@
-import { getMyStatus } from '@repo/api-client';
+import { getMyStatusServer } from '@repo/api-client';
 import OnboardingLayoutClient from './OnboardingLayoutClient';
 import { OnboardingProvider } from './_contexts/OnboardingContext';
 
 async function safeGetMyStatus() {
   try {
-    return await getMyStatus();
+    return await getMyStatusServer();
   } catch (error) {
     console.error(error);
     return null;

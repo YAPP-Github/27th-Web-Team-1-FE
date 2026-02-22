@@ -11,7 +11,7 @@ export default defineConfig({
       mode: 'single',
       override: {
         mutator: {
-          path: './packages/api-client/src/fetcher.ts',
+          path: './packages/api-client/src/customFetcher.ts',
           name: 'customFetcher',
         },
       },

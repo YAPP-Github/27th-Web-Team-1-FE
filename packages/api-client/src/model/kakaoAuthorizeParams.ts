@@ -7,8 +7,8 @@
  */
 
 export type KakaoAuthorizeParams = {
-  /**
-   * 로그인 후 리다이렉트할 프론트엔드 URL
-   */
-  redirect?: string;
+/**
+ * 로그인 후 리다이렉트할 프론트엔드 URL
+ */
+redirect?: string;
 };
