@@ -5,7 +5,7 @@ import styles from './MenuContainer.module.css';
 export default function MenuContainer() {
   return (
     <section className={styles.wrapper}>
-      <ReconnectClient />
+      <ReconnectClient isShow />
       <DisconnectClient />
     </section>
   );
