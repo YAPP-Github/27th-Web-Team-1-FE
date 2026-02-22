@@ -9,7 +9,7 @@ export const MAP_CLUSTERING_CONFIG = {
   /** Supercluster 최대 줌 레벨 */
   SUPERCLUSTER_MAX_ZOOM: 20,
   /** Supercluster 클러스터 반지름 (픽셀) */
-  SUPERCLUSTER_RADIUS: 60,
+  SUPERCLUSTER_RADIUS: 28,
   /** Supercluster 최소 포인트 수 */
   SUPERCLUSTER_MIN_POINTS: 2,
 } as const;
