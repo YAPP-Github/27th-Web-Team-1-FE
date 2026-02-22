@@ -20,8 +20,8 @@ export const PinButton = styled.button`
 
 export const ImageWrapper = styled.div`
   position: relative;
-  width: 40px;
-  height: 52px;
+  width: 60px;
+  height: 80px;
   border: 1px solid ${({ theme }) => theme.colors.gray[100]};
   border-radius: 11px;
   z-index: 2;
