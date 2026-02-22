@@ -1,6 +1,7 @@
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
+  EXPLORE: '/explore',
   ALBUM: {
     DETAIL: (albumId: number) => `/album/${albumId}`,
   },

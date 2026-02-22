@@ -1,11 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import {
   SHEET_CONTEXT_TYPE,
   type SheetContext,
 } from '@/components/bottomSheet/constants';
 import { ExploreHeader, MenuHeader } from '@/components/header';
-import { DEFAULT_ALBUM_TITLE } from '@/constants';
+import { DEFAULT_ALBUM_TITLE, ROUTES } from '@/constants';
 import type { LocationInfoResponse } from '@repo/api-client';
 
 interface MapRouteHeaderProps {
@@ -35,6 +36,7 @@ export const MapRouteHeader = ({
   onOpenAlbumDelete,
   onCloseClusterDetail,
 }: MapRouteHeaderProps) => {
+  const router = useRouter();
   if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
     const isDefaultAlbum = selectedAlbumTitle === DEFAULT_ALBUM_TITLE;
     return (
@@ -69,7 +71,7 @@ export const MapRouteHeader = ({
     <ExploreHeader
       title={address || '위치 정보 로딩 중'}
       onClickProfile={() => {}}
-      onClickExplore={() => {}}
+      onClickExplore={() => router.push(ROUTES.EXPLORE)}
     />
   );
 };
