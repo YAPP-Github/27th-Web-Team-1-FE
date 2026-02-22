@@ -13,7 +13,17 @@ export default function ProfileImageClient({ profileUrl }: ProfileImageClientPro
   };
 
   return (
-    <S.Wrapper onClick={handleProfileImageClick}>
+    <S.Wrapper
+      role="button"
+      tabIndex={0}
+      onClick={handleProfileImageClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleProfileImageClick();
+        }
+      }}
+    >
       {profileUrl ? (
         <S.Image src={profileUrl} alt="내 프로필 이미지" />
       ) : (

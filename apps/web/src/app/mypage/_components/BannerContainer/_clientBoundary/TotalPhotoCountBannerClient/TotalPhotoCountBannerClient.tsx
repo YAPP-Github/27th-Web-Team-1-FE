@@ -17,7 +17,18 @@ export default function TotalPhotoCountBannerClient({
   };
 
   return (
-    <S.Wrapper onClick={handleBannerClick} $photoUrl={photoUrl}>
+    <S.Wrapper
+      role="button"
+      tabIndex={0}
+      onClick={handleBannerClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleBannerClick();
+        }
+      }}
+      $photoUrl={photoUrl}
+    >
       <S.Content>
         <S.Caption>그동안 쌓인 우리의 추억</S.Caption>
         <S.CountRow>{totalPhotoCount}개 사진</S.CountRow>

@@ -13,7 +13,17 @@ export default function NicknameClient({ username }: NicknameClientProps) {
   };
 
   return (
-    <S.Wrapper onClick={handleNicknameEdit}>
+    <S.Wrapper
+      role="button"
+      tabIndex={0}
+      onClick={handleNicknameEdit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleNicknameEdit();
+        }
+      }}
+    >
       <S.Text>{username ?? ''}</S.Text>
       <S.EditIcon>
         <EditIcon width={12} height={12} />

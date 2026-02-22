@@ -13,7 +13,17 @@ export default function DdayBannerClient({ dday }: DdayBannerClientProps) {
   };
 
   return (
-    <S.Wrapper onClick={handleBannerClick}>
+    <S.Wrapper
+      role="button"
+      tabIndex={0}
+      onClick={handleBannerClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleBannerClick();
+        }
+      }}
+    >
       <S.Content>
         <S.Caption>처음 로킷을 시작한 날부터</S.Caption>
         <S.DdayRow>

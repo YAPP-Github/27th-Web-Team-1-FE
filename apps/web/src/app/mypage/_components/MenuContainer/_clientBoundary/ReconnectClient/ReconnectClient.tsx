@@ -15,7 +15,17 @@ export default function ReconnectClient({ isShow = false }: ReconnectClientProps
   };
 
   return (
-    <S.Wrapper onClick={handleClick}>
+    <S.Wrapper
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+    >
       <S.Label>재연결하기</S.Label>
       <S.ChevronIcon>
         <ChevronRightIcon width={22} height={22} />
