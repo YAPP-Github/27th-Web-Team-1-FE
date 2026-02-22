@@ -62,6 +62,8 @@ export default function MapRoute() {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLocationDeniedModalOpen, setIsLocationDeniedModalOpen] = useState(false);
+  const [menuAlbumId, setMenuAlbumId] = useState<number | undefined>(undefined);
+  const [menuAlbumTitle, setMenuAlbumTitle] = useState<string | undefined>(undefined);
 
   // 앨범이 선택되었을 때 앨범의 중심 위치로 지도 이동
   useEffect(() => {
@@ -168,6 +170,28 @@ export default function MapRoute() {
     setIsDeleteModalOpen(true);
   };
 
+  const handleGridAlbumRename = (albumId: number, albumTitle: string) => {
+    setMenuAlbumId(albumId);
+    setMenuAlbumTitle(albumTitle);
+    setIsRenameModalOpen(true);
+  };
+
+  const handleGridAlbumDelete = (albumId: number) => {
+    setMenuAlbumId(albumId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseRenameModal = () => {
+    setIsRenameModalOpen(false);
+    setMenuAlbumId(undefined);
+    setMenuAlbumTitle(undefined);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setMenuAlbumId(undefined);
+  };
+
   const handleCloseClusterDetail = () => {
     setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
   };
@@ -211,6 +235,8 @@ export default function MapRoute() {
         onSelectAlbum={handleSelectAlbum}
         onGoToCurrentLocation={handleGoToCurrentLocation}
         onOpenAddAlbumModal={() => setIsAddModalOpen(true)}
+        onRenameAlbum={handleGridAlbumRename}
+        onDeleteAlbum={handleGridAlbumDelete}
         clusterExpansionData={clusterExpansionData}
       />
 
@@ -220,14 +246,14 @@ export default function MapRoute() {
       />
       <AlbumRenameModalContainer
         isOpen={isRenameModalOpen}
-        onClose={() => setIsRenameModalOpen(false)}
-        selectedAlbumId={selectedAlbumId ?? undefined}
-        initialTitle={selectedAlbumTitle}
+        onClose={handleCloseRenameModal}
+        selectedAlbumId={menuAlbumId ?? selectedAlbumId ?? undefined}
+        initialTitle={menuAlbumTitle ?? selectedAlbumTitle}
       />
       <AlbumDeleteModalContainer
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        selectedAlbumId={selectedAlbumId ?? undefined}
+        onClose={handleCloseDeleteModal}
+        selectedAlbumId={menuAlbumId ?? selectedAlbumId ?? undefined}
       />
       <LocationPermissionModal
         isOpen={isLocationDeniedModalOpen}

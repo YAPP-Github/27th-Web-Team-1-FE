@@ -94,10 +94,17 @@ export const InfoSection = styled.div<{ type: AlbumContainerType }>`
     `}
 `;
 
+export const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+`;
+
 export const Title = styled.span`
   ${({ theme }) => theme.typography.body16Medium}
   color: ${({ theme }) => theme.colors.gray[200]};
-  width: 100%;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -108,3 +115,4 @@ export const PhotoCount = styled.span`
   ${({ theme }) => theme.typography.body14Semibold}
   color: ${({ theme }) => theme.colors.gray[400]};
 `;
+

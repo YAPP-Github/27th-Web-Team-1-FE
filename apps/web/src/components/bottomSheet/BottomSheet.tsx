@@ -33,6 +33,8 @@ interface BottomSheetProps {
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
   onOpenAddAlbumModal?: () => void;
+  onRenameAlbum: (albumId: number, albumTitle: string) => void;
+  onDeleteAlbum: (albumId: number) => void;
   clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
@@ -45,6 +47,8 @@ const BottomSheet = ({
   onSelectAlbum,
   onGoToCurrentLocation,
   onOpenAddAlbumModal,
+  onRenameAlbum,
+  onDeleteAlbum,
   clusterExpansionData,
 }: BottomSheetProps) => {
   const router = useRouter();
@@ -216,6 +220,8 @@ const BottomSheet = ({
             albumDetailById={albumDetailById}
             displayPhotos={displayPhotos}
             onSelectAlbum={onSelectAlbum}
+            onRenameAlbum={onRenameAlbum}
+            onDeleteAlbum={onDeleteAlbum}
             clusterExpansionData={clusterExpansionData}
           />
         </S.Content>

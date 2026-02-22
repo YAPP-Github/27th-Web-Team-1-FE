@@ -81,6 +81,8 @@ export default function MapPreview({
         onChangeContext={setContext}
         onSelectAlbum={() => {}}
         onGoToCurrentLocation={handleGoToCurrentLocation}
+        onRenameAlbum={() => {}}
+        onDeleteAlbum={() => {}}
       />
     </S.Container>
   );

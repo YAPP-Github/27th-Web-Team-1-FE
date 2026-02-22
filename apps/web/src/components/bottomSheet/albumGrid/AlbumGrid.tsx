@@ -8,9 +8,16 @@ import AlbumGridContainer from '@/components/album-grid-container/AlbumGridConta
 interface AlbumGridProps {
   albums: AlbumThumbnails[];
   onSelectAlbum: (albumId: number) => void;
+  onRenameAlbum: (albumId: number, albumTitle: string) => void;
+  onDeleteAlbum: (albumId: number) => void;
 }
 
-const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
+const AlbumGrid = ({
+  albums,
+  onSelectAlbum,
+  onRenameAlbum,
+  onDeleteAlbum,
+}: AlbumGridProps) => {
   const [searchValue, setSearchValue] = useState('');
 
   const handleSearchChange = (value: string) => {
@@ -44,6 +51,8 @@ const AlbumGrid = ({ albums, onSelectAlbum }: AlbumGridProps) => {
               thumbnailUrls={album.thumbnailUrls}
               photoCount={album.photoCount ?? 0}
               onClick={() => onSelectAlbum(album.id ?? 0)}
+              onMenuRename={() => onRenameAlbum(album.id ?? 0, album.title ?? '')}
+              onMenuDelete={() => onDeleteAlbum(album.id ?? 0)}
             />
           ))}
         </AlbumGridContainer>
