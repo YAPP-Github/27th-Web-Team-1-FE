@@ -19,6 +19,9 @@ export const API_URL = {
     PLACES_SEARCH: '/map/places/search',
     LOCATION: '/map/location',
   },
+  COUPLES: {
+    STATUS: '/couples/me/status',
+  },
   PHOTOS: {
     BASE: '/photos',
     BY_ALBUM: (albumId: number | string) => `/photos/album/${albumId}`,
