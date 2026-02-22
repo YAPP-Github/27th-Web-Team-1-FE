@@ -25,21 +25,16 @@ export async function serverFetcher<TResponse>(
       const cookieStore = await cookies();
       const allCookies = cookieStore.getAll();
 
-      const cookieHeader = allCookies
-        .map((c) => `${c.name}=${c.value}`)
-        .join('; ');
+      const cookieHeader = allCookies.map((c) => `${c.name}=${c.value}`).join('; ');
 
-      return customFetcher<TResponse>(
-        config,
-        {
-          ...options,
-          headers: {
-            ...config.headers,
-            ...options.headers,
-            ...(cookieHeader && { Cookie: cookieHeader }),
-          },
+      return customFetcher<TResponse>(config, {
+        ...options,
+        headers: {
+          ...config.headers,
+          ...options.headers,
+          ...(cookieHeader && { Cookie: cookieHeader }),
         },
-      );
+      });
     } catch (error) {
       console.warn('[serverFetcher] cookies() unavailable:', error);
     }
