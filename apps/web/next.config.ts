@@ -21,10 +21,9 @@ const nextConfig: NextConfig = {
         if (!r) continue;
         if (r.oneOf) excludeSvgFromImageRules(r.oneOf as unknown[]);
         const test = r.test;
-        if (test && typeof test === 'object' && 'test' in test) {
-          const regex = test as RegExp;
-          if (regex.test('.svg') && regex.test('.png')) {
-            r.test = new RegExp(regex.source.replace('|svg', ''), regex.flags);
+        if (test instanceof RegExp) {
+          if (test.test('.svg') && test.test('.png')) {
+            r.test = new RegExp(test.source.replace(/\|svg|svg\|/, ''), test.flags);
           }
         }
       }
