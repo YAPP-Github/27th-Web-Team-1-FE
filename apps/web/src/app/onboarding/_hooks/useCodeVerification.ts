@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useVerifyInviteCode,
-  useConfirmInviteCode,
+  useJoinByInviteCode,
   getGetMyStatusQueryKey,
   ApiError,
 } from '@repo/api-client';
@@ -13,7 +13,7 @@ import type { VerifyCodeResult } from '../_types';
 export function useCodeVerification() {
   const queryClient = useQueryClient();
   const { mutateAsync: verify, isPending: isVerifying } = useVerifyInviteCode();
-  const { mutateAsync: confirm, isPending: isConfirming } = useConfirmInviteCode();
+  const { mutateAsync: join, isPending: isJoining } = useJoinByInviteCode();
 
   const verifyCode = useCallback(
     async (code: string): Promise<VerifyCodeResult> => {
@@ -31,10 +31,10 @@ export function useCodeVerification() {
     [verify],
   );
 
-  const confirmCode = useCallback(
+  const joinCode = useCallback(
     async (code: string) => {
       try {
-        await confirm({ data: { inviteCode: code } });
+        await join({ data: { inviteCode: code } });
         queryClient.invalidateQueries({ queryKey: getGetMyStatusQueryKey() });
         return { success: true };
       } catch (error) {
@@ -45,13 +45,13 @@ export function useCodeVerification() {
         return { success: false, errorCode: 'UNKNOWN_ERROR' };
       }
     },
-    [confirm, queryClient],
+    [join, queryClient],
   );
 
   return {
     verifyCode,
-    confirmCode,
+    joinCode,
     isVerifying,
-    isConfirming,
+    isJoining,
   };
 }
