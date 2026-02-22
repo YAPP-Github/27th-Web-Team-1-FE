@@ -31,7 +31,7 @@ export default function ConnectPage() {
     const checkCoupleStatus = async () => {
       try {
         const data = await getMyStatus();
-        setIsCoupled(data.coupled ?? false);
+        setIsCoupled(data.isCoupled ?? false);
       } catch (error) {
         console.error('연결 상태 확인 실패:', error);
       }
