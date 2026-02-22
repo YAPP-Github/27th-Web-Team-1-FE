@@ -2,9 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import type { MapViewHandle } from '@/components/map/MapView';
-import { getCurrentPosition } from '@/utils/getCurrentPosition';
 import { LocationState } from '@/types/map.type';
-import { DEFAULT_LOCATION, DEFAULT_ZOOM } from '../constants';
+import { DEFAULT_LOCATION } from '../constants';
 
 interface UseMapRouteViewStateReturn {
   viewState: LocationState | null;
@@ -23,29 +22,9 @@ export const useMapRouteViewState = (): UseMapRouteViewStateReturn => {
   const mapViewRef = useRef<MapViewHandle>(null);
   const viewStateChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 초기화: 사용자의 현재 위치로 지도 설정
+  // 초기화: 한반도가 보이는 기본 위치로 지도 설정
   useEffect(() => {
-    const init = async () => {
-      try {
-        const pos = await getCurrentPosition();
-
-        if (!pos) {
-          setViewState(DEFAULT_LOCATION);
-          return;
-        }
-
-        setViewState({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          zoom: DEFAULT_ZOOM,
-        });
-      } catch (err) {
-        console.log(err);
-        setViewState(DEFAULT_LOCATION);
-      }
-    };
-
-    init();
+    setViewState(DEFAULT_LOCATION);
   }, []);
 
   // 지도 이동 시 debounce 적용 (500ms)으로 API 호출 빈도 제한
