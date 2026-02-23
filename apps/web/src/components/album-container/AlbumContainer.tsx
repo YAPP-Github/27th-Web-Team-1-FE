@@ -4,7 +4,7 @@ import {
   AlbumContainerType,
   MAX_GRID_PHOTOS,
 } from './AlbumContainer.constants';
-import AlbumMenu from './AlbumMenu';
+import AlbumMenu from './albumMenu/AlbumMenu';
 import { DEFAULT_ALBUM_TITLE } from '@/constants';
 
 interface AlbumContainerProps {
