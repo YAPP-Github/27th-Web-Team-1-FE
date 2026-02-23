@@ -320,7 +320,7 @@ export default function PhotoViewPage() {
             {!isPendingMode && !albumIdFromQuery && (
               <S.MapPreviewButtonWrapper>
                 <FloatingButton
-                  text="지도뷰 미리보기"
+                  text="지도뷰로 보기"
                   icon={<MapPin width={16} height={16} />}
                   onClick={handleMoveToMapView}
                 />
