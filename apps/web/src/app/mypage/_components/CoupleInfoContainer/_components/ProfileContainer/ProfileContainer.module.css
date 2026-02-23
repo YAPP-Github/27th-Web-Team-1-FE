@@ -8,8 +8,10 @@
 .nicknameArea {
   position: absolute;
   top: 98px; /* 90px image + 8px gap */
-  left: -30%;
-  right: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 144px;
   display: flex;
   justify-content: center;
 }
