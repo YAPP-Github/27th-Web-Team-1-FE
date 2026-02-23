@@ -14,6 +14,7 @@ import type {
 import type { DisplayPhoto } from '@/stores/pendingPhotos/types';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useRef, useState } from 'react';
+import HomeEmptyState from './HomeEmptyState';
 import MenuButton from '../buttons/menuButton/MenuButton';
 import TextButton from '../buttons/textButton/TextButton';
 import { useBottomSheetController } from './_hooks/useBottomSheetController';
@@ -29,10 +30,13 @@ interface BottomSheetProps {
   albums: AlbumThumbnails[];
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   displayPhotos: DisplayPhoto[];
+  photoCount: number;
   onChangeContext: (context: SheetContext) => void;
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
   onOpenAddAlbumModal?: () => void;
+  onRenameAlbum: (albumId: number, albumTitle: string) => void;
+  onDeleteAlbum: (albumId: number) => void;
   clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
@@ -41,10 +45,13 @@ const BottomSheet = ({
   albums,
   albumDetailById,
   displayPhotos,
+  photoCount,
   onChangeContext,
   onSelectAlbum,
   onGoToCurrentLocation,
   onOpenAddAlbumModal,
+  onRenameAlbum,
+  onDeleteAlbum,
   clusterExpansionData,
 }: BottomSheetProps) => {
   const router = useRouter();
@@ -135,7 +142,14 @@ const BottomSheet = ({
       return;
     }
 
-    onChangeContext(deriveContextFromHeight(snappedHeight));
+    const derivedContext = deriveContextFromHeight(snappedHeight);
+
+    if (photoCount === 0 && derivedContext.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
+      onChangeContext({ type: SHEET_CONTEXT_TYPE.HOME });
+      return;
+    }
+
+    onChangeContext(derivedContext);
   };
 
   const handleFloatingButtonClick = () => {
@@ -210,14 +224,23 @@ const BottomSheet = ({
           }
           $isHomeContext={context.type === SHEET_CONTEXT_TYPE.HOME}
         >
-          <BottomSheetContent
-            context={context}
-            albums={albums}
-            albumDetailById={albumDetailById}
-            displayPhotos={displayPhotos}
-            onSelectAlbum={onSelectAlbum}
-            clusterExpansionData={clusterExpansionData}
-          />
+          {context.type === SHEET_CONTEXT_TYPE.HOME && photoCount === 0 ? (
+            <HomeEmptyState
+              onAddPhoto={() => selectPhotosFromFile()}
+              onAddAlbum={handleAddAlbumClick}
+            />
+          ) : (
+            <BottomSheetContent
+              context={context}
+              albums={albums}
+              albumDetailById={albumDetailById}
+              displayPhotos={displayPhotos}
+              onSelectAlbum={onSelectAlbum}
+              onRenameAlbum={onRenameAlbum}
+              onDeleteAlbum={onDeleteAlbum}
+              clusterExpansionData={clusterExpansionData}
+            />
+          )}
         </S.Content>
       </S.SheetWrapper>
 

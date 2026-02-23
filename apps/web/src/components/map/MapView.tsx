@@ -28,6 +28,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
   ({ locationState, pins, onPinClick, onViewStateChange }, ref) => {
     const geolocateControlRef = useRef<GeolocateControlInstance>(null);
     const mapRef = useRef<MapRef>(null);
+    const isProgrammaticMoveRef = useRef(false);
 
     useImperativeHandle(
       ref,
@@ -39,6 +40,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
         },
         flyTo: (options) => {
           if (mapRef.current) {
+            isProgrammaticMoveRef.current = true;
             mapRef.current.flyTo({
               center: [options.longitude, options.latitude],
               zoom: options.zoom,
@@ -50,9 +52,9 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
       [],
     );
 
-    // locationState 변경 시 지도 이동 (외부에서 프로그래밍으로 이동할 때)
     useEffect(() => {
       if (locationState && mapRef.current) {
+        isProgrammaticMoveRef.current = true;
         mapRef.current.flyTo({
           center: [locationState.longitude, locationState.latitude],
           zoom: locationState.zoom,
@@ -77,7 +79,7 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
           ]}
           maxPitch={0}
           onMove={(evt) => {
-            if (onViewStateChange) {
+            if (!isProgrammaticMoveRef.current && onViewStateChange) {
               onViewStateChange({
                 latitude: evt.viewState.latitude,
                 longitude: evt.viewState.longitude,
@@ -85,7 +87,10 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(
               });
             }
           }}
-          mapStyle="mapbox://styles/lokit1220/cmlw3jkac004901sn54qi73ge"
+          onMoveEnd={() => {
+            isProgrammaticMoveRef.current = false;
+          }}
+          mapStyle="mapbox://styles/lokit1220/cmlw1c5hh004w01sqblp751wd"
         >
           <GeolocateControl
             ref={geolocateControlRef}

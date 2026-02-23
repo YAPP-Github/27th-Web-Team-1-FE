@@ -134,6 +134,12 @@ export const SliderWrapper = styled.div`
   margin-right: -16px;
 `;
 
+export const MapPreviewButtonWrapper = styled.div`
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+`;
+
 export const ThumbnailSlider = styled.div`
   display: flex;
   align-items: center;
@@ -152,8 +158,8 @@ export const ThumbnailSlider = styled.div`
 
 export const ThumbnailItem = styled.button<{ $isActive: boolean }>`
   flex-shrink: 0;
-  width: ${({ $isActive }) => ($isActive ? '56px' : '40px')};
-  height: ${({ $isActive }) => ($isActive ? '78px' : '56px')};
+  width: ${({ $isActive }) => ($isActive ? '42px' : '32px')};
+  height: ${({ $isActive }) => ($isActive ? '60px' : '44px')};
   border-radius: 8px;
   overflow: hidden;
   border: none;

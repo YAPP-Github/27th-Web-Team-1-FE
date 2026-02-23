@@ -2,10 +2,8 @@
 
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
-import { ROUTES } from '@/constants';
 import { useGetPhotoDetail } from '@repo/api-client';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { STATE_SOURCE } from '../../_constants/stateSource';
 import { usePhotoContext } from '../../_contexts/PhotoContext';
@@ -24,6 +22,7 @@ import CloseIcon from '@/assets/images/close.svg';
 import CloseSmallIcon from '@/assets/images/closeSmall.svg';
 import MapPinIcon from '@/assets/images/mapPin.svg';
 import SuccessIcon from '@/assets/images/success.svg';
+import MapPreviewSheet from '@/components/map/mapPreview/MapPreviewSheet';
 
 interface PhotoEditOverlayProps {
   photoId: number;
@@ -43,7 +42,6 @@ export default function PhotoEditOverlay({
   onSave,
   isSaving = false,
 }: PhotoEditOverlayProps) {
-  const router = useRouter();
   const { initPhotoEditState, isEditStateInitialized } = usePhotoContext();
   const { data: photoDetail, isLoading } = useGetPhotoDetail(photoId);
 
@@ -92,6 +90,7 @@ export default function PhotoEditOverlay({
   } = useAlbumModal({ stateSource: STATE_SOURCE.EDIT });
 
   const [isAlbumCleared, setIsAlbumCleared] = useState(false);
+  const [isMapPreviewOpen, setIsMapPreviewOpen] = useState(false);
 
   useEffect(() => {
     if (selectedAlbum) setIsAlbumCleared(false);
@@ -116,22 +115,8 @@ export default function PhotoEditOverlay({
   } = useLocationModal({ stateSource: STATE_SOURCE.EDIT });
 
   const handleMapPreview = () => {
-    if (!photoDetail || !selectedLocation) return;
-
-    const latitude = selectedLocation.latitude;
-    const longitude = selectedLocation.longitude;
-
-    if (latitude && longitude) {
-      sessionStorage.setItem(
-        'mapPreviewState',
-        JSON.stringify({
-          latitude,
-          longitude,
-          photoUrl: photoDetail.url || '',
-        }),
-      );
-      router.push(ROUTES.PHOTO.PREVIEW);
-    }
+    if (!photoDetail) return;
+    setIsMapPreviewOpen(true);
   };
 
   const handleSave = () => {
@@ -278,7 +263,7 @@ export default function PhotoEditOverlay({
             <S.MapPreviewButton
               type="button"
               onClick={handleMapPreview}
-              disabled={!selectedLocation}
+              disabled={!photoDetail}
             >
               <S.MapIcon>
                 <MapPinIcon width={16} height={17} />
@@ -329,6 +314,12 @@ export default function PhotoEditOverlay({
         onSelectLocation={setTempSelectedLocationId}
         onClose={handleLocationModalClose}
         onSubmit={handleLocationSubmit}
+      />
+
+      <MapPreviewSheet
+        isOpen={isMapPreviewOpen}
+        photoUrl={photoDetail.url || ''}
+        onClose={() => setIsMapPreviewOpen(false)}
       />
     </motion.div>
   );

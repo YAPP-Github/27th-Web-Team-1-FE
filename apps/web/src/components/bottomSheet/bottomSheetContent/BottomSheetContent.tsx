@@ -16,6 +16,8 @@ interface BottomSheetContentProps {
   albumDetailById: Record<number, AlbumWithPhotosResponse>;
   displayPhotos: DisplayPhoto[];
   onSelectAlbum: (albumId: number) => void;
+  onRenameAlbum: (albumId: number, albumTitle: string) => void;
+  onDeleteAlbum: (albumId: number) => void;
   clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
@@ -25,6 +27,8 @@ const BottomSheetContent = ({
   albumDetailById,
   displayPhotos,
   onSelectAlbum,
+  onRenameAlbum,
+  onDeleteAlbum,
   clusterExpansionData,
 }: BottomSheetContentProps) => {
   switch (context.type) {
@@ -32,7 +36,14 @@ const BottomSheetContent = ({
       return <AlbumRow albums={albums} onSelectAlbum={onSelectAlbum} />;
 
     case SHEET_CONTEXT_TYPE.ALBUM_LIST:
-      return <AlbumGrid albums={albums} onSelectAlbum={onSelectAlbum} />;
+      return (
+        <AlbumGrid
+          albums={albums}
+          onSelectAlbum={onSelectAlbum}
+          onRenameAlbum={onRenameAlbum}
+          onDeleteAlbum={onDeleteAlbum}
+        />
+      );
 
     case SHEET_CONTEXT_TYPE.ALBUM_DETAIL:
       return (

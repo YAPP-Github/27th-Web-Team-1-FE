@@ -1,6 +1,7 @@
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
+  EXPLORE: '/explore',
   ALBUM: {
     DETAIL: (albumId: number) => `/album/${albumId}`,
   },
@@ -14,7 +15,6 @@ export const ROUTES = {
       albumId ? `/photo/${photoId}?albumId=${albumId}` : `/photo/${photoId}`,
     VIEW_WITH_CLUSTER: (photoId: number, clusterId: string) =>
       `/photo/${photoId}?clusterId=${clusterId}`,
-    PREVIEW: '/photo/preview',
   },
   ONBOARDING: {
     START: '/onboarding',

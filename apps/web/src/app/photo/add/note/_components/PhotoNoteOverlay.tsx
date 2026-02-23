@@ -20,6 +20,7 @@
 import { PhotoAddHeader } from '@/components/header';
 import * as HeaderStyles from '@/components/header/photoAdd/PhotoAddHeader.styles';
 import { ROUTES } from '@/constants';
+import MapPreviewSheet from '@/components/map/mapPreview/MapPreviewSheet';
 import { usePendingPhotos } from '@/stores/pendingPhotos/PendingPhotosContext';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -44,7 +45,7 @@ import WarningIcon from '@/assets/images/warning.svg';
 import { useToast } from '@/components/toast';
 import { getCurrentPosition } from '@/utils/getCurrentPosition';
 import { getLocationInfo } from '@repo/api-client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface PhotoNoteOverlayProps {
   onClose: () => void;
@@ -101,6 +102,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
   const { addPendingPhoto } = usePendingPhotos();
   const isSubmittingRef = useRef(false);
   const hasAttemptedDefaultLocation = useRef(false);
+  const [isMapPreviewOpen, setIsMapPreviewOpen] = useState(false);
 
   // 사진에 EXIF 위치 정보가 없고, 수동 선택 위치도 없으면 현재 위치를 기본값으로 설정
   useEffect(() => {
@@ -163,21 +165,7 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
 
   const handleMapPreview = () => {
     if (!selectedPhoto || !hasLocation) return;
-
-    const latitude = selectedLocation?.latitude || selectedPhoto.location?.latitude;
-    const longitude = selectedLocation?.longitude || selectedPhoto.location?.longitude;
-
-    if (latitude && longitude) {
-      sessionStorage.setItem(
-        'mapPreviewState',
-        JSON.stringify({
-          latitude,
-          longitude,
-          photoUrl: selectedPhoto.uri,
-        }),
-      );
-      router.push(ROUTES.PHOTO.PREVIEW);
-    }
+    setIsMapPreviewOpen(true);
   };
 
   if (!selectedPhoto) {
@@ -394,6 +382,12 @@ export default function PhotoNoteOverlay({ onClose }: PhotoNoteOverlayProps) {
         onSelectLocation={setTempSelectedLocationId}
         onClose={handleLocationModalClose}
         onSubmit={handleLocationSubmit}
+      />
+
+      <MapPreviewSheet
+        isOpen={isMapPreviewOpen}
+        photoUrl={selectedPhoto.uri}
+        onClose={() => setIsMapPreviewOpen(false)}
       />
     </motion.div>
   );

@@ -3,10 +3,8 @@ import {
   useGetPhotoDetail,
   getGetPhotoDetailQueryOptions,
   useGetPhotos,
-  useGetSelectableAlbums,
   useGetClusterPhotos,
   getGetClusterPhotosQueryOptions,
-  getGetSelectableAlbumsQueryKey,
   getGetPhotosQueryKey,
   type PhotoResponse,
   type ClusterPhotoResponse,
@@ -76,7 +74,7 @@ const usePhotoData = ({
   // 클라이언트 클러스터가 아닌 경우에만 API 호출
   // 또는 클라이언트 클러스터이지만 sessionStorage에 데이터가 없으면 API 호출 (fallback)
   const shouldFetchPhotoDetail =
-    enabled && (!isClientCluster || (!clientClusterPhotoDetail && isClientCluster));
+    enabled && photoId > 0 && (!isClientCluster || !clientClusterPhotoDetail);
 
   const photoDetailId = shouldFetchPhotoDetail ? photoId : 0;
   const { data: apiPhotoDetail, isLoading: isApiLoading } = useGetPhotoDetail(
@@ -88,9 +86,6 @@ const usePhotoData = ({
       },
     },
   );
-
-  const photoDetail = clientClusterPhotoDetail || apiPhotoDetail;
-  const isPhotoLoading = shouldFetchPhotoDetail ? isApiLoading : false;
 
   const clusterIdForFetch =
     isClientCluster || !clusterIdFromQuery ? '' : clusterIdFromQuery;
@@ -105,45 +100,19 @@ const usePhotoData = ({
     ? clientClusterPhotosData
     : serverClusterPhotosData;
 
-  // 앨범 목록 조회 (albumId가 없을 때 albumName으로 찾기 위함)
-  // 클라이언트 클러스터인 경우는 필요 없음 (이미 clusterIdFromQuery가 있음)
-  const { data: selectableAlbums } = useGetSelectableAlbums({
+  const firstClusterPhoto = clusterPhotosData?.[0];
+  const clusterFallbackPhotoDetail = firstClusterPhoto
+    ? convertClusterPhotoToPhotoResponse(firstClusterPhoto)
+    : undefined;
+
+  const photoDetail =
+    clientClusterPhotoDetail || apiPhotoDetail || clusterFallbackPhotoDetail;
+  const isPhotoLoading = shouldFetchPhotoDetail ? isApiLoading : false;
+
+  const { data: albumPhotos } = useGetPhotos(albumIdFromQuery ?? 0, {
     query: {
-      queryKey: getGetSelectableAlbumsQueryKey(),
-      enabled:
-        enabled &&
-        !albumIdFromQuery &&
-        !clusterIdFromQuery &&
-        !isClientCluster &&
-        !!photoDetail,
-    },
-  });
-
-  // albumId 결정: 쿼리 파라미터 우선, 없으면 albumName으로 매칭
-  // 클라이언트 클러스터인 경우는 albumId가 필요 없음
-  const albumId = useMemo(() => {
-    if (albumIdFromQuery) return albumIdFromQuery;
-
-    // 클라이언트 클러스터인 경우 albumId 사용 안 함
-    if (isClientCluster) return undefined;
-
-    if (selectableAlbums?.albums && photoDetail) {
-      const albumNameFromDetail = (photoDetail as any).albumName;
-      if (albumNameFromDetail) {
-        const matchedAlbum = selectableAlbums.albums.find(
-          (album) => album.title === albumNameFromDetail,
-        );
-        return matchedAlbum?.id;
-      }
-    }
-
-    return undefined;
-  }, [albumIdFromQuery, selectableAlbums?.albums, photoDetail, isClientCluster]);
-
-  const { data: albumPhotos } = useGetPhotos(albumId ?? 0, {
-    query: {
-      queryKey: getGetPhotosQueryKey(albumId),
-      enabled: enabled && !!albumId && !clusterIdFromQuery,
+      queryKey: getGetPhotosQueryKey(albumIdFromQuery),
+      enabled: enabled && !!albumIdFromQuery && !clusterIdFromQuery,
     },
   });
 

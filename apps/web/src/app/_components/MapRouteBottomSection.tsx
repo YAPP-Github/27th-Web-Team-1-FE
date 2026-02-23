@@ -17,6 +17,8 @@ interface MapRouteBottomSectionProps {
   onSelectAlbum: (albumId: number) => void;
   onGoToCurrentLocation: () => void;
   onOpenAddAlbumModal?: () => void;
+  onRenameAlbum: (albumId: number, albumTitle: string) => void;
+  onDeleteAlbum: (albumId: number) => void;
   clusterExpansionData?: Map<string, ClusterPhotoResponse[]>;
 }
 
@@ -35,6 +37,8 @@ export const MapRouteBottomSection = ({
   onSelectAlbum,
   onGoToCurrentLocation,
   onOpenAddAlbumModal,
+  onRenameAlbum,
+  onDeleteAlbum,
   clusterExpansionData,
 }: MapRouteBottomSectionProps) => {
   return (
@@ -44,10 +48,13 @@ export const MapRouteBottomSection = ({
         albums={albumList}
         albumDetailById={albumDetailById}
         displayPhotos={displayPhotos}
+        photoCount={photoCount}
         onChangeContext={onChangeContext}
         onSelectAlbum={onSelectAlbum}
         onGoToCurrentLocation={onGoToCurrentLocation}
         onOpenAddAlbumModal={onOpenAddAlbumModal}
+        onRenameAlbum={onRenameAlbum}
+        onDeleteAlbum={onDeleteAlbum}
         clusterExpansionData={clusterExpansionData}
       />
       <S.FloatingButtonWrapper>

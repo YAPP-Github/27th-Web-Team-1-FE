@@ -12,12 +12,10 @@ import type { LocationInfoResponse } from '@repo/api-client';
 interface MapRouteHeaderProps {
   sheetContext: SheetContext;
   selectedAlbumTitle: string | undefined;
-  clusterLocationData: LocationInfoResponse | undefined;
   address: string | null;
   onCloseAlbumDetail: () => void;
   onOpenAlbumRename: () => void;
   onOpenAlbumDelete: () => void;
-  onCloseClusterDetail: () => void;
 }
 
 /**
@@ -29,15 +27,12 @@ interface MapRouteHeaderProps {
 export const MapRouteHeader = ({
   sheetContext,
   selectedAlbumTitle,
-  clusterLocationData,
   address,
   onCloseAlbumDetail,
   onOpenAlbumRename,
   onOpenAlbumDelete,
-  onCloseClusterDetail,
 }: MapRouteHeaderProps) => {
   const router = useRouter();
-
   if (sheetContext.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
     const isDefaultAlbum = selectedAlbumTitle === DEFAULT_ALBUM_TITLE;
     return (
@@ -58,21 +53,11 @@ export const MapRouteHeader = ({
     );
   }
 
-  if (sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL) {
-    return (
-      <MenuHeader
-        title={clusterLocationData?.address ?? '위치 로딩 중...'}
-        onClickBack={onCloseClusterDetail}
-        showMenu={false}
-      />
-    );
-  }
-
   return (
     <ExploreHeader
       title={address || '위치 정보 로딩 중'}
       onClickProfile={() => router.push(ROUTES.MYPAGE)}
-      onClickExplore={() => {}}
+      onClickExplore={() => router.push(ROUTES.EXPLORE)}
     />
   );
 };

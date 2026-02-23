@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getGetClusterPhotosQueryOptions } from '@repo/api-client';
 import MapView from '@/components/map/MapView';
 import { MapPin } from '@/types/map.type';
 import { ROUTES } from '@/constants/routes';
@@ -27,6 +29,7 @@ import { saveClusterToSession } from '@/utils/sessionStorage';
 
 export default function MapRoute() {
   const router = useRouter();
+  const [pendingClusterId, setPendingClusterId] = useState<string | null>(null);
 
   // 상태 관리
   const { viewState, mapViewRef, handleViewStateChange, handleGoToCurrentLocation } =
@@ -42,8 +45,6 @@ export default function MapRoute() {
     albumMapInfo,
     mapPins,
     totalHistoryCount,
-    clusterLocationData,
-    clusterPhotosData,
     clusterExpansionData,
   } = useMapRouteData({
     viewState,
@@ -62,6 +63,8 @@ export default function MapRoute() {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLocationDeniedModalOpen, setIsLocationDeniedModalOpen] = useState(false);
+  const [menuAlbumId, setMenuAlbumId] = useState<number | undefined>(undefined);
+  const [menuAlbumTitle, setMenuAlbumTitle] = useState<string | undefined>(undefined);
 
   // 앨범이 선택되었을 때 앨범의 중심 위치로 지도 이동
   useEffect(() => {
@@ -89,7 +92,7 @@ export default function MapRoute() {
         zoom: centerInfo.zoom,
       });
     }
-  }, [selectedAlbumId, handleViewStateChange]);
+  }, [selectedAlbumId, albumDetail, albumMapInfo, handleViewStateChange]);
 
   useEffect(() => {
     const initLocation = async () => {
@@ -109,46 +112,60 @@ export default function MapRoute() {
   }, [albumDetail]);
 
   const photoCount = useMemo(() => {
-    const clusterPhotoCount = clusterPhotosData?.length ?? 0;
-    return calculatePhotoCount(
-      sheetContext,
-      albumDetail,
-      clusterPhotoCount,
-      totalHistoryCount,
-    );
-  }, [sheetContext, albumDetail, clusterPhotosData, totalHistoryCount]);
+    return calculatePhotoCount(sheetContext, albumDetail, 0, totalHistoryCount);
+  }, [sheetContext, albumDetail, totalHistoryCount]);
 
   const selectedAlbumTitle = albumDetail?.title;
 
-  const handlePinClick = (pin: MapPin) => {
-    if (pin.isCluster) {
-      // 같은 클러스터 Detail을 이미 보고 있는 경우 슬라이드 뷰로 전환
-      if (
-        sheetContext.type === SHEET_CONTEXT_TYPE.CLUSTER_DETAIL &&
-        sheetContext.clusterId === pin.clusterId
-      ) {
-        // sessionStorage에 클러스터 데이터 저장
-        if (clusterPhotosData) {
-          saveClusterToSession(pin.clusterId, clusterPhotosData);
-        }
+  const { data: clusterPhotosFromQuery, isError: isClusterQueryError } = useQuery({
+    ...getGetClusterPhotosQueryOptions(pendingClusterId ?? ''),
+    enabled: !!pendingClusterId && !clusterExpansionData?.has(pendingClusterId),
+  });
 
-        const firstPhotoId = clusterPhotosData?.[0]?.id;
-        if (firstPhotoId) {
-          router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, pin.clusterId));
-        }
-        return;
-      }
+  useEffect(() => {
+    if (!pendingClusterId) return;
 
-      // 새로운 클러스터 Detail 열기
-      setSheetContext({
-        type: SHEET_CONTEXT_TYPE.CLUSTER_DETAIL,
-        clusterId: pin.clusterId!,
-        latitude: pin.latitude,
-        longitude: pin.longitude,
-      });
-    } else {
-      router.push(ROUTES.PHOTO.VIEW(pin.id));
+    if (isClusterQueryError) {
+      console.error('[MapRoute] Failed to load cluster photos');
+      setPendingClusterId(null);
+      return;
     }
+
+    const photos = clusterExpansionData?.get(pendingClusterId) ?? clusterPhotosFromQuery;
+    if (!photos) return;
+
+    if (!photos.length) {
+      setPendingClusterId(null);
+      return;
+    }
+
+    saveClusterToSession(pendingClusterId, photos);
+    const firstPhotoId = photos.find((photo) => !!photo.id)?.id;
+    if (!firstPhotoId) {
+      setPendingClusterId(null);
+      return;
+    }
+
+    router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, pendingClusterId));
+    setPendingClusterId(null);
+  }, [
+    pendingClusterId,
+    clusterPhotosFromQuery,
+    clusterExpansionData,
+    isClusterQueryError,
+    router,
+  ]);
+
+  const handlePinClick = (pin: MapPin) => {
+    if (!pin.isCluster) {
+      router.push(ROUTES.PHOTO.VIEW(pin.id));
+      return;
+    }
+
+    const clusterId = pin.clusterId;
+    if (!clusterId) return;
+
+    setPendingClusterId(clusterId);
   };
 
   const handleSelectAlbum = (albumId: number) => {
@@ -168,8 +185,26 @@ export default function MapRoute() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleCloseClusterDetail = () => {
-    setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
+  const handleGridAlbumRename = (albumId: number, albumTitle: string) => {
+    setMenuAlbumId(albumId);
+    setMenuAlbumTitle(albumTitle);
+    setIsRenameModalOpen(true);
+  };
+
+  const handleGridAlbumDelete = (albumId: number) => {
+    setMenuAlbumId(albumId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseRenameModal = () => {
+    setIsRenameModalOpen(false);
+    setMenuAlbumId(undefined);
+    setMenuAlbumTitle(undefined);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setMenuAlbumId(undefined);
   };
 
   const handleCloseLocationDeniedModal = () => {
@@ -182,12 +217,10 @@ export default function MapRoute() {
         <MapRouteHeader
           sheetContext={sheetContext}
           selectedAlbumTitle={selectedAlbumTitle}
-          clusterLocationData={clusterLocationData}
           address={address}
           onCloseAlbumDetail={handleCloseAlbumDetail}
           onOpenAlbumRename={handleOpenAlbumRename}
           onOpenAlbumDelete={handleOpenAlbumDelete}
-          onCloseClusterDetail={handleCloseClusterDetail}
         />
       </S.HeaderContainer>
 
@@ -211,6 +244,8 @@ export default function MapRoute() {
         onSelectAlbum={handleSelectAlbum}
         onGoToCurrentLocation={handleGoToCurrentLocation}
         onOpenAddAlbumModal={() => setIsAddModalOpen(true)}
+        onRenameAlbum={handleGridAlbumRename}
+        onDeleteAlbum={handleGridAlbumDelete}
         clusterExpansionData={clusterExpansionData}
       />
 
@@ -220,14 +255,14 @@ export default function MapRoute() {
       />
       <AlbumRenameModalContainer
         isOpen={isRenameModalOpen}
-        onClose={() => setIsRenameModalOpen(false)}
-        selectedAlbumId={selectedAlbumId ?? undefined}
-        initialTitle={selectedAlbumTitle}
+        onClose={handleCloseRenameModal}
+        selectedAlbumId={menuAlbumId ?? selectedAlbumId ?? undefined}
+        initialTitle={menuAlbumTitle ?? selectedAlbumTitle}
       />
       <AlbumDeleteModalContainer
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        selectedAlbumId={selectedAlbumId ?? undefined}
+        onClose={handleCloseDeleteModal}
+        selectedAlbumId={menuAlbumId ?? selectedAlbumId ?? undefined}
       />
       <LocationPermissionModal
         isOpen={isLocationDeniedModalOpen}

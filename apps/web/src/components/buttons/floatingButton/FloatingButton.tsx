@@ -12,7 +12,7 @@ interface FloatingButtonProps {
 const FloatingButton = ({ text, icon, onClick, ...rest }: FloatingButtonProps) => {
   return (
     <S.Wrapper onClick={onClick} disabled={!onClick} {...rest}>
-      {icon}
+      {icon && <S.IconWrapper>{icon}</S.IconWrapper>}
       <S.TextContainer>{text}</S.TextContainer>
     </S.Wrapper>
   );

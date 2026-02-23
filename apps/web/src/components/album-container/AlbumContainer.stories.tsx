@@ -21,9 +21,14 @@ export default meta;
 type Story = StoryObj<typeof AlbumContainer>;
 
 const mockThumbnailUrl = ['https://picsum.photos/200/200?random=1'];
+const defaultArgs = {
+  onMenuRename: () => {},
+  onMenuDelete: () => {},
+};
 
 export const Medium: Story = {
   args: {
+    ...defaultArgs,
     title: '우리의 추억',
     type: 'medium',
     thumbnailUrls: mockThumbnailUrl,
@@ -33,6 +38,7 @@ export const Medium: Story = {
 
 export const Small: Story = {
   args: {
+    ...defaultArgs,
     title: '우리의 추억',
     type: 'small',
     thumbnailUrls: mockThumbnailUrl,
@@ -42,6 +48,7 @@ export const Small: Story = {
 
 export const FewPhotos: Story = {
   args: {
+    ...defaultArgs,
     title: '짧은 여행',
     type: 'medium',
     thumbnailUrls: mockThumbnailUrl,
@@ -51,6 +58,7 @@ export const FewPhotos: Story = {
 
 export const ManyPhotos: Story = {
   args: {
+    ...defaultArgs,
     title: '긴 여행',
     type: 'medium',
     thumbnailUrls: mockThumbnailUrl,
@@ -60,6 +68,7 @@ export const ManyPhotos: Story = {
 
 export const NoThumbnail: Story = {
   args: {
+    ...defaultArgs,
     title: '빈 앨범',
     type: 'medium',
     thumbnailUrls: undefined,
