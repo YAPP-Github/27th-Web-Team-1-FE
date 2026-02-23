@@ -23,9 +23,10 @@ export default function useProfileImageUpload() {
   const upload = useCallback(
     async (file: File) => {
       const queryKey = getGetMyPageQueryKey();
-      const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
 
-      // 1. 낙관적 업데이트: 로컬 프리뷰 즉시 표시
+      // 1. 낙관적 업데이트: 진행 중인 재요청 취소 후 로컬 프리뷰 즉시 표시
+      await queryClient.cancelQueries({ queryKey });
+      const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
       const localPreviewUrl = URL.createObjectURL(file);
       queryClient.setQueryData<MyPageResponse>(queryKey, (old) =>
         old ? { ...old, myProfileImageUrl: localPreviewUrl } : old,
@@ -78,6 +79,9 @@ export default function useProfileImageUpload() {
             onError: () => {
               queryClient.setQueryData(queryKey, previousData);
               showToast('프로필 사진 변경에 실패했어요');
+            },
+            onSettled: () => {
+              queryClient.invalidateQueries({ queryKey });
             },
           },
         );

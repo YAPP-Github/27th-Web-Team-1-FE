@@ -33,13 +33,14 @@ export default function NicknameEditModal({
     }
   }, [isOpen, initialNickname]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const trimmed = nickname.trim();
     if (!trimmed) return;
 
     const queryKey = getGetMyPageQueryKey();
-    const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
 
+    await queryClient.cancelQueries({ queryKey });
+    const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
     queryClient.setQueryData<MyPageResponse>(queryKey, (old) =>
       old ? { ...old, myName: trimmed } : old,
     );
@@ -53,6 +54,9 @@ export default function NicknameEditModal({
         onError: () => {
           queryClient.setQueryData(queryKey, previousData);
           showToast('닉네임 변경에 실패했어요');
+        },
+        onSettled: () => {
+          queryClient.invalidateQueries({ queryKey });
         },
       },
     );
