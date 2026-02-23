@@ -225,7 +225,7 @@ const BottomSheet = ({
         <S.FloatingButtonWrapper>
           <FloatingButton
             text="지도뷰로 보기"
-            icon={<MapPinIcon />}
+            icon={<MapPinIcon color="#8D8C8F" />}
             onClick={handleFloatingButtonClick}
           />
         </S.FloatingButtonWrapper>

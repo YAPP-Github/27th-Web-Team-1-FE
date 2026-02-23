@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   FLOATING_BUTTON_HEIGHT,
   HEADER_HEIGHT,
@@ -10,10 +11,14 @@ import {
 } from '../constants';
 
 export function useBottomSheetController(context: SheetContext) {
+  const searchParams = useSearchParams();
   const getMaxHeight = () => {
     if (typeof window === 'undefined') return 800;
 
-    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
+    if (
+      context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST ||
+      context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL
+    ) {
       return window.innerHeight;
     }
 
@@ -26,7 +31,9 @@ export function useBottomSheetController(context: SheetContext) {
     if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       setHeight(MID_HEIGHT);
     }
-    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) setHeight(MID_HEIGHT);
+    if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
+      setHeight(searchParams.get('expand') === 'true' ? getMaxHeight() : MID_HEIGHT);
+    }
   }, [context]);
 
   const clampHeight = (nextHeight: number) => {
