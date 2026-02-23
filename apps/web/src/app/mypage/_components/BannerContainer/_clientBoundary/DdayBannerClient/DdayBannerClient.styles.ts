@@ -4,6 +4,7 @@ export const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 81px;
   padding: 8px 16px;
   border-radius: 12px;
   border: 1px solid rgba(226, 230, 255, 0.1);
@@ -35,6 +36,12 @@ export const DdayPrefix = styled.span`
 
 export const DdayNumber = styled.span`
   color: ${({ theme }) => theme.colors.gray[0]};
+`;
+
+export const EmptyText = styled.span`
+  ${({ theme }) => theme.typography.body18Semibold}
+  color: ${({ theme }) => theme.colors.gray[300]};
+  padding: 4px;
 `;
 
 export const ChevronIcon = styled.span`

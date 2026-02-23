@@ -8,7 +8,8 @@ import * as S from './DdayBannerClient.styles';
 
 export default function DdayBannerClient() {
   const { data } = useGetMyPageSuspense();
-  const dday = data.coupledDay ?? 0;
+  const dday = data.coupledDay;
+  const hasDday = dday !== null && dday !== undefined;
   const { isOpen, handleOpen, handleClose } = usePopup();
 
   return (
@@ -24,16 +25,27 @@ export default function DdayBannerClient() {
           }
         }}
       >
-        <S.Content>
-          <S.Caption>처음 만난 날부터</S.Caption>
-          <S.DdayRow>
-            <S.DdayPrefix>D+</S.DdayPrefix>
-            <S.DdayNumber>{dday}</S.DdayNumber>
-          </S.DdayRow>
-        </S.Content>
-        <S.ChevronIcon>
-          <ChevronRightIcon width={22} height={22} />
-        </S.ChevronIcon>
+        {hasDday ? (
+          <>
+            <S.Content>
+              <S.Caption>처음 만난 날부터</S.Caption>
+              <S.DdayRow>
+                <S.DdayPrefix>D+</S.DdayPrefix>
+                <S.DdayNumber>{dday}</S.DdayNumber>
+              </S.DdayRow>
+            </S.Content>
+            <S.ChevronIcon>
+              <ChevronRightIcon width={22} height={22} />
+            </S.ChevronIcon>
+          </>
+        ) : (
+          <>
+            <S.EmptyText>처음 만난 날이 언제인가요?</S.EmptyText>
+            <S.ChevronIcon>
+              <ChevronRightIcon width={22} height={22} />
+            </S.ChevronIcon>
+          </>
+        )}
       </S.Wrapper>
       <DdayEditModal isOpen={isOpen} onClose={handleClose} />
     </>
