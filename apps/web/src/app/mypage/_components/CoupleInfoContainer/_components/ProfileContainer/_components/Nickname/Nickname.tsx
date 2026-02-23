@@ -1,9 +1,10 @@
+'use client';
+
+import { useGetMyPageSuspense } from '@repo/api-client';
 import styles from './Nickname.module.css';
 
-interface NicknameProps {
-  username?: string;
-}
+export default function Nickname() {
+  const { data } = useGetMyPageSuspense();
 
-export default function Nickname({ username }: NicknameProps) {
-  return <span className={styles.text}>{username ?? ''}</span>;
+  return <span className={styles.text}>{data.partnerName ?? ''}</span>;
 }

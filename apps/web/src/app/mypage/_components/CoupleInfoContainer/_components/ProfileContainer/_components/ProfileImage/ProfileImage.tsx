@@ -1,10 +1,12 @@
+'use client';
+
+import { useGetMyPageSuspense } from '@repo/api-client';
 import styles from './ProfileImage.module.css';
 
-interface ProfileImageProps {
-  profileUrl?: string;
-}
+export default function ProfileImage() {
+  const { data } = useGetMyPageSuspense();
+  const profileUrl = data.partnerProfileImageUrl;
 
-export default function ProfileImage({ profileUrl }: ProfileImageProps) {
   return (
     <div className={styles.wrapper}>
       {profileUrl ? (

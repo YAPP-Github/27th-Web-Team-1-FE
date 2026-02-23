@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+
+import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getGetMyPageQueryKey, getMyPageServer } from '@repo/api-client';
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
 import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
 import BannerContainer from './_components/BannerContainer/BannerContainer';
@@ -7,24 +11,35 @@ import Footer from './_components/Footer/Footer';
 import { PAGE_TITLE } from './constants';
 import styles from './page.module.css';
 
-export default function MyPage() {
+export default async function MyPage() {
+  const queryClient = new QueryClient();
+
+  await queryClient
+    .prefetchQuery({
+      queryKey: getGetMyPageQueryKey(),
+      queryFn: () => getMyPageServer(),
+    })
+    .catch(() => {});
+
   return (
-    <main className={styles.wrapper}>
-      <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
-      <HeaderClient />
-      <div className={styles.coupleInfo}>
-        <CoupleInfoContainer />
-      </div>
-      <div className={styles.banner}>
-        <BannerContainer />
-      </div>
-      <div className={styles.divider}>
-        <Divider />
-      </div>
-      <MenuContainer />
-      <div className={styles.footer}>
-        <Footer />
-      </div>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <main className={styles.wrapper}>
+        <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
+        <HeaderClient />
+        <div className={styles.coupleInfo}>
+          <CoupleInfoContainer />
+        </div>
+        <div className={styles.banner}>
+          <BannerContainer />
+        </div>
+        <div className={styles.divider}>
+          <Divider />
+        </div>
+        <MenuContainer />
+        <div className={styles.footer}>
+          <Footer />
+        </div>
+      </main>
+    </HydrationBoundary>
   );
 }

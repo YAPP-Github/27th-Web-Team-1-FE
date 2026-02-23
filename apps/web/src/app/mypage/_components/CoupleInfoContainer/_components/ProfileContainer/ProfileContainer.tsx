@@ -6,26 +6,20 @@ import styles from './ProfileContainer.module.css';
 
 interface ProfileContainerProps {
   isMe?: boolean;
-  profileUrl?: string;
-  username?: string;
 }
 
-export default function ProfileContainer({
-  isMe = false,
-  profileUrl,
-  username,
-}: ProfileContainerProps) {
+export default function ProfileContainer({ isMe = false }: ProfileContainerProps) {
   return (
     <div className={styles.wrapper}>
       {isMe ? (
         <>
-          <ProfileImageClient profileUrl={profileUrl} />
-          <NicknameClient username={username} />
+          <ProfileImageClient />
+          <NicknameClient />
         </>
       ) : (
         <>
-          <ProfileImage profileUrl={profileUrl} />
-          <Nickname username={username} />
+          <ProfileImage />
+          <Nickname />
         </>
       )}
     </div>

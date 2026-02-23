@@ -1,15 +1,33 @@
 'use client';
 
+import { useRef, useCallback, type ChangeEvent } from 'react';
+import { useGetMyPageSuspense } from '@repo/api-client';
+import { isAllowedImageType, ALLOWED_IMAGE_MIME_TYPES } from '@/constants/image';
 import CameraIcon from '@/assets/images/camera.svg';
+import useProfileImageUpload from './useProfileImageUpload';
 import * as S from './ProfileImageClient.styles';
 
-interface ProfileImageClientProps {
-  profileUrl?: string;
-}
+export default function ProfileImageClient() {
+  const { data } = useGetMyPageSuspense();
+  const profileUrl = data.myProfileImageUrl;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { upload, isUploading } = useProfileImageUpload();
 
-export default function ProfileImageClient({ profileUrl }: ProfileImageClientProps) {
+  const handleFileChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file && isAllowedImageType(file)) {
+        upload(file);
+      }
+      e.target.value = '';
+    },
+    [upload],
+  );
+
   const handleProfileImageClick = () => {
-    // TODO: 프로필 이미지 변경 로직 구현
+    if (!isUploading) {
+      fileInputRef.current?.click();
+    }
   };
 
   return (
@@ -29,9 +47,17 @@ export default function ProfileImageClient({ profileUrl }: ProfileImageClientPro
       ) : (
         <S.Placeholder />
       )}
-      <S.CameraButton type="button">
+      <S.CameraButton type="button" disabled={isUploading}>
         <CameraIcon width={14} height={14} />
       </S.CameraButton>
+      {isUploading && <S.LoadingOverlay />}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_MIME_TYPES.join(',')}
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
     </S.Wrapper>
   );
 }
