@@ -1076,8 +1076,8 @@ export const useSaveCoupleStatusCookie = <
 };
 
 /**
- * 초대 코드를 통해 커플에 합류합니다.
- * @summary 초대 코드로 커플 합류
+ * 초대 코드를 입력한 사용자가 커플에 합류합니다.
+ * @summary 초대 코드로 커플 합류(입력자)
  */
 export const joinByInviteCode = (
   joinCoupleRequest: JoinCoupleRequest,
@@ -1136,7 +1136,7 @@ export type JoinByInviteCodeMutationBody = JoinCoupleRequest;
 export type JoinByInviteCodeMutationError = ApiResponseErrorDetail | CoupleStatusResponse;
 
 /**
- * @summary 초대 코드로 커플 합류
+ * @summary 초대 코드로 커플 합류(입력자)
  */
 export const useJoinByInviteCode = <
   TError = ApiResponseErrorDetail | CoupleStatusResponse,
@@ -1393,90 +1393,6 @@ export const useRefreshInvite = <
   TContext
 > => {
   const mutationOptions = getRefreshInviteMutationOptions(options);
-
-  return useMutation(mutationOptions);
-};
-
-/**
- * 초대코드를 사용해 커플 연결을 확정합니다.
- * @summary 커플 연결 확정
- */
-export const confirmInviteCode = (
-  joinCoupleRequest: JoinCoupleRequest,
-  signal?: AbortSignal,
-) => {
-  return customFetcher<CoupleStatusResponse>({
-    url: `/couples/invites/confirm`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: joinCoupleRequest,
-    signal,
-  });
-};
-
-export const getConfirmInviteCodeMutationOptions = <
-  TError = ApiResponseErrorDetail,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof confirmInviteCode>>,
-    TError,
-    { data: JoinCoupleRequest },
-    TContext
-  >;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof confirmInviteCode>>,
-  TError,
-  { data: JoinCoupleRequest },
-  TContext
-> => {
-  const mutationKey = ['confirmInviteCode'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof confirmInviteCode>>,
-    { data: JoinCoupleRequest }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return confirmInviteCode(data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ConfirmInviteCodeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof confirmInviteCode>>
->;
-export type ConfirmInviteCodeMutationBody = JoinCoupleRequest;
-export type ConfirmInviteCodeMutationError = ApiResponseErrorDetail;
-
-/**
- * @summary 커플 연결 확정
- */
-export const useConfirmInviteCode = <
-  TError = ApiResponseErrorDetail,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof confirmInviteCode>>,
-    TError,
-    { data: JoinCoupleRequest },
-    TContext
-  >;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof confirmInviteCode>>,
-  TError,
-  { data: JoinCoupleRequest },
-  TContext
-> => {
-  const mutationOptions = getConfirmInviteCodeMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -3170,30 +3086,6 @@ export const getRefreshInviteResponseMock = (
   ...overrideResponse,
 });
 
-export const getConfirmInviteCodeResponseMock = (
-  overrideResponse: Partial<CoupleStatusResponse> = {},
-): CoupleStatusResponse => ({
-  partnerSummary: faker.helpers.arrayElement([
-    {
-      userId: faker.helpers.arrayElement([
-        faker.number.int({ min: undefined, max: undefined }),
-        undefined,
-      ]),
-      nickname: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-      profileImageUrl: faker.helpers.arrayElement([
-        faker.string.alpha({ length: { min: 10, max: 20 } }),
-        undefined,
-      ]),
-    },
-    undefined,
-  ]),
-  isCoupled: faker.helpers.arrayElement([faker.datatype.boolean(), undefined]),
-  ...overrideResponse,
-});
-
 export const getCreate1ResponseMock = (
   overrideResponse: Partial<IdResponse> = {},
 ): IdResponse => ({
@@ -4157,34 +4049,6 @@ export const getRefreshInviteMockHandler = (
   );
 };
 
-export const getConfirmInviteCodeMockHandler = (
-  overrideResponse?:
-    | CoupleStatusResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Promise<CoupleStatusResponse> | CoupleStatusResponse),
-  options?: RequestHandlerOptions,
-) => {
-  return http.post(
-    '*/couples/invites/confirm',
-    async (info) => {
-      await delay(1000);
-
-      return new HttpResponse(
-        JSON.stringify(
-          overrideResponse !== undefined
-            ? typeof overrideResponse === 'function'
-              ? await overrideResponse(info)
-              : overrideResponse
-            : getConfirmInviteCodeResponseMock(),
-        ),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    },
-    options,
-  );
-};
-
 export const getCreate1MockHandler = (
   overrideResponse?:
     | IdResponse
@@ -4730,7 +4594,6 @@ export const getLokitAPIMock = () => [
   getCreateInviteMockHandler(),
   getVerifyInviteCodeMockHandler(),
   getRefreshInviteMockHandler(),
-  getConfirmInviteCodeMockHandler(),
   getCreate1MockHandler(),
   getCreateCouplePartnerMockHandler(),
   getMigratePreviousCoupleDataMockHandler(),
