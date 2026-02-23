@@ -1,7 +1,8 @@
 import Image from 'next/image';
+import * as S from './HomeEmptyState.styles';
+
 const folder3dSrc = '/folder_3d.png';
 const location3dIcon = '/location_3d.png';
-import * as S from './HomeEmptyState.styles';
 
 interface HomeEmptyStateProps {
   onAddPhoto: () => void;
