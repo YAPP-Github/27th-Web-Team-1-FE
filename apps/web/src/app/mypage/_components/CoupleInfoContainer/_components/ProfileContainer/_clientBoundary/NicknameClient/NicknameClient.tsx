@@ -80,7 +80,7 @@ export default function NicknameClient() {
       <Modal isOpen={isOpen} onClose={handleClose}>
         <Modal.Content>
           <ModalS.TextWrapper>
-            <ModalS.Title>닉네임 변경</ModalS.Title>
+            <ModalS.Title>변경할 닉네임을 입력해주세요</ModalS.Title>
           </ModalS.TextWrapper>
           <ModalS.InputSection>
             <Input
