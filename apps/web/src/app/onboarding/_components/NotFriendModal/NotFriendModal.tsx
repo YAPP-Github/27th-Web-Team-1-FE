@@ -19,7 +19,7 @@ export default function NotFriendModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Content>
         <S.Title>친구가 아닌가요?</S.Title>
-        <S.Description>새로고침 이후 다시 시도해주세요</S.Description>
+        <S.Description>친구가 아니라면 다시 시도해주세요</S.Description>
         <Modal.Footer>
           <S.ButtonWrapper>
             <TextButton text="돌아가기" onClick={onClose} />
