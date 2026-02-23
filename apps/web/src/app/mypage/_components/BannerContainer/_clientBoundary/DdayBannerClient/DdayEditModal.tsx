@@ -56,10 +56,10 @@ export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
               inputMode="numeric"
               placeholder="2025"
               value={year}
-              charCount={year.length || 4}
+              $charCount={year.length || 4}
               onChange={handleNumericChange(setYear, 4, new Date().getFullYear())}
             />
-            <S.DateSuffix isEmpty={!year}>년</S.DateSuffix>
+            <S.DateSuffix $isEmpty={!year}>년</S.DateSuffix>
           </S.DateBlock>
           <S.DateBlock>
             <S.DateInput
@@ -67,10 +67,10 @@ export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
               inputMode="numeric"
               placeholder="12"
               value={month}
-              charCount={month.length || 2}
+              $charCount={month.length || 2}
               onChange={handleNumericChange(setMonth, 2, 12)}
             />
-            <S.DateSuffix isEmpty={!month}>월</S.DateSuffix>
+            <S.DateSuffix $isEmpty={!month}>월</S.DateSuffix>
           </S.DateBlock>
           <S.DateBlock>
             <S.DateInput
@@ -78,10 +78,10 @@ export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
               inputMode="numeric"
               placeholder="17"
               value={day}
-              charCount={day.length || 2}
+              $charCount={day.length || 2}
               onChange={handleNumericChange(setDay, 2, 31)}
             />
-            <S.DateSuffix isEmpty={!day}>일</S.DateSuffix>
+            <S.DateSuffix $isEmpty={!day}>일</S.DateSuffix>
           </S.DateBlock>
         </S.DateInputRow>
         <Modal.Footer>

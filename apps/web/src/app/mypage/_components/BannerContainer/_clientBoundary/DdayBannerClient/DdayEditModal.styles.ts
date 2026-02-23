@@ -30,7 +30,7 @@ export const DateBlock = styled.div`
   min-width: 0;
 `;
 
-export const DateInput = styled.input<{ charCount: number }>`
+export const DateInput = styled.input<{ $charCount: number }>`
   ${({ theme }) => theme.typography.body16Regular};
   font-family: inherit;
   color: ${({ theme }) => theme.colors.gray[100]};
@@ -39,15 +39,15 @@ export const DateInput = styled.input<{ charCount: number }>`
   outline: none;
   text-align: right;
   padding: 0;
-  width: ${({ charCount }) => charCount}ch;
+  width: ${({ $charCount }) => $charCount}ch;
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.gray[400]};
   }
 `;
 
-export const DateSuffix = styled.span<{ isEmpty?: boolean }>`
+export const DateSuffix = styled.span<{ $isEmpty?: boolean }>`
   ${({ theme }) => theme.typography.body16Regular};
-  color: ${({ theme, isEmpty }) =>
-    isEmpty ? theme.colors.gray[400] : theme.colors.gray[100]};
+  color: ${({ theme, $isEmpty }) =>
+    $isEmpty ? theme.colors.gray[400] : theme.colors.gray[100]};
 `;
