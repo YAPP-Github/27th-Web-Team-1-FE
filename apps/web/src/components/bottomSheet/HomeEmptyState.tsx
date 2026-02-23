@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import folder3dSrc from '@/assets/images/folder_3d.png';
-import location3dIcon from '@/assets/images/location_3d.png';
+const folder3dSrc = '/folder_3d.png';
+const location3dIcon = '/location_3d.png';
 import * as S from './HomeEmptyState.styles';
 
 interface HomeEmptyStateProps {

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import toolsImage from '@/assets/images/tools_3d.png';
+const toolsImage = '/tools_3d.png';
 import MenuHeader from '@/components/header/menu/MenuHeader';
 import * as S from './page.styles';
 

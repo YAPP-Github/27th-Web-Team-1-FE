@@ -1,6 +1,6 @@
 'use client';
 
-import emptyMapImage from '@/assets/images/empty_map.png';
+const emptyMapImage = '/empty_map.png';
 import Button from '@/components/buttons/button/Button';
 import ImagePin from '@/components/image/ImagePin';
 import Image from 'next/image';
