@@ -14,12 +14,16 @@ export default function ProfileContainer({ isMe = false }: ProfileContainerProps
       {isMe ? (
         <>
           <ProfileImageClient />
-          <NicknameClient />
+          <div className={styles.nicknameArea}>
+            <NicknameClient />
+          </div>
         </>
       ) : (
         <>
           <ProfileImage />
-          <Nickname />
+          <div className={styles.nicknameArea}>
+            <Nickname />
+          </div>
         </>
       )}
     </div>

@@ -4,4 +4,8 @@
   line-height: 160%;
   letter-spacing: -0.02em;
   color: #d3d3d3; /* gray.200 */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

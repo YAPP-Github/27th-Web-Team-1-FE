@@ -3,4 +3,5 @@
   align-items: center;
   justify-content: center;
   gap: 28px;
+  padding-bottom: 34px; /* space for absolutely positioned nickname */
 }
