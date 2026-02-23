@@ -18,7 +18,7 @@ export default function useProfileImageUpload() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const { mutateAsync: getPresignedUrl } = useGetPresignedUrl();
-  const { mutate: updateProfileImage } = useUpdateProfileImage();
+  const { mutateAsync: updateProfileImage } = useUpdateProfileImage();
 
   const upload = useCallback(
     async (file: File) => {
@@ -73,7 +73,7 @@ export default function useProfileImageUpload() {
         );
 
         // 6. 서버에 프로필 이미지 URL 저장
-        updateProfileImage(
+        await updateProfileImage(
           { data: { profileImageUrl: objectUrl } },
           {
             onError: () => {
