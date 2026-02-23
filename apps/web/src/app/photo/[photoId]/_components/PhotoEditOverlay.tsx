@@ -115,7 +115,7 @@ export default function PhotoEditOverlay({
   } = useLocationModal({ stateSource: STATE_SOURCE.EDIT });
 
   const handleMapPreview = () => {
-    if (!photoDetail || !selectedLocation) return;
+    if (!photoDetail) return;
     setIsMapPreviewOpen(true);
   };
 
@@ -263,7 +263,7 @@ export default function PhotoEditOverlay({
             <S.MapPreviewButton
               type="button"
               onClick={handleMapPreview}
-              disabled={!selectedLocation}
+              disabled={!photoDetail}
             >
               <S.MapIcon>
                 <MapPinIcon width={16} height={17} />
