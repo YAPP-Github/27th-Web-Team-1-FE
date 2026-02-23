@@ -209,9 +209,14 @@ export async function customFetcher<TResponse>(
   }
 
   if (response.status === 204) {
-    return undefined as TResponse;
+    return null as TResponse;
   }
 
-  const json = (await response.json()) as { data: TResponse };
-  return json.data;
+  const json = (await response.json()) as Record<string, unknown>;
+
+  if (json !== null && typeof json === 'object' && 'data' in json) {
+    return json.data as TResponse;
+  }
+
+  return json as TResponse;
 }
