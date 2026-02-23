@@ -74,9 +74,7 @@ const usePhotoData = ({
   // 클라이언트 클러스터가 아닌 경우에만 API 호출
   // 또는 클라이언트 클러스터이지만 sessionStorage에 데이터가 없으면 API 호출 (fallback)
   const shouldFetchPhotoDetail =
-    enabled &&
-    photoId > 0 &&
-    (!isClientCluster || (!clientClusterPhotoDetail && isClientCluster));
+    enabled && photoId > 0 && (!isClientCluster || !clientClusterPhotoDetail);
 
   const photoDetailId = shouldFetchPhotoDetail ? photoId : 0;
   const { data: apiPhotoDetail, isLoading: isApiLoading } = useGetPhotoDetail(
@@ -107,7 +105,8 @@ const usePhotoData = ({
     ? convertClusterPhotoToPhotoResponse(firstClusterPhoto)
     : undefined;
 
-  const photoDetail = clientClusterPhotoDetail || apiPhotoDetail || clusterFallbackPhotoDetail;
+  const photoDetail =
+    clientClusterPhotoDetail || apiPhotoDetail || clusterFallbackPhotoDetail;
   const isPhotoLoading = shouldFetchPhotoDetail ? isApiLoading : false;
 
   const { data: albumPhotos } = useGetPhotos(albumIdFromQuery ?? 0, {
