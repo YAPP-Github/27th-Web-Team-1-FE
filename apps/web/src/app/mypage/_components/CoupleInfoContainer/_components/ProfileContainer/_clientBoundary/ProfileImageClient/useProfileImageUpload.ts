@@ -11,6 +11,7 @@ import { compressImage } from '@/app/photo/add/_utils/compressImage';
 import { dataUrlToBlob } from '@/utils/dataUrlToBlob';
 
 const PROFILE_MAX_DIMENSION = 512;
+const TARGET_IMAGE_CONTENT_TYPE = 'image/jpeg';
 
 export default function useProfileImageUpload() {
   const [isUploading, setIsUploading] = useState(false);
@@ -40,7 +41,7 @@ export default function useProfileImageUpload() {
 
         // 3. Presigned URL 발급
         const response = await getPresignedUrl({
-          data: { contentType: 'image/jpeg' },
+          data: { contentType: TARGET_IMAGE_CONTENT_TYPE },
         });
 
         const presignedUrl = response?.presignedUrl;
@@ -56,7 +57,7 @@ export default function useProfileImageUpload() {
         const uploadResponse = await fetch(presignedUrl, {
           method: 'PUT',
           body: compressedBlob,
-          headers: { 'Content-Type': 'image/jpeg' },
+          headers: { 'Content-Type': TARGET_IMAGE_CONTENT_TYPE },
         });
 
         if (!uploadResponse.ok) {
