@@ -1,7 +1,7 @@
 import Skeleton from '@/components/common/skeleton/Skeleton';
-import styles from './CoupleInfoSkeleton.module.css';
+import styles from './CoupleInfoFallback.module.css';
 
-export default function CoupleInfoSkeleton() {
+export default function CoupleInfoFallback() {
   return (
     <section className={styles.wrapper}>
       <div className={styles.profile}>
