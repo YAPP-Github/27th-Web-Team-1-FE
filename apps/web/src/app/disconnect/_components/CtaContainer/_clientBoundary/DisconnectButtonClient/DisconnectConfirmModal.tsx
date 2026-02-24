@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useDisconnect } from '@repo/api-client';
+import { useDisconnect, saveCoupleStatusCookie } from '@repo/api-client';
 import Modal from '@/components/popup/modal/Modal';
 import Input from '@/components/input/Input';
 import TextButton from '@/components/buttons/textButton/TextButton';
@@ -25,7 +25,8 @@ export default function DisconnectConfirmModal({
 
   const { mutate: disconnect, isPending } = useDisconnect({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await saveCoupleStatusCookie().catch(() => {});
         onClose();
         window.location.href = ROUTES.HOME;
       },

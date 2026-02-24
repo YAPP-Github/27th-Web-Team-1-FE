@@ -6,6 +6,7 @@ import {
   useVerifyInviteCode,
   useJoinByInviteCode,
   getGetMyStatusQueryKey,
+  saveCoupleStatusCookie,
   ApiError,
 } from '@repo/api-client';
 import type { VerifyCodeResult } from '../_types';
@@ -35,6 +36,7 @@ export function useCodeVerification() {
     async (code: string) => {
       try {
         await join({ data: { inviteCode: code } });
+        await saveCoupleStatusCookie().catch(() => {});
         queryClient.invalidateQueries({ queryKey: getGetMyStatusQueryKey() });
         return { success: true };
       } catch (error) {

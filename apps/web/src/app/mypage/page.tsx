@@ -5,7 +5,6 @@ import {
   getGetMyPageQueryKey,
   getMyPageServer,
   getMyStatusServer,
-  type MyPageResponse,
 } from '@repo/api-client';
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
 import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
@@ -28,9 +27,6 @@ export default async function MyPage() {
       console.error('[MyPage] prefetch failed:', error);
     });
 
-  const myPageData = queryClient.getQueryData<MyPageResponse>(getGetMyPageQueryKey());
-  const hasDday = myPageData?.coupledDay != null;
-
   const coupleStatus = await getMyStatusServer().catch((error) => {
     console.error('[MyPage] getMyStatus failed:', error);
     return null;
@@ -45,7 +41,7 @@ export default async function MyPage() {
           <CoupleInfoContainer isCoupled={coupleStatus?.isCoupled ?? false} />
         </div>
         <div className={styles.banner}>
-          <BannerContainer hasDday={hasDday} />
+          <BannerContainer />
         </div>
         <div className={styles.divider}>
           <Divider />

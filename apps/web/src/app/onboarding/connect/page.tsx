@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getMyStatus } from '@repo/api-client';
+import { getMyStatus, saveCoupleStatusCookie } from '@repo/api-client';
 import Button from '@/components/buttons/button/Button';
 import OnboardingHeader from '../_components/OnboardingHeader/OnboardingHeader';
 import { useInviteCode } from '../_hooks/useInviteCode';
@@ -92,11 +92,12 @@ export default function ConnectPage() {
     return () => clearInterval(interval);
   }, [inviteCode?.expiresAt]);
 
-  const handleStartClick = useCallback(() => {
+  const handleStartClick = useCallback(async () => {
     if (!isCoupled) {
       showToast('파트너가 접속하면 로킷을 사용할 수 있어요', 3000, 'info');
       return;
     }
+    await saveCoupleStatusCookie().catch(() => {});
     markStepCompleted('connect');
     router.push(ROUTES.HOME);
   }, [isCoupled, markStepCompleted, router, showToast]);

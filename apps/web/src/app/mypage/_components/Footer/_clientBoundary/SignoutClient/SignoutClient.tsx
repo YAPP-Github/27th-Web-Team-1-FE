@@ -1,22 +1,29 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useGetMyStatus } from '@repo/api-client';
 import usePopup from '@/hooks/usePopup';
 import Modal from '@/components/popup/modal/Modal';
 import TextButton from '@/components/buttons/textButton/TextButton';
 import { ROUTES } from '@/constants/routes';
+import { COUPLE_STATUS } from '@/constants/coupleStatus';
 import * as S from './SignoutClient.styles';
+
+function getCookieValue(name: string): string | undefined {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match?.[1];
+}
 
 export default function SignoutClient() {
   const router = useRouter();
-  const { data: coupleStatus, isLoading, isError } = useGetMyStatus();
   const { isOpen, handleOpen, handleClose } = usePopup();
 
   const handleClick = () => {
-    if (isLoading || isError) return;
+    const coupleStatus = getCookieValue('coupleStatus');
 
-    if (coupleStatus?.isCoupled) {
+    if (
+      coupleStatus === COUPLE_STATUS.COUPLED ||
+      coupleStatus === COUPLE_STATUS.DISCONNECTED_BY_PARTNER
+    ) {
       handleOpen();
     } else {
       router.push(ROUTES.SIGNOUT);

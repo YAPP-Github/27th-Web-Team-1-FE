@@ -5,20 +5,13 @@ import TotalPhotoCountBannerClient from './_clientBoundary/TotalPhotoCountBanner
 import BannerFallback from './_components/BannerFallback/BannerFallback';
 import styles from './BannerContainer.module.css';
 
-interface BannerContainerProps {
-  hasDday: boolean;
-}
-
-export default function BannerContainer({ hasDday }: BannerContainerProps) {
+export default function BannerContainer() {
   return (
     <section className={styles.wrapper}>
-      {hasDday ? (
-        <Suspense fallback={<BannerFallback />}>
-          <DdayBannerClient />
-        </Suspense>
-      ) : (
-        <DdayEmptyBannerClient />
-      )}
+      <Suspense fallback={<BannerFallback />}>
+        <DdayBannerClient />
+      </Suspense>
+      <DdayEmptyBannerClient />
       <Suspense fallback={<BannerFallback />}>
         <TotalPhotoCountBannerClient />
       </Suspense>

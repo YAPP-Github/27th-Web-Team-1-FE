@@ -1,6 +1,6 @@
 'use client';
 
-import { useWithdraw } from '@repo/api-client';
+import { useWithdraw, ApiError } from '@repo/api-client';
 import Button from '@/components/buttons/button/Button';
 import Modal from '@/components/popup/modal/Modal';
 import TextButton from '@/components/buttons/textButton/TextButton';
@@ -20,9 +20,13 @@ export default function SignoutButtonClient() {
       onSuccess: () => {
         window.location.href = ROUTES.LOGIN;
       },
-      onError: () => {
+      onError: (error) => {
         handleClose();
-        showToast('커플 연결을 먼저 끊어주세요.', 3000, 'warn');
+        const message =
+          error instanceof ApiError && error.detail
+            ? error.detail
+            : '회원 탈퇴에 실패했어요.';
+        showToast(message, 3000, 'warn');
       },
     },
   });

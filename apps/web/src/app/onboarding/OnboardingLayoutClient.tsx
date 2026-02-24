@@ -18,19 +18,13 @@ export default function OnboardingLayoutClient({
   const { completedSteps } = useOnboardingContext();
 
   useEffect(() => {
-    if (!initialCoupleStatus) {
-      return;
-    }
-
-    // 이미 커플 연결 완료된 경우 홈으로
-    if (initialCoupleStatus.isCoupled) {
-      router.replace(ROUTES.HOME);
-      return;
-    }
-
     // 경로별 가드 로직
-    // profile 완료 전 connect 접근 금지
-    if (pathname === ROUTES.ONBOARDING.CONNECT && !completedSteps.profile) {
+    // profile 완료 전 connect 접근 금지 (기존 사용자는 이미 프로필이 있으므로 스킵)
+    if (
+      pathname === ROUTES.ONBOARDING.CONNECT &&
+      !completedSteps.profile &&
+      !initialCoupleStatus
+    ) {
       router.replace(ROUTES.ONBOARDING.PROFILE);
       return;
     }
