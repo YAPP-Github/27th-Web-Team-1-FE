@@ -1,11 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
+import { ROUTES } from '@/constants/routes';
 import * as S from './DisconnectClient.styles';
 
 export default function DisconnectClient() {
+  const router = useRouter();
+
   const handleClick = () => {
-    // TODO: 연인 연결 끊기 로직 구현
+    router.push(ROUTES.DISCONNECT);
   };
 
   return (

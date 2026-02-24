@@ -1,0 +1,36 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: rgba(226, 230, 255, 0.05);
+  padding: 0 16px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.bar {
+  height: 1px;
+  background: rgba(226, 230, 255, 0.05);
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 160%;
+  letter-spacing: -0.02em;
+  color: #b2b2b4;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 160%;
+  letter-spacing: -0.02em;
+  color: #d3d3d3;
+}
