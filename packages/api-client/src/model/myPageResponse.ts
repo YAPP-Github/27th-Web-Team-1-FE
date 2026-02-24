@@ -10,6 +10,8 @@
  * 마이페이지 조회 응답
  */
 export interface MyPageResponse {
+  /** 내 이메일 */
+  myEmail?: string;
   /** 내 닉네임 */
   myName?: string;
   /** 내 프로필 이미지 URL */
@@ -18,7 +20,9 @@ export interface MyPageResponse {
   partnerName?: string;
   /** 상대방 프로필 이미지 URL */
   partnerProfileImageUrl?: string;
-  /** 로킷을 커플 연결한 이후 지금까지의 사용한 날짜 (미연결 시 null) */
+  /** 처음 만난 날짜 (미설정 시 null) */
+  firstMetDate?: string;
+  /** 처음 만난 날짜 기준 D-Day (미설정 시 null) */
   coupledDay?: number;
   /** 커플 내 전체 사진 수 */
   couplePhotoCount?: number;

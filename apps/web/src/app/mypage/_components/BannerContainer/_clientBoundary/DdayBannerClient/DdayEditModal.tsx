@@ -13,17 +13,13 @@ import * as S from './DdayEditModal.styles';
 interface DdayEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  coupledDay?: number | null;
-  savedDate?: string | null;
-  onSaved?: (date: string) => void;
+  initialDate?: string;
 }
 
 export default function DdayEditModal({
   isOpen,
   onClose,
-  coupledDay,
-  savedDate,
-  onSaved,
+  initialDate,
 }: DdayEditModalProps) {
   const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
@@ -33,22 +29,13 @@ export default function DdayEditModal({
   const { mutate: updateFirstMetDate, isPending } = useUpdateFirstMetDate();
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    if (savedDate) {
-      const [y, m, d] = savedDate.split('-');
+    if (isOpen && initialDate) {
+      const [y, m, d] = initialDate.split('-');
       setYear(y);
       setMonth(String(Number(m)));
       setDay(String(Number(d)));
-    } else if (coupledDay != null) {
-      const today = new Date();
-      const utcToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
-      const met = new Date(utcToday - (coupledDay - 1) * 24 * 60 * 60 * 1000);
-      setYear(String(met.getUTCFullYear()));
-      setMonth(String(met.getUTCMonth() + 1));
-      setDay(String(met.getUTCDate()));
     }
-  }, [isOpen, savedDate, coupledDay]);
+  }, [isOpen, initialDate]);
 
   const isValidDate = () => {
     if (!year || !month || !day) return false;
@@ -75,21 +62,19 @@ export default function DdayEditModal({
 
     const today = new Date();
     const met = new Date(Number(year), Number(month) - 1, Number(day));
-    const diffDays = Math.floor(
-      (today.getTime() - met.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const diffDays =
+      Math.floor((today.getTime() - met.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     queryClient.cancelQueries({ queryKey });
     const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
     queryClient.setQueryData<MyPageResponse>(queryKey, (old) =>
-      old ? { ...old, coupledDay: diffDays } : old,
+      old ? { ...old, coupledDay: diffDays, firstMetDate } : old,
     );
 
     updateFirstMetDate(
       { data: { firstMetDate } },
       {
         onSuccess: () => {
-          onSaved?.(firstMetDate);
           onClose();
         },
         onError: () => {
