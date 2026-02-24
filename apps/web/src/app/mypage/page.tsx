@@ -1,7 +1,11 @@
 export const dynamic = 'force-dynamic';
 
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getGetMyPageQueryKey, getMyPageServer } from '@repo/api-client';
+import {
+  getGetMyPageQueryKey,
+  getMyPageServer,
+  type MyPageResponse,
+} from '@repo/api-client';
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
 import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
 import BannerContainer from './_components/BannerContainer/BannerContainer';
@@ -19,7 +23,12 @@ export default async function MyPage() {
       queryKey: getGetMyPageQueryKey(),
       queryFn: () => getMyPageServer(),
     })
-    .catch(() => {});
+    .catch((error) => {
+      console.error('[MyPage] prefetch failed:', error);
+    });
+
+  const myPageData = queryClient.getQueryData<MyPageResponse>(getGetMyPageQueryKey());
+  const hasDday = myPageData?.coupledDay != null;
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -30,7 +39,7 @@ export default async function MyPage() {
           <CoupleInfoContainer />
         </div>
         <div className={styles.banner}>
-          <BannerContainer />
+          <BannerContainer hasDday={hasDday} />
         </div>
         <div className={styles.divider}>
           <Divider />
