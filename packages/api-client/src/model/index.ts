@@ -84,6 +84,7 @@ export * from './searchPlacesParams';
 export * from './selectableAlbum';
 export * from './selectableAlbumResponse';
 export * from './updateAlbumTitleRequest';
+export * from './updateFirstMetDateRequest';
 export * from './updateNicknameRequest';
 export * from './updateParams';
 export * from './updatePhotoRequest';
