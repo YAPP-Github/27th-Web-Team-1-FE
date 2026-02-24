@@ -7,7 +7,7 @@ type MSWProviderProps = {
 };
 
 export function MSWProvider({ children }: MSWProviderProps) {
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(() => typeof window === 'undefined');
 
   useEffect(() => {
     async function enableMocking() {
