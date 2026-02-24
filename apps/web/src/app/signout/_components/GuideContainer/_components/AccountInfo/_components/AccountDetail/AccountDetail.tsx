@@ -7,7 +7,7 @@ export default async function AccountDetail() {
 
   return (
     <div className={styles.box}>
-      <span className={styles.email}>{data.myEmail}</span>
+      <span className={styles.email}>{data.myEmail ?? '-'}</span>
       <div className={styles.kakaoCircle}>
         <KakaoIcon width={9} height={9} />
       </div>
