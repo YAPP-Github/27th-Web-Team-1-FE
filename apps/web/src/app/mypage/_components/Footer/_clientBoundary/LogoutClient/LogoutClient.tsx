@@ -29,7 +29,7 @@ export default function LogoutClient() {
       <S.Button type="button" onClick={handleOpen}>
         로그아웃
       </S.Button>
-      <Modal isOpen={isOpen} onClose={handleClose}>
+      <Modal isOpen={isOpen} onClose={isPending ? () => {} : handleClose}>
         <Modal.Content>
           <S.Title>로그아웃 할까요?</S.Title>
           <Modal.Footer>

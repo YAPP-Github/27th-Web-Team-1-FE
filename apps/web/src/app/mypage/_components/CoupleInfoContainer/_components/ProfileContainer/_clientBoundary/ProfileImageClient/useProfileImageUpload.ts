@@ -73,21 +73,11 @@ export default function useProfileImageUpload() {
         );
 
         // 6. 서버에 프로필 이미지 URL 저장
-        await updateProfileImage(
-          { data: { profileImageUrl: objectUrl } },
-          {
-            onError: () => {
-              queryClient.setQueryData(queryKey, previousData);
-              showToast('프로필 사진 변경에 실패했어요');
-            },
-            onSettled: () => {
-              queryClient.invalidateQueries({ queryKey });
-            },
-          },
-        );
+        await updateProfileImage({ data: { profileImageUrl: objectUrl } });
+        await queryClient.invalidateQueries({ queryKey });
       } catch {
         queryClient.setQueryData(queryKey, previousData);
-        showToast('이미지 업로드에 실패했어요');
+        showToast('프로필 사진 변경에 실패했어요');
       } finally {
         URL.revokeObjectURL(localPreviewUrl);
         setIsUploading(false);
