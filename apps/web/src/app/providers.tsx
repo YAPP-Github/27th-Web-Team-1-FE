@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { theme } from '@/theme';
-import { MSWProvider } from '@/mocks/MSWProvider';
+import { EnableMockClient } from '@/mocks/EnableMockClient';
 import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider } from '@repo/api-client';
 import { ToastProvider } from '@/components/toast';
@@ -83,9 +83,10 @@ export function AppProviders({
     </CacheProvider>
   );
 
-  if (enableMocking) {
-    return <MSWProvider>{content}</MSWProvider>;
-  }
-
-  return content;
+  return (
+    <>
+      {enableMocking && <EnableMockClient />}
+      {content}
+    </>
+  );
 }

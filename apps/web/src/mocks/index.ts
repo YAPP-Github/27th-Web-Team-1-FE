@@ -1,2 +1,2 @@
 export { handlers } from './handlers';
-export { MSWProvider } from './MSWProvider';
+export { EnableMockClient } from './EnableMockClient';
