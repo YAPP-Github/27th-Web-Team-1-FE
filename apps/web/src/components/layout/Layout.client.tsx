@@ -32,10 +32,13 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
       return;
     }
 
-    if (!coupleStatus?.isCoupled) {
+    const isReconnectAllowedPath =
+      pathname === ROUTES.MYPAGE || pathname === ROUTES.RECONNECT;
+
+    if (!coupleStatus?.isCoupled && !isReconnectAllowedPath) {
       router.replace(ROUTES.ONBOARDING.START);
     }
-  }, [coupleStatus, isLoading, isError, router, shouldSkipQuery]);
+  }, [coupleStatus, isLoading, isError, router, shouldSkipQuery, pathname]);
 
   return <Container>{children}</Container>;
 }

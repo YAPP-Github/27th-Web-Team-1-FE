@@ -2,10 +2,14 @@ import ReconnectClient from './_clientBoundary/ReconnectClient/ReconnectClient';
 import DisconnectClient from './_clientBoundary/DisconnectClient/DisconnectClient';
 import styles from './MenuContainer.module.css';
 
-export default function MenuContainer() {
+interface MenuContainerProps {
+  isCoupled: boolean;
+}
+
+export default function MenuContainer({ isCoupled }: MenuContainerProps) {
   return (
     <section className={styles.wrapper}>
-      <ReconnectClient isShow />
+      {!isCoupled && <ReconnectClient />}
       <DisconnectClient />
     </section>
   );

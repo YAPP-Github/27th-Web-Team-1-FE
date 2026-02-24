@@ -1,17 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
+import { ROUTES } from '@/constants/routes';
 import * as S from './ReconnectClient.styles';
 
-interface ReconnectClientProps {
-  isShow?: boolean;
-}
-
-export default function ReconnectClient({ isShow = false }: ReconnectClientProps) {
-  if (!isShow) return null;
+export default function ReconnectClient() {
+  const router = useRouter();
 
   const handleClick = () => {
-    // TODO: 재연결 로직 구현
+    router.push(ROUTES.RECONNECT);
   };
 
   return (

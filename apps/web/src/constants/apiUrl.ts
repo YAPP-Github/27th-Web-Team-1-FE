@@ -23,6 +23,7 @@ export const API_URL = {
     BASE: '/couples/me',
     STATUS: '/couples/me/status',
     FIRST_MET_DATE: '/couples/me/first-met-date',
+    INVITES: '/couples/invites',
   },
   MY_PAGE: {
     BASE: '/my-page',

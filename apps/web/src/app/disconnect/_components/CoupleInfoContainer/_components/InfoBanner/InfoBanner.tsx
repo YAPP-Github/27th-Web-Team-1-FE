@@ -5,7 +5,7 @@ import styles from './InfoBanner.module.css';
 
 const ROWS = [
   { label: '연결한 기간', type: 'connectionPeriod' },
-  { label: 'LOKIT에 업로드된 총 사진 갯수', type: 'photoCount' },
+  { label: 'LOKIT에 업로드된 총 사진 개수', type: 'photoCount' },
   { label: '재연결 할 수 있는 기간', type: 'reconnectionPeriod' },
 ] as const;
 

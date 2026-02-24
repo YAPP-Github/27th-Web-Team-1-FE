@@ -4,6 +4,7 @@ import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query
 import {
   getGetMyPageQueryKey,
   getMyPageServer,
+  getMyStatusServer,
   type MyPageResponse,
 } from '@repo/api-client';
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
@@ -30,6 +31,11 @@ export default async function MyPage() {
   const myPageData = queryClient.getQueryData<MyPageResponse>(getGetMyPageQueryKey());
   const hasDday = myPageData?.coupledDay != null;
 
+  const coupleStatus = await getMyStatusServer().catch((error) => {
+    console.error('[MyPage] getMyStatus failed:', error);
+    return null;
+  });
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <main className={styles.wrapper}>
@@ -44,7 +50,7 @@ export default async function MyPage() {
         <div className={styles.divider}>
           <Divider />
         </div>
-        <MenuContainer />
+        <MenuContainer isCoupled={coupleStatus?.isCoupled ?? false} />
         <div className={styles.footer}>
           <Footer />
         </div>
