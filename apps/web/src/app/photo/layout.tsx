@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 export default function PhotoLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <Suspense>{children}</Suspense>;
 }

@@ -8,7 +8,8 @@ import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { theme } from '@/theme';
 import { EnableMockClient } from '@/mocks/EnableMockClient';
 import GlobalStyles from '@/theme/globalStyles';
-import { setAuthHeaderProvider } from '@repo/api-client';
+import { setAuthHeaderProvider, setErrorCaptureProvider } from '@repo/api-client';
+import { captureApiError } from '@repo/sentry/captureApiError';
 import { ToastProvider } from '@/components/toast';
 import { PhotoProvider } from './photo/_contexts/PhotoContext';
 import { PendingPhotosProvider } from '@/stores/pendingPhotos/PendingPhotosContext';
@@ -42,9 +43,11 @@ export function AppProviders({
     // 쿠키 기반 인증에서는 Authorization 헤더가 필요하지 않음
     // 모든 요청에서 브라우저가 자동으로 쿠키 전송
     setAuthHeaderProvider(null);
+    setErrorCaptureProvider(captureApiError);
 
     return () => {
       setAuthHeaderProvider(null);
+      setErrorCaptureProvider(null);
     };
   }, []);
 

@@ -1,5 +1,3 @@
-import { captureApiError } from '@repo/sentry/captureApiError';
-
 export type ApiErrorData = {
   errorCode: string;
   detail: string;
@@ -45,11 +43,17 @@ type FetcherConfig = {
 };
 
 export type AuthHeaderProvider = (config: FetcherConfig) => string | undefined;
+export type ErrorCaptureProvider = (error: ApiError) => void;
 
 let authHeaderProvider: AuthHeaderProvider | null = null;
+let errorCaptureProvider: ErrorCaptureProvider | null = null;
 
 export const setAuthHeaderProvider = (provider: AuthHeaderProvider | null) => {
   authHeaderProvider = provider;
+};
+
+export const setErrorCaptureProvider = (provider: ErrorCaptureProvider | null) => {
+  errorCaptureProvider = provider;
 };
 
 const DEFAULT_HEADERS = {
@@ -208,7 +212,7 @@ export async function customFetcher<TResponse>(
       };
     }
     const apiError = new ApiError(errorResponse);
-    captureApiError(apiError);
+    errorCaptureProvider?.(apiError);
     throw apiError;
   }
 
