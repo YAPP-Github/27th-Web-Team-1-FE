@@ -10,6 +10,10 @@
     "build": "tsc --emitDeclarationOnly"
   },
   "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
     "./captureApiError": {
       "import": "./src/captureApiError.ts",
       "types": "./src/captureApiError.ts"
