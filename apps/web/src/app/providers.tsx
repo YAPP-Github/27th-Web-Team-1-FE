@@ -9,7 +9,7 @@ import { theme } from '@/theme';
 import { EnableMockClient } from '@/mocks/EnableMockClient';
 import GlobalStyles from '@/theme/globalStyles';
 import { setAuthHeaderProvider, setErrorCaptureProvider } from '@repo/api-client';
-import { captureApiError } from '@repo/sentry/captureApiError';
+import { captureApiError } from '@repo/sentry';
 import { ToastProvider } from '@/components/toast';
 import { PhotoProvider } from './photo/_contexts/PhotoContext';
 import { PendingPhotosProvider } from '@/stores/pendingPhotos/PendingPhotosContext';

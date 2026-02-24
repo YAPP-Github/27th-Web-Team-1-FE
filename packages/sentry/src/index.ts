@@ -33,3 +33,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 export { Sentry };
+export { captureApiError } from './captureApiError';

@@ -9,10 +9,6 @@
     "lint": "eslint src --ext .ts",
     "build": "tsc --emitDeclarationOnly"
   },
-  "exports": {
-    ".": "./src/index.ts",
-    "./captureApiError": "./src/captureApiError.ts"
-  },
   "dependencies": {
     "@sentry/nextjs": "^9.0.0"
   },
