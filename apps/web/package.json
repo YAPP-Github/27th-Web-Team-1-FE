@@ -20,6 +20,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@repo/api-client": "workspace:*",
+    "@repo/sentry": "workspace:*",
     "@tanstack/react-query": "^5.64.0",
     "@tanstack/react-query-devtools": "^5.64.0",
     "framer-motion": "^12.29.0",
