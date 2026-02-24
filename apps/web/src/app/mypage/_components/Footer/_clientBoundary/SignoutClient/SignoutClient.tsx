@@ -41,8 +41,7 @@ export default function SignoutClient() {
             <TextButton
               text="이동하기"
               variant="negative"
-              // TODO: 연결 끊기 화면으로 이동하도록 변경
-              onClick={() => router.push(ROUTES.SIGNOUT)}
+              onClick={() => router.push(ROUTES.DISCONNECT)}
               style={{ flex: 1 }}
             />
           </Modal.Footer>

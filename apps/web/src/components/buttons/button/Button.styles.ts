@@ -9,7 +9,11 @@ const variantStyles = {
     color: ${theme.colors.gray[1000]};
     border-radius: 8px;
 
-    &:hover {
+    &:hover:not(:disabled) {
+      background: ${theme.colors.gradient.mintHover};
+    }
+
+    &:active:not(:disabled) {
       background: ${theme.colors.gradient.mintHover};
     }
 
@@ -17,10 +21,6 @@ const variantStyles = {
       color: ${theme.colors.gray[600]};
       background: ${theme.colors.gray[700]};
       cursor: not-allowed;
-    }
-
-    &:active {
-      background: ${theme.colors.gradient.mintHover};
     }
   `,
 
@@ -29,7 +29,11 @@ const variantStyles = {
     color: ${theme.colors.gray[1000]};
     border-radius: 8px;
 
-    &:hover {
+    &:hover:not(:disabled) {
+      background: ${theme.colors.gray[100]};
+    }
+
+    &:active:not(:disabled) {
       background: ${theme.colors.gray[100]};
     }
 
@@ -37,10 +41,6 @@ const variantStyles = {
       color: ${theme.colors.gray[600]};
       background: ${theme.colors.gray[700]};
       cursor: not-allowed;
-    }
-
-    &:active {
-      background: ${theme.colors.gray[100]};
     }
   `,
 
@@ -50,7 +50,11 @@ const variantStyles = {
     border-radius: 8px;
     border: 1px solid ${theme.colors.blueWhite.border10};
 
-    &:hover {
+    &:hover:not(:disabled) {
+      background: ${theme.colors.gray[800]};
+    }
+
+    &:active:not(:disabled) {
       background: ${theme.colors.gray[800]};
     }
 
@@ -58,10 +62,6 @@ const variantStyles = {
       background: ${theme.colors.gray[700]};
       color: ${theme.colors.gray[600]};
       cursor: not-allowed;
-    }
-
-    &:active {
-      background: ${theme.colors.gray[800]};
     }
   `,
 
@@ -70,7 +70,11 @@ const variantStyles = {
     color: ${theme.colors.gray[0]};
     border-radius: 8px;
 
-    &:hover {
+    &:hover:not(:disabled) {
+      background: ${theme.colors.status.red[300]};
+    }
+
+    &:active:not(:disabled) {
       background: ${theme.colors.status.red[300]};
     }
 
@@ -78,10 +82,6 @@ const variantStyles = {
       background: ${theme.colors.gray[700]};
       color: ${theme.colors.gray[600]};
       cursor: not-allowed;
-    }
-
-    &:active {
-      background: ${theme.colors.status.red[300]};
     }
   `,
 };

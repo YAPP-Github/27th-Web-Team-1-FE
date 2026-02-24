@@ -6,3 +6,8 @@
   color: #ffffff;
   text-align: center;
 }
+
+.inlineSkeleton {
+  display: inline-block;
+  vertical-align: middle;
+}

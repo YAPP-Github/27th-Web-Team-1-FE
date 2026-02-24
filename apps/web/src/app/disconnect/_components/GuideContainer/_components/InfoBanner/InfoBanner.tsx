@@ -1,9 +1,10 @@
 import CheckSmallIcon from '@/assets/images/checkSmall.svg';
+import { RECONNECTION_DAYS } from '@/app/disconnect/constants';
 import styles from './InfoBanner.module.css';
 
 const INFO_ITEMS = [
   '커플 연결이 해제돼요',
-  '연결 해제일로부터 31일이 지나면 이전 데이터는 복구할 수 없어요',
+  `연결 해제일로부터 ${RECONNECTION_DAYS}일이 지나면 이전 데이터는 복구할 수 없어요`,
 ] as const;
 
 export default function InfoBanner() {

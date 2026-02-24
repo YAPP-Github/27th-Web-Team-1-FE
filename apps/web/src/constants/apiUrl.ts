@@ -20,6 +20,7 @@ export const API_URL = {
     LOCATION: '/map/location',
   },
   COUPLES: {
+    BASE: '/couples/me',
     STATUS: '/couples/me/status',
     FIRST_MET_DATE: '/couples/me/first-met-date',
   },
