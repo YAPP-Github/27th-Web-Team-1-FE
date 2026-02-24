@@ -64,6 +64,26 @@ const variantStyles = {
       background: ${theme.colors.gray[800]};
     }
   `,
+
+  danger: (theme: Theme) => css`
+    background: ${theme.colors.status.red[200]};
+    color: ${theme.colors.gray[0]};
+    border-radius: 8px;
+
+    &:hover {
+      background: ${theme.colors.status.red[300]};
+    }
+
+    &:disabled {
+      background: ${theme.colors.gray[700]};
+      color: ${theme.colors.gray[600]};
+      cursor: not-allowed;
+    }
+
+    &:active {
+      background: ${theme.colors.status.red[300]};
+    }
+  `,
 };
 
 const sizeStyles = {

@@ -1,0 +1,17 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heading {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 160%;
+  letter-spacing: -0.02em;
+  color: #d3d3d3;
+}
+
+.required {
+  color: #ff4d5f;
+}

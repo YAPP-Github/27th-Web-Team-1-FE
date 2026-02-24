@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #302f32;
+  border: 1px solid #403f44;
+}
+
+.label {
+  width: 220px;
+  height: 16px;
+  border-radius: 4px;
+  background: #302f32;
+}

@@ -1,0 +1,47 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.guide {
+  margin-top: 36px;
+}
+
+.divider {
+  margin-top: 28px;
+}
+
+.reason {
+  margin-top: 28px;
+  padding: 0 16px;
+}
+
+.comment {
+  margin-top: 16px;
+  padding: 0 16px;
+}
+
+.cta {
+  margin-top: 56px;
+  padding: 0 16px;
+  margin-bottom: 18px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
