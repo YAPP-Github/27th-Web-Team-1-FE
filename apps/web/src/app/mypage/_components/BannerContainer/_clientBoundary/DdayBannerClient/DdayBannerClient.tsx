@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
 import { useGetMyPageSuspense } from '@repo/api-client';
 import usePopup from '@/hooks/usePopup';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
@@ -12,11 +11,6 @@ export default function DdayBannerClient() {
   const dday = data.coupledDay;
   const hasDday = dday !== null && dday !== undefined;
   const { isOpen, handleOpen, handleClose } = usePopup();
-  const savedDateRef = useRef<string | null>(null);
-
-  const handleSaved = useCallback((date: string) => {
-    savedDateRef.current = date;
-  }, []);
 
   return (
     <>
@@ -56,9 +50,7 @@ export default function DdayBannerClient() {
       <DdayEditModal
         isOpen={isOpen}
         onClose={handleClose}
-        coupledDay={dday}
-        savedDate={savedDateRef.current}
-        onSaved={handleSaved}
+        initialDate={data.firstMetDate}
       />
     </>
   );
