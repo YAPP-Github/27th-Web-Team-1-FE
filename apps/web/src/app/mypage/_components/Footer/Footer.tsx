@@ -1,4 +1,5 @@
 import LogoutClient from './_clientBoundary/LogoutClient/LogoutClient';
+import SignoutClient from './_clientBoundary/SignoutClient/SignoutClient';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -6,9 +7,7 @@ export default function Footer() {
     <footer className={styles.wrapper}>
       <LogoutClient />
       <span className={styles.divider} />
-      <button type="button" className={styles.footerButton}>
-        회원 탈퇴
-      </button>
+      <SignoutClient />
     </footer>
   );
 }

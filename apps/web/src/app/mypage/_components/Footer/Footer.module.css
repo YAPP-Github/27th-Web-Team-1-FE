@@ -5,18 +5,6 @@
   gap: 12px;
 }
 
-.footerButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #78787d; /* gray.500 */
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 160%;
-  letter-spacing: -0.02em;
-  padding: 0;
-}
-
 .divider {
   width: 1px;
   height: 17px;

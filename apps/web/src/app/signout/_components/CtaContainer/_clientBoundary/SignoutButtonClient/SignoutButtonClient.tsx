@@ -1,19 +1,62 @@
 'use client';
 
+import { useWithdraw } from '@repo/api-client';
 import Button from '@/components/buttons/button/Button';
+import Modal from '@/components/popup/modal/Modal';
+import TextButton from '@/components/buttons/textButton/TextButton';
+import usePopup from '@/hooks/usePopup';
+import { useToast } from '@/components/toast/ToastProvider';
+import { useSignoutContext } from '@/app/signout/_contexts/SignoutContext';
+import { ROUTES } from '@/constants/routes';
+import * as S from './SignoutButtonClient.styles';
 
 export default function SignoutButtonClient() {
-  const handleSignout = () => {
-    // TODO: 탈퇴 로직 구현
-  };
+  const { isSubmitEnabled } = useSignoutContext();
+  const { isOpen, handleOpen, handleClose } = usePopup();
+  const { showToast } = useToast();
+
+  const { mutate: withdraw, isPending } = useWithdraw({
+    mutation: {
+      onSuccess: () => {
+        window.location.href = ROUTES.LOGIN;
+      },
+      onError: () => {
+        handleClose();
+        showToast('커플 연결을 먼저 끊어주세요.', 3000, 'warn');
+      },
+    },
+  });
 
   return (
-    <Button
-      text="로킷 탈퇴하기"
-      onClick={handleSignout}
-      size="large"
-      variant="danger"
-      style={{ width: '100%' }}
-    />
+    <>
+      <Button
+        text="로킷 탈퇴하기"
+        onClick={handleOpen}
+        size="large"
+        variant="danger"
+        disabled={!isSubmitEnabled}
+        style={{ width: '100%' }}
+      />
+      <Modal isOpen={isOpen} onClose={handleClose}>
+        <Modal.Content>
+          <S.Title>정말 탈퇴하시겠어요?</S.Title>
+          <Modal.Footer>
+            <TextButton
+              text="돌아가기"
+              onClick={handleClose}
+              disabled={isPending}
+              style={{ flex: 1 }}
+            />
+            <TextButton
+              text="탈퇴하기"
+              variant="negative"
+              onClick={() => withdraw()}
+              disabled={isPending}
+              style={{ flex: 1 }}
+            />
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </>
   );
 }

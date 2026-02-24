@@ -27,6 +27,9 @@ export const API_URL = {
     NICKNAME: '/my-page/nickname',
     PROFILE_IMAGE: '/my-page/profile-image',
   },
+  USERS: {
+    ME: '/users/me',
+  },
   PHOTOS: {
     BASE: '/photos',
     BY_ALBUM: (albumId: number | string) => `/photos/album/${albumId}`,

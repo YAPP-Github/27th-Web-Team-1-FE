@@ -3,6 +3,7 @@ import { locationHandlers } from './location';
 import { mapHandlers } from './map';
 import { mypageHandlers } from './mypage';
 import { photosHandlers } from './photos';
+import { usersHandlers } from './users';
 
 export const customHandlers = [
   ...albumsHandlers,
@@ -10,4 +11,5 @@ export const customHandlers = [
   ...mapHandlers,
   ...mypageHandlers,
   ...photosHandlers,
+  ...usersHandlers,
 ];

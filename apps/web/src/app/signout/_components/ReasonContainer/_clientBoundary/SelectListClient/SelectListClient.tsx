@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import CheckSmallIcon from '@/assets/images/checkSmall.svg';
+import { useSignoutContext } from '@/app/signout/_contexts/SignoutContext';
 import * as S from './SelectListClient.styles';
 
 const REASON_OPTIONS = [
@@ -12,25 +12,13 @@ const REASON_OPTIONS = [
 ] as const;
 
 export default function SelectListClient() {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  const handleSelect = (reason: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(reason)) {
-        next.delete(reason);
-      } else {
-        next.add(reason);
-      }
-      return next;
-    });
-  };
+  const { selectedReasons, toggleReason } = useSignoutContext();
 
   return (
     <S.List>
       {REASON_OPTIONS.map((reason) => (
-        <S.Item key={reason} onClick={() => handleSelect(reason)}>
-          <S.Circle isChecked={selected.has(reason)}>
+        <S.Item key={reason} onClick={() => toggleReason(reason)}>
+          <S.Circle isChecked={selectedReasons.has(reason)}>
             <CheckSmallIcon />
           </S.Circle>
           <S.Label>{reason}</S.Label>

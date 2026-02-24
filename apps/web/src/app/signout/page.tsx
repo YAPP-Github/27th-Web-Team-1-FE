@@ -1,4 +1,5 @@
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
+import SignoutFormClient from './_clientBoundary/SignoutFormClient/SignoutFormClient';
 import GuideContainer from './_components/GuideContainer/GuideContainer';
 import ReasonContainer from './_components/ReasonContainer/ReasonContainer';
 import CommentContainer from './_components/CommentContainer/CommentContainer';
@@ -14,21 +15,23 @@ export default function SignoutPage() {
       <div className={styles.header}>
         <HeaderClient />
       </div>
-      <div className={styles.guide}>
-        <GuideContainer />
-      </div>
-      <div className={styles.divider}>
-        <Divider />
-      </div>
-      <div className={styles.reason}>
-        <ReasonContainer />
-      </div>
-      <div className={styles.comment}>
-        <CommentContainer />
-      </div>
-      <div className={styles.cta}>
-        <CtaContainer />
-      </div>
+      <SignoutFormClient>
+        <div className={styles.guide}>
+          <GuideContainer />
+        </div>
+        <div className={styles.divider}>
+          <Divider />
+        </div>
+        <div className={styles.reason}>
+          <ReasonContainer />
+        </div>
+        <div className={styles.comment}>
+          <CommentContainer />
+        </div>
+        <div className={styles.cta}>
+          <CtaContainer />
+        </div>
+      </SignoutFormClient>
     </main>
   );
 }

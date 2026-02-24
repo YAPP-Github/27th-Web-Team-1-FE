@@ -23,4 +23,5 @@ export const ROUTES = {
     VERIFY: '/onboarding/verify',
   },
   MYPAGE: '/mypage',
+  SIGNOUT: '/signout',
 } as const;

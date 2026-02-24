@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import Textarea from '@/components/textarea/Textarea';
+import { useSignoutContext } from '@/app/signout/_contexts/SignoutContext';
 
 export default function TextareaClient() {
-  const [value, setValue] = useState('');
+  const { comment, setComment } = useSignoutContext();
 
   return (
     <Textarea
-      value={value}
-      onChange={setValue}
+      value={comment}
+      onChange={setComment}
       placeholder="자유롭게 적어주세요 (선택사항)"
     />
   );
