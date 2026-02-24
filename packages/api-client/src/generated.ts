@@ -4129,6 +4129,10 @@ export const getGetPhotosResponseMock = (
 export const getGetMyPageResponseMock = (
   overrideResponse: Partial<MyPageResponse> = {},
 ): MyPageResponse => ({
+  myEmail: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
   myName: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
     undefined,
@@ -4143,6 +4147,10 @@ export const getGetMyPageResponseMock = (
   ]),
   partnerProfileImageUrl: faker.helpers.arrayElement([
     faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
+  firstMetDate: faker.helpers.arrayElement([
+    faker.date.past().toISOString().split('T')[0],
     undefined,
   ]),
   coupledDay: faker.helpers.arrayElement([
