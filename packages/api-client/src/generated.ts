@@ -32,6 +32,7 @@ import type {
   RemoveEmoticonRequest,
   SearchPlacesParams,
   UpdateAlbumTitleRequest,
+  UpdateFirstMetDateRequest,
   UpdateNicknameRequest,
   UpdatePhotoRequest,
   UpdateProfileImageRequest,
@@ -1523,6 +1524,61 @@ export const useRefreshInvite = <
 };
 
 /**
+ * 현재 로그인된 사용자의 세션을 종료합니다.
+ * @summary 로그아웃
+ */
+export const logout = (signal?: AbortSignal) => {
+  return customFetcher<void>({ url: `/auth/logout`, method: 'POST', signal });
+};
+
+export const getLogoutMutationOptions = <
+  TError = ApiResponseErrorDetail,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationOptions<Awaited<ReturnType<typeof logout>>, TError, void, TContext> => {
+  const mutationKey = ['logout'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof logout>>, void> = () => {
+    return logout();
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type LogoutMutationResult = NonNullable<Awaited<ReturnType<typeof logout>>>;
+
+export type LogoutMutationError = ApiResponseErrorDetail;
+
+/**
+ * @summary 로그아웃
+ */
+export const useLogout = <TError = ApiResponseErrorDetail, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+}): UseMutationResult<Awaited<ReturnType<typeof logout>>, TError, void, TContext> => {
+  const mutationOptions = getLogoutMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
  * 새로운 앨범을 생성합니다.
  * @summary 앨범 생성
  */
@@ -1831,6 +1887,88 @@ export const useClearAllCaches = <
   TContext
 > => {
   const mutationOptions = getClearAllCachesMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+/**
+ * 커플의 처음 만난 날짜(기념일)를 수정합니다.
+ * @summary 처음 만난 날짜 수정
+ */
+export const updateFirstMetDate = (
+  updateFirstMetDateRequest: UpdateFirstMetDateRequest,
+) => {
+  return customFetcher<void>({
+    url: `/couples/me/first-met-date`,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateFirstMetDateRequest,
+  });
+};
+
+export const getUpdateFirstMetDateMutationOptions = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateFirstMetDate>>,
+    TError,
+    { data: UpdateFirstMetDateRequest },
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateFirstMetDate>>,
+  TError,
+  { data: UpdateFirstMetDateRequest },
+  TContext
+> => {
+  const mutationKey = ['updateFirstMetDate'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateFirstMetDate>>,
+    { data: UpdateFirstMetDateRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return updateFirstMetDate(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateFirstMetDateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateFirstMetDate>>
+>;
+export type UpdateFirstMetDateMutationBody = UpdateFirstMetDateRequest;
+export type UpdateFirstMetDateMutationError = ApiResponseErrorDetail | void;
+
+/**
+ * @summary 처음 만난 날짜 수정
+ */
+export const useUpdateFirstMetDate = <
+  TError = ApiResponseErrorDetail | void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateFirstMetDate>>,
+    TError,
+    { data: UpdateFirstMetDateRequest },
+    TContext
+  >;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateFirstMetDate>>,
+  TError,
+  { data: UpdateFirstMetDateRequest },
+  TContext
+> => {
+  const mutationOptions = getUpdateFirstMetDateMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -4786,6 +4924,25 @@ export const getRefreshInviteMockHandler = (
   );
 };
 
+export const getLogoutMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.post>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.post(
+    '*/auth/logout',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
+    },
+    options,
+  );
+};
+
 export const getCreate1MockHandler = (
   overrideResponse?:
     | IdResponse
@@ -4893,6 +5050,25 @@ export const getClearAllCachesMockHandler = (
         ),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
+    },
+    options,
+  );
+};
+
+export const getUpdateFirstMetDateMockHandler = (
+  overrideResponse?:
+    | void
+    | ((info: Parameters<Parameters<typeof http.patch>[1]>[0]) => Promise<void> | void),
+  options?: RequestHandlerOptions,
+) => {
+  return http.patch(
+    '*/couples/me/first-met-date',
+    async (info) => {
+      await delay(1000);
+      if (typeof overrideResponse === 'function') {
+        await overrideResponse(info);
+      }
+      return new HttpResponse(null, { status: 204 });
     },
     options,
   );
@@ -5331,10 +5507,12 @@ export const getLokitAPIMock = () => [
   getCreateInviteMockHandler(),
   getVerifyInviteCodeMockHandler(),
   getRefreshInviteMockHandler(),
+  getLogoutMockHandler(),
   getCreate1MockHandler(),
   getCreateCouplePartnerMockHandler(),
   getMigratePreviousCoupleDataMockHandler(),
   getClearAllCachesMockHandler(),
+  getUpdateFirstMetDateMockHandler(),
   getDelete1MockHandler(),
   getUpdateTitleMockHandler(),
   getGetPhotosMockHandler(),

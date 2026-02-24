@@ -1,4 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  useUpdateFirstMetDate,
+  getGetMyPageQueryKey,
+  type MyPageResponse,
+} from '@repo/api-client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/components/toast';
 import Modal from '@/components/popup/modal/Modal';
 import TextButton from '@/components/buttons/textButton/TextButton';
 import * as S from './DdayEditModal.styles';
@@ -6,12 +13,42 @@ import * as S from './DdayEditModal.styles';
 interface DdayEditModalProps {
   isOpen: boolean;
   onClose: () => void;
+  coupledDay?: number | null;
+  savedDate?: string | null;
+  onSaved?: (date: string) => void;
 }
 
-export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
+export default function DdayEditModal({
+  isOpen,
+  onClose,
+  coupledDay,
+  savedDate,
+  onSaved,
+}: DdayEditModalProps) {
   const [year, setYear] = useState('');
   const [month, setMonth] = useState('');
   const [day, setDay] = useState('');
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const { mutate: updateFirstMetDate, isPending } = useUpdateFirstMetDate();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (savedDate) {
+      const [y, m, d] = savedDate.split('-');
+      setYear(y);
+      setMonth(String(Number(m)));
+      setDay(String(Number(d)));
+    } else if (coupledDay != null) {
+      const today = new Date();
+      const utcToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+      const met = new Date(utcToday - (coupledDay - 1) * 24 * 60 * 60 * 1000);
+      setYear(String(met.getUTCFullYear()));
+      setMonth(String(met.getUTCMonth() + 1));
+      setDay(String(met.getUTCDate()));
+    }
+  }, [isOpen, savedDate, coupledDay]);
 
   const isValidDate = () => {
     if (!year || !month || !day) return false;
@@ -31,8 +68,39 @@ export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
   };
 
   const handleConfirm = () => {
-    // TODO: API 연동 후 날짜 저장 로직 추가
-    onClose();
+    if (!isValidDate()) return;
+
+    const firstMetDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    const queryKey = getGetMyPageQueryKey();
+
+    const today = new Date();
+    const met = new Date(Number(year), Number(month) - 1, Number(day));
+    const diffDays = Math.floor(
+      (today.getTime() - met.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    queryClient.cancelQueries({ queryKey });
+    const previousData = queryClient.getQueryData<MyPageResponse>(queryKey);
+    queryClient.setQueryData<MyPageResponse>(queryKey, (old) =>
+      old ? { ...old, coupledDay: diffDays } : old,
+    );
+
+    updateFirstMetDate(
+      { data: { firstMetDate } },
+      {
+        onSuccess: () => {
+          onSaved?.(firstMetDate);
+          onClose();
+        },
+        onError: () => {
+          queryClient.setQueryData(queryKey, previousData);
+          showToast('날짜 변경에 실패했어요');
+        },
+        onSettled: () => {
+          queryClient.invalidateQueries({ queryKey });
+        },
+      },
+    );
   };
 
   const handleNumericChange =
@@ -85,12 +153,17 @@ export default function DdayEditModal({ isOpen, onClose }: DdayEditModalProps) {
           </S.DateBlock>
         </S.DateInputRow>
         <Modal.Footer>
-          <TextButton text="취소" onClick={onClose} style={{ flex: 1 }} />
+          <TextButton
+            text="취소"
+            onClick={onClose}
+            disabled={isPending}
+            style={{ flex: 1 }}
+          />
           <TextButton
             text="변경하기"
             variant="primary"
             onClick={handleConfirm}
-            disabled={!isValidDate()}
+            disabled={!isValidDate() || isPending}
             style={{ flex: 1 }}
           />
         </Modal.Footer>
