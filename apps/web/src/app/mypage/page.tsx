@@ -23,7 +23,9 @@ export default async function MyPage() {
       queryKey: getGetMyPageQueryKey(),
       queryFn: () => getMyPageServer(),
     })
-    .catch(() => {});
+    .catch((error) => {
+      console.error('[MyPage] prefetch failed:', error);
+    });
 
   const myPageData = queryClient.getQueryData<MyPageResponse>(getGetMyPageQueryKey());
   const hasDday = myPageData?.coupledDay != null;
