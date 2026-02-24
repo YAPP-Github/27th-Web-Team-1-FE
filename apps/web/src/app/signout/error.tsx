@@ -26,6 +26,7 @@ export default function SignoutError({
     >
       <p style={{ color: '#999', fontSize: '16px' }}>페이지를 불러오지 못했어요</p>
       <button
+        type="button"
         onClick={reset}
         style={{
           padding: '8px 20px',
