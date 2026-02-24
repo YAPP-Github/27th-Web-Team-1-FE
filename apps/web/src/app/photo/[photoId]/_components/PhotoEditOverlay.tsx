@@ -92,9 +92,12 @@ export default function PhotoEditOverlay({
   const [isAlbumCleared, setIsAlbumCleared] = useState(false);
   const [isMapPreviewOpen, setIsMapPreviewOpen] = useState(false);
 
-  useEffect(() => {
+  // 앨범 선택 시 cleared 상태 해제 (렌더 중 상태 조정 패턴)
+  const [prevSelectedAlbum, setPrevSelectedAlbum] = useState(selectedAlbum);
+  if (prevSelectedAlbum !== selectedAlbum) {
+    setPrevSelectedAlbum(selectedAlbum);
     if (selectedAlbum) setIsAlbumCleared(false);
-  }, [selectedAlbum]);
+  }
 
   const albumDisplayName = isAlbumCleared
     ? null

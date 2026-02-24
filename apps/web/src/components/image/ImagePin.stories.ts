@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import TextButton from '@/components/buttons/textButton/TextButton';
 import ImagePin from './ImagePin';
 
 const meta: Meta<typeof ImagePin> = {

@@ -50,6 +50,15 @@ export default function OnboardingCarousel() {
     }, 3000);
   }, []);
 
+  // 정상 범위 내에 있을 때 애니메이션 활성화 (렌더 중 상태 조정 패턴)
+  const [prevCurrentIndex, setPrevCurrentIndex] = useState(currentIndex);
+  if (prevCurrentIndex !== currentIndex) {
+    setPrevCurrentIndex(currentIndex);
+    if (currentIndex >= 1 && currentIndex <= 4) {
+      setIsTransitioning(true);
+    }
+  }
+
   // 인덱스 보정 로직 (무한 루프 핵심)
   useEffect(() => {
     // 마지막 클론 슬라이드(index 5)에 도달했을 때
@@ -68,11 +77,6 @@ export default function OnboardingCarousel() {
         setCurrentIndex(4);
       }, 500);
       return () => clearTimeout(timer);
-    }
-
-    // 정상 범위 내에 있을 때는 다시 애니메이션 활성화
-    if (currentIndex >= 1 && currentIndex <= 4) {
-      setIsTransitioning(true);
     }
   }, [currentIndex]);
 

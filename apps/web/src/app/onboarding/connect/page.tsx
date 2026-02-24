@@ -131,7 +131,7 @@ export default function ConnectPage() {
         console.error('카카오톡 공유 실패:', error);
       }
     }
-  }, [inviteCode?.code, profileData.nickname]);
+  }, [inviteCode, profileData]);
 
   return (
     <S.Wrapper>

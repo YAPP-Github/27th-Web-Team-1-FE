@@ -18,14 +18,9 @@ interface UseMapRouteViewStateReturn {
  * - 뷰 상태 변경 시 debounce 적용 (API 호출 빈도 제한)
  */
 export const useMapRouteViewState = (): UseMapRouteViewStateReturn => {
-  const [viewState, setViewState] = useState<LocationState | null>(null);
+  const [viewState, setViewState] = useState<LocationState | null>(DEFAULT_LOCATION);
   const mapViewRef = useRef<MapViewHandle>(null);
   const viewStateChangeTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // 초기화: 한반도가 보이는 기본 위치로 지도 설정
-  useEffect(() => {
-    setViewState(DEFAULT_LOCATION);
-  }, []);
 
   // 지도 이동 시 debounce 적용 (500ms)으로 API 호출 빈도 제한
   const handleViewStateChange = useCallback((newViewState: LocationState) => {

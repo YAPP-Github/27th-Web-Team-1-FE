@@ -37,7 +37,7 @@ export default function KakaoShareClient({ inviteCode }: KakaoShareClientProps) 
         console.error('카카오톡 공유 실패:', error);
       }
     }
-  }, [inviteCode, myPageData?.myName]);
+  }, [inviteCode, myPageData]);
 
   return (
     <S.KakaoShareButton onClick={handleShareKakao}>

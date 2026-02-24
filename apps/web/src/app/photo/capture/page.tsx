@@ -86,6 +86,7 @@ export default function PhotoCapturePage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 카메라 초기화는 마운트 후 실행되어야 함
     startCamera();
 
     return () => {

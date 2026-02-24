@@ -15,7 +15,7 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 export const Default: Story = {
-  render: () => {
+  render: function Render() {
     const { isOpen, handleOpen, handleClose } = usePopup();
 
     return (

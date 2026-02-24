@@ -34,14 +34,19 @@ const usePhotoSlider = ({
     [albumIdFromQuery, clusterIdFromQuery],
   );
 
-  useEffect(() => {
+  // photos 또는 initialPhotoId 변경 시 인덱스 동기화 (렌더 중 상태 조정 패턴)
+  const [prevPhotos, setPrevPhotos] = useState(photos);
+  const [prevInitialPhotoId, setPrevInitialPhotoId] = useState(initialPhotoId);
+  if (prevPhotos !== photos || prevInitialPhotoId !== initialPhotoId) {
+    setPrevPhotos(photos);
+    setPrevInitialPhotoId(initialPhotoId);
     if (photos.length > 0 && initialPhotoId) {
       const index = photos.findIndex((p) => p.id === initialPhotoId);
       if (index !== -1) {
         setCurrentPhotoIndex(index);
       }
     }
-  }, [photos, initialPhotoId]);
+  }
 
   useEffect(() => {
     if (thumbnailContainerRef.current && photos.length > 0) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDisconnect, saveCoupleStatusCookie } from '@repo/api-client';
 import Modal from '@/components/popup/modal/Modal';
 import Input from '@/components/input/Input';
@@ -37,11 +37,14 @@ export default function DisconnectConfirmModal({
     },
   });
 
-  useEffect(() => {
+  // 모달이 닫힐 때 입력값 초기화 (렌더 중 상태 조정 패턴)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) {
       setInputValue('');
     }
-  }, [isOpen]);
+  }
 
   const isConfirmDisabled = isPending || inputValue !== CONFIRM_TEXT;
 

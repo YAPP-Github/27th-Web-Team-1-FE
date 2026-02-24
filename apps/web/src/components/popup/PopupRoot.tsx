@@ -8,6 +8,7 @@ const PopupRoot = ({ children }: { children: React.ReactNode }) => {
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 전용 DOM 접근을 위해 필요
     setModalRoot(document.getElementById('modal-root'));
   }, []);
 

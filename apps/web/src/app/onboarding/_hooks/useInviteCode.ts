@@ -49,7 +49,7 @@ export function useInviteCode() {
     } catch (error) {
       showToast('복사에 실패했어요');
     }
-  }, [inviteCode?.code, showToast]);
+  }, [inviteCode, showToast]);
 
   return {
     inviteCode,

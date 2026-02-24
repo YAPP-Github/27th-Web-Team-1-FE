@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   useUpdateNickname,
   getGetMyPageQueryKey,
@@ -27,11 +27,14 @@ export default function NicknameEditModal({
   const { showToast } = useToast();
   const { mutate: updateNickname, isPending } = useUpdateNickname();
 
-  useEffect(() => {
+  // 모달이 열릴 때 초기 닉네임으로 폼 초기화 (렌더 중 상태 조정 패턴)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setNickname(initialNickname);
     }
-  }, [isOpen, initialNickname]);
+  }
 
   const handleConfirm = async () => {
     const trimmed = nickname.trim();

@@ -9,7 +9,7 @@ import type {
   PhotoDetailResponse,
   PhotoResponse,
 } from '@repo/api-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 
 /**
  * Pending 사진과 서버 데이터를 merge하는 뷰 모델 훅
@@ -111,19 +111,27 @@ export const usePendingPhotoDetail = ({
   const isPendingMode = !!activePendingId && resolvedServerId === null;
   const effectivePhotoId = resolvedServerId ?? photoId;
 
-  // 업로드 완료 시 서버 사진으로 부드럽게 전환
+  // 업로드 완료 감지: 서버 ID 전환 (렌더 중 상태 조정 패턴)
+  if (
+    pendingPhoto?.status === 'success' &&
+    pendingPhoto.serverId &&
+    resolvedServerId === null
+  ) {
+    setResolvedServerId(pendingPhoto.serverId);
+  }
+
+  // 서버 ID 확정 시 URL 갱신 (side effect)
+  const prevResolvedServerIdRef = useRef(resolvedServerId);
   useEffect(() => {
     if (
-      pendingPhoto?.status === 'success' &&
-      pendingPhoto.serverId &&
-      resolvedServerId === null
+      resolvedServerId !== null &&
+      prevResolvedServerIdRef.current !== resolvedServerId
     ) {
-      setResolvedServerId(pendingPhoto.serverId);
-
-      const newUrl = `/photo/${pendingPhoto.serverId}${albumIdFromQuery ? `?albumId=${albumIdFromQuery}` : ''}`;
+      prevResolvedServerIdRef.current = resolvedServerId;
+      const newUrl = `/photo/${resolvedServerId}${albumIdFromQuery ? `?albumId=${albumIdFromQuery}` : ''}`;
       window.history.replaceState(null, '', newUrl);
     }
-  }, [pendingPhoto?.status, pendingPhoto?.serverId, resolvedServerId, albumIdFromQuery]);
+  }, [resolvedServerId, albumIdFromQuery]);
 
   const isUploading = pendingPhoto?.status === 'uploading';
   const isError = pendingPhoto?.status === 'error';

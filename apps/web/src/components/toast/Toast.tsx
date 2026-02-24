@@ -28,6 +28,7 @@ const Toast = ({ toasts }: ToastProps) => {
       root.id = 'toast-root';
       document.body.appendChild(root);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 전용 DOM 접근을 위해 필요
     setToastRoot(root);
   }, []);
 

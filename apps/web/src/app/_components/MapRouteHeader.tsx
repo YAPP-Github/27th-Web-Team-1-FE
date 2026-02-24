@@ -7,7 +7,6 @@ import {
 } from '@/components/bottomSheet/constants';
 import { ExploreHeader, MenuHeader } from '@/components/header';
 import { DEFAULT_ALBUM_TITLE, ROUTES } from '@/constants';
-import type { LocationInfoResponse } from '@repo/api-client';
 
 interface MapRouteHeaderProps {
   sheetContext: SheetContext;

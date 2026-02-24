@@ -92,6 +92,7 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
 
   // 통합 클러스터링 계산 - mapPins와 clusterExpansionData를 한 번에 처리
   // 이전에는 이 로직이 두 개의 useMemo에서 중복되었음
+  // eslint-disable-next-line react-hooks/refs -- 클러스터 캐시를 렌더 중 업데이트하기 위해 의도적으로 ref 사용
   const clusteringResult = useMemo(() => {
     const data = response.data;
     if (!data) {
@@ -135,6 +136,7 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
     const geoJsonPoints = convertPhotosToGeoJsonFeatures(photos);
 
     // Supercluster에 데이터 로드
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supercluster 타입 호환을 위해 필요
     superclusterInstance.load(geoJsonPoints as any);
 
     // bbox 파싱 (헬퍼 함수 사용)

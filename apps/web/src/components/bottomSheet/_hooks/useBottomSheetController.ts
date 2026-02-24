@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   FLOATING_BUTTON_HEIGHT,
@@ -27,14 +27,17 @@ export function useBottomSheetController(context: SheetContext) {
 
   const [height, setHeight] = useState(MIN_HEIGHT);
 
-  useEffect(() => {
+  // context 변경 시 높이 동기화 (렌더 중 상태 조정 패턴)
+  const [prevContextType, setPrevContextType] = useState(context.type);
+  if (prevContextType !== context.type) {
+    setPrevContextType(context.type);
     if (context.type === SHEET_CONTEXT_TYPE.ALBUM_LIST) {
       setHeight(MID_HEIGHT);
     }
     if (context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL) {
       setHeight(searchParams.get('expand') === 'true' ? getMaxHeight() : MID_HEIGHT);
     }
-  }, [context]);
+  }
 
   const clampHeight = (nextHeight: number) => {
     return Math.min(Math.max(nextHeight, LOW_HEIGHT), getMaxHeight());

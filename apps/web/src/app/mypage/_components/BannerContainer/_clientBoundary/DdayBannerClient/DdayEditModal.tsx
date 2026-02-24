@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   useUpdateFirstMetDate,
   getGetMyPageQueryKey,
@@ -28,14 +28,17 @@ export default function DdayEditModal({
   const { showToast } = useToast();
   const { mutate: updateFirstMetDate, isPending } = useUpdateFirstMetDate();
 
-  useEffect(() => {
+  // 모달이 열릴 때 초기 날짜로 폼 초기화 (렌더 중 상태 조정 패턴)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen && initialDate) {
       const [y, m, d] = initialDate.split('-');
       setYear(y);
       setMonth(String(Number(m)));
       setDay(String(Number(d)));
     }
-  }, [isOpen, initialDate]);
+  }
 
   const isValidDate = () => {
     if (!year || !month || !day) return false;

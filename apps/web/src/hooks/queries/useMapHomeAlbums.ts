@@ -1,6 +1,6 @@
 import { getMapMe, getGetMapMeQueryKey, type AlbumThumbnails } from '@repo/api-client';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 
 interface UseMapHomeAlbumsParams {
   longitude?: number;
@@ -9,8 +9,8 @@ interface UseMapHomeAlbumsParams {
 
 export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams) => {
   const isValid = longitude !== undefined && latitude !== undefined;
-  const prevAddressRef = useRef<string>('');
-  const prevAlbumListRef = useRef<AlbumThumbnails[]>([]);
+  const [prevAlbumList, setPrevAlbumList] = useState<AlbumThumbnails[]>([]);
+  const [prevAddress, setPrevAddress] = useState('');
 
   const params = {
     longitude: longitude ?? 0,
@@ -25,27 +25,34 @@ export const useMapHomeAlbums = ({ longitude, latitude }: UseMapHomeAlbumsParams
     placeholderData: keepPreviousData,
   });
 
+  // 새로운 데이터가 도착하면 캐시 갱신 (렌더 중 상태 조정 패턴)
+  const responseData = response.data;
+  const [prevResponseData, setPrevResponseData] = useState(responseData);
+  if (responseData !== prevResponseData) {
+    setPrevResponseData(responseData);
+    if (responseData !== undefined) {
+      setPrevAlbumList(responseData.albums ?? []);
+    }
+    const newAddr = responseData?.location?.address;
+    if (newAddr) {
+      setPrevAddress(newAddr);
+    }
+  }
+
   const albumList: AlbumThumbnails[] = useMemo(() => {
-    if (!isValid) return prevAlbumListRef.current;
+    if (!isValid) return prevAlbumList;
 
     // API 요청이 성공하면 결과를 신뢰 (빈 배열도 유효한 결과)
-    if (response.data !== undefined) {
-      const newAlbums = response.data.albums ?? [];
-      prevAlbumListRef.current = newAlbums;
-      return newAlbums;
+    if (responseData !== undefined) {
+      return responseData.albums ?? [];
     }
 
     // 로딩 중에는 이전 데이터 유지
-    return prevAlbumListRef.current;
-  }, [response.data, isValid]);
+    return prevAlbumList;
+  }, [responseData, isValid, prevAlbumList]);
 
-  // 새 주소가 있으면 캐싱, 로딩 중에는 이전 주소 유지
-  const newAddress = response.data?.location?.address;
-  if (newAddress) {
-    prevAddressRef.current = newAddress;
-  }
-
-  const address = isValid ? (newAddress ?? prevAddressRef.current) : '';
+  const newAddress = responseData?.location?.address;
+  const address = isValid ? (newAddress ?? prevAddress) : '';
 
   return {
     albumList,

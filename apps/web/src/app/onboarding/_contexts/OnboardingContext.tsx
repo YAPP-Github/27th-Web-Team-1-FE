@@ -89,6 +89,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- 클라이언트 전용 sessionStorage 초기화를 위해 필요
         setCompletedSteps(parsed);
       } catch (e) {
         console.error('Failed to parse onboarding steps from sessionStorage', e);

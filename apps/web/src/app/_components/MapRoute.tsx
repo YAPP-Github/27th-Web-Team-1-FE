@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { getGetClusterPhotosQueryOptions } from '@repo/api-client';
 import MapView from '@/components/map/MapView';
 import { MapPin } from '@/types/map.type';
@@ -29,7 +29,7 @@ import { saveClusterToSession } from '@/utils/sessionStorage';
 
 export default function MapRoute() {
   const router = useRouter();
-  const [pendingClusterId, setPendingClusterId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // 상태 관리
   const { viewState, mapViewRef, handleViewStateChange, handleGoToCurrentLocation } =
@@ -117,46 +117,7 @@ export default function MapRoute() {
 
   const selectedAlbumTitle = albumDetail?.title;
 
-  const { data: clusterPhotosFromQuery, isError: isClusterQueryError } = useQuery({
-    ...getGetClusterPhotosQueryOptions(pendingClusterId ?? ''),
-    enabled: !!pendingClusterId && !clusterExpansionData?.has(pendingClusterId),
-  });
-
-  useEffect(() => {
-    if (!pendingClusterId) return;
-
-    if (isClusterQueryError) {
-      console.error('[MapRoute] Failed to load cluster photos');
-      setPendingClusterId(null);
-      return;
-    }
-
-    const photos = clusterExpansionData?.get(pendingClusterId) ?? clusterPhotosFromQuery;
-    if (!photos) return;
-
-    if (!photos.length) {
-      setPendingClusterId(null);
-      return;
-    }
-
-    saveClusterToSession(pendingClusterId, photos);
-    const firstPhotoId = photos.find((photo) => !!photo.id)?.id;
-    if (!firstPhotoId) {
-      setPendingClusterId(null);
-      return;
-    }
-
-    router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, pendingClusterId));
-    setPendingClusterId(null);
-  }, [
-    pendingClusterId,
-    clusterPhotosFromQuery,
-    clusterExpansionData,
-    isClusterQueryError,
-    router,
-  ]);
-
-  const handlePinClick = (pin: MapPin) => {
+  const handlePinClick = async (pin: MapPin) => {
     if (!pin.isCluster) {
       router.push(ROUTES.PHOTO.VIEW(pin.id));
       return;
@@ -165,7 +126,24 @@ export default function MapRoute() {
     const clusterId = pin.clusterId;
     if (!clusterId) return;
 
-    setPendingClusterId(clusterId);
+    let photos = clusterExpansionData?.get(clusterId);
+
+    if (!photos) {
+      try {
+        photos = await queryClient.fetchQuery(getGetClusterPhotosQueryOptions(clusterId));
+      } catch {
+        console.error('[MapRoute] Failed to load cluster photos');
+        return;
+      }
+    }
+
+    if (!photos?.length) return;
+
+    saveClusterToSession(clusterId, photos);
+    const firstPhotoId = photos.find((photo) => !!photo.id)?.id;
+    if (!firstPhotoId) return;
+
+    router.push(ROUTES.PHOTO.VIEW_WITH_CLUSTER(firstPhotoId, clusterId));
   };
 
   const handleSelectAlbum = (albumId: number) => {

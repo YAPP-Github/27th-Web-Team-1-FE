@@ -88,7 +88,7 @@ const ClusterDetail = ({ clusterId, clusterExpansionData }: ClusterDetailProps) 
           key={photo.id}
           src={photo.url ?? ''}
           alt={`cluster-photo-${photo.id}`}
-          date={(photo as any).showDate ? photo.takenAt : undefined}
+          date={photo.showDate ? photo.takenAt : undefined}
           onClick={() => handlePhotoClick(photo.id ?? 0)}
         />
       ))}
