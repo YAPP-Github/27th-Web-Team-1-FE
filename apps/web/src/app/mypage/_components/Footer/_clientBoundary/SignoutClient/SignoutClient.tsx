@@ -10,10 +10,12 @@ import * as S from './SignoutClient.styles';
 
 export default function SignoutClient() {
   const router = useRouter();
-  const { data: coupleStatus } = useGetMyStatus();
+  const { data: coupleStatus, isLoading, isError } = useGetMyStatus();
   const { isOpen, handleOpen, handleClose } = usePopup();
 
   const handleClick = () => {
+    if (isLoading || isError) return;
+
     if (coupleStatus?.isCoupled) {
       handleOpen();
     } else {
