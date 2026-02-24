@@ -4,13 +4,21 @@ import LoveIcon from './_components/LoveIcon/LoveIcon';
 import CoupleInfoFallback from './_components/CoupleInfoFallback/CoupleInfoFallback';
 import styles from './CoupleInfoContainer.module.css';
 
-export default function CoupleInfoContainer() {
+interface CoupleInfoContainerProps {
+  isCoupled: boolean;
+}
+
+export default function CoupleInfoContainer({ isCoupled }: CoupleInfoContainerProps) {
   return (
-    <Suspense fallback={<CoupleInfoFallback />}>
+    <Suspense fallback={<CoupleInfoFallback isCoupled={isCoupled} />}>
       <section className={styles.wrapper}>
         <ProfileContainer isMe />
-        <LoveIcon />
-        <ProfileContainer />
+        {isCoupled && (
+          <>
+            <LoveIcon />
+            <ProfileContainer />
+          </>
+        )}
       </section>
     </Suspense>
   );

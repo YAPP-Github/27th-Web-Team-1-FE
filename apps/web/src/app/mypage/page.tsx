@@ -42,7 +42,7 @@ export default async function MyPage() {
         <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
         <HeaderClient />
         <div className={styles.coupleInfo}>
-          <CoupleInfoContainer />
+          <CoupleInfoContainer isCoupled={coupleStatus?.isCoupled ?? false} />
         </div>
         <div className={styles.banner}>
           <BannerContainer hasDday={hasDday} />
