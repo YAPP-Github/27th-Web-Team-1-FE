@@ -1,13 +1,11 @@
 'use client';
 
-import { useGetMyPageSuspense } from '@repo/api-client';
 import usePopup from '@/hooks/usePopup';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
 import DdayEditModal from './DdayEditModal';
 import * as S from './DdayBannerClient.styles';
 
-export default function DdayBannerClient() {
-  const { data } = useGetMyPageSuspense();
+export default function DdayEmptyBannerClient() {
   const { isOpen, handleOpen, handleClose } = usePopup();
 
   return (
@@ -23,22 +21,12 @@ export default function DdayBannerClient() {
           }
         }}
       >
-        <S.Content>
-          <S.Caption>처음 만난 날부터</S.Caption>
-          <S.DdayRow>
-            <S.DdayPrefix>D+</S.DdayPrefix>
-            <S.DdayNumber>{data.coupledDay}</S.DdayNumber>
-          </S.DdayRow>
-        </S.Content>
+        <S.EmptyText>처음 만난 날이 언제인가요?</S.EmptyText>
         <S.ChevronIcon>
           <ChevronRightIcon width={22} height={22} />
         </S.ChevronIcon>
       </S.Wrapper>
-      <DdayEditModal
-        isOpen={isOpen}
-        onClose={handleClose}
-        initialDate={data.firstMetDate}
-      />
+      <DdayEditModal isOpen={isOpen} onClose={handleClose} />
     </>
   );
 }
