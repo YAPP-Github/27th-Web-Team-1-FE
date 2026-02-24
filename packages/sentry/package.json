@@ -10,14 +10,8 @@
     "build": "tsc --emitDeclarationOnly"
   },
   "exports": {
-    ".": {
-      "import": "./src/index.ts",
-      "types": "./src/index.ts"
-    },
-    "./captureApiError": {
-      "import": "./src/captureApiError.ts",
-      "types": "./src/captureApiError.ts"
-    }
+    ".": "./src/index.ts",
+    "./captureApiError": "./src/captureApiError.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^9.0.0"
