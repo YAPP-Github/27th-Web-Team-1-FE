@@ -1,11 +1,9 @@
-'use client';
-
-import { useGetMyPageSuspense } from '@repo/api-client';
+import { getMyPageServer } from '@repo/api-client';
 import KakaoIcon from '@/assets/images/kakao.svg';
 import styles from '../../AccountInfo.module.css';
 
-export default function AccountClient() {
-  const { data } = useGetMyPageSuspense();
+export default async function AccountDetail() {
+  const data = await getMyPageServer();
 
   return (
     <div className={styles.box}>
