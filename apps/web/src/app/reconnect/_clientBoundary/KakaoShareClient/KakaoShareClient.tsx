@@ -2,18 +2,20 @@
 
 import { useCallback } from 'react';
 import { useGetMyPage } from '@repo/api-client';
-import { useReconnectInviteCode } from '../../_hooks/useReconnectInviteCode';
 import { KAKAO_TEMPLATE_ID } from '@/constants/kakao';
 import KakaoSvg from '@/assets/images/kakao.svg';
 import * as S from './KakaoShareClient.styles';
 
-export default function KakaoShareClient() {
+interface KakaoShareClientProps {
+  inviteCode: string | null;
+}
+
+export default function KakaoShareClient({ inviteCode }: KakaoShareClientProps) {
   const { data: myPageData } = useGetMyPage();
-  const { inviteCode } = useReconnectInviteCode();
 
   const handleShareKakao = useCallback(() => {
     const kakao = window.Kakao;
-    if (kakao && inviteCode?.code) {
+    if (kakao && inviteCode) {
       try {
         const isDev = process.env.NODE_ENV === 'development';
         const templateId = isDev ? KAKAO_TEMPLATE_ID.DEV : KAKAO_TEMPLATE_ID.PROD;
@@ -27,7 +29,7 @@ export default function KakaoShareClient() {
           templateId: templateId,
           templateArgs: {
             userName: myPageData?.myName || '사용자',
-            inviteCode: inviteCode.code || '000000',
+            inviteCode: inviteCode,
             link: window.location.origin,
           },
         });
@@ -35,7 +37,7 @@ export default function KakaoShareClient() {
         console.error('카카오톡 공유 실패:', error);
       }
     }
-  }, [inviteCode?.code, myPageData?.myName]);
+  }, [inviteCode, myPageData?.myName]);
 
   return (
     <S.KakaoShareButton onClick={handleShareKakao}>

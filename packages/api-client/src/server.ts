@@ -4,10 +4,11 @@
  */
 
 import { serverFetcher } from './serverFetcher';
-import type { CoupleStatusResponse, MyPageResponse } from './model';
+import type { CoupleStatusResponse, InviteCodeResponse, MyPageResponse } from './model';
 
 const SERVER_API_URL = {
   COUPLES_STATUS: '/couples/me/status',
+  COUPLES_INVITES: '/couples/invites',
   MY_PAGE: '/my-page',
 } as const;
 
@@ -19,6 +20,17 @@ export const getMyStatusServer = () => {
   return serverFetcher<CoupleStatusResponse>({
     url: SERVER_API_URL.COUPLES_STATUS,
     method: 'GET',
+  });
+};
+
+/**
+ * 초대코드를 생성하거나 활성 코드가 있으면 재사용합니다. (서버용)
+ * @summary 초대코드 생성
+ */
+export const createInviteServer = () => {
+  return serverFetcher<InviteCodeResponse>({
+    url: SERVER_API_URL.COUPLES_INVITES,
+    method: 'POST',
   });
 };
 
