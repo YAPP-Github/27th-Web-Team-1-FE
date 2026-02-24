@@ -158,7 +158,9 @@ export default function ConnectPage() {
       </S.Content>
 
       <S.ButtonGroup>
-        <S.SignOutButton onClick={() => {}}>회원탈퇴 하기</S.SignOutButton>
+        <S.SignOutButton onClick={() => router.push(ROUTES.SIGNOUT)}>
+          회원탈퇴 하기
+        </S.SignOutButton>
         <S.ButtonRow>
           <Button
             text="초대코드 입력"
