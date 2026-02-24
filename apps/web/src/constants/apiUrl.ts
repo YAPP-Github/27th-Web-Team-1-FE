@@ -21,6 +21,7 @@ export const API_URL = {
   },
   COUPLES: {
     STATUS: '/couples/me/status',
+    FIRST_MET_DATE: '/couples/me/first-met-date',
   },
   MY_PAGE: {
     BASE: '/my-page',
