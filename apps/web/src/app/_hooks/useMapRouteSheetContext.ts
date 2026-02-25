@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { SHEET_CONTEXT_TYPE, SheetContext } from '@/components/bottomSheet/constants';
 import { extractAlbumIdFromPath, getSelectedAlbumId } from '../_utils/mapRoute.calc';
@@ -33,19 +33,19 @@ export const useMapRouteSheetContext = (): UseMapRouteSheetContextReturn => {
     return { type: SHEET_CONTEXT_TYPE.HOME };
   });
 
-  // 경로가 변경되었을 때 바텀시트 상태 동기화 (렌더 중 상태 조정 패턴)
-  const [prevAlbumIdFromPath, setPrevAlbumIdFromPath] = useState(albumIdFromPath);
-  if (prevAlbumIdFromPath !== albumIdFromPath) {
-    setPrevAlbumIdFromPath(albumIdFromPath);
+  // 경로가 변경되었을 때 바텀시트 상태 동기화
+  useEffect(() => {
     if (albumIdFromPath) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 경로 변경 시 바텀시트 상태 동기화
       setSheetContext({
         type: SHEET_CONTEXT_TYPE.ALBUM_DETAIL,
         albumId: albumIdFromPath,
       });
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 경로 변경 시 바텀시트 상태 동기화
       setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
     }
-  }
+  }, [albumIdFromPath]);
 
   // 선택된 앨범 ID 계산
   const selectedAlbumId = useMemo(() => {
