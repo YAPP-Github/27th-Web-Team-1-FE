@@ -42,7 +42,6 @@ export const useMapRouteSheetContext = (): UseMapRouteSheetContextReturn => {
         albumId: albumIdFromPath,
       });
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- 경로 변경 시 바텀시트 상태 동기화
       setSheetContext({ type: SHEET_CONTEXT_TYPE.HOME });
     }
   }, [albumIdFromPath]);
