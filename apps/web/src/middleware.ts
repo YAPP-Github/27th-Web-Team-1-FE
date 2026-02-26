@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/constants/routes';
-import { COUPLE_STATUS } from '@/constants/coupleStatus';
+import { COUPLE_STATUS, COUPLE_STATUS_COOKIE } from '@/constants/coupleStatus';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get('accessToken')?.value;
-  const coupleStatus = request.cookies.get('coupleStatus')?.value;
+  const coupleStatus = request.cookies.get(COUPLE_STATUS_COOKIE)?.value;
   const isLoginPage = pathname.startsWith(ROUTES.LOGIN);
 
   // 미인증 → 로그인만 허용

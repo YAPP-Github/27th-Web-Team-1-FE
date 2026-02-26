@@ -5,7 +5,7 @@ import usePopup from '@/hooks/usePopup';
 import Modal from '@/components/popup/modal/Modal';
 import TextButton from '@/components/buttons/textButton/TextButton';
 import { ROUTES } from '@/constants/routes';
-import { COUPLE_STATUS } from '@/constants/coupleStatus';
+import { COUPLE_STATUS, COUPLE_STATUS_COOKIE } from '@/constants/coupleStatus';
 import * as S from './SignoutClient.styles';
 
 function getCookieValue(name: string): string | undefined {
@@ -18,11 +18,12 @@ export default function SignoutClient() {
   const { isOpen, handleOpen, handleClose } = usePopup();
 
   const handleClick = () => {
-    const coupleStatus = getCookieValue('coupleStatus');
+    const coupleStatus = getCookieValue(COUPLE_STATUS_COOKIE);
 
     if (
       coupleStatus === COUPLE_STATUS.COUPLED ||
-      coupleStatus === COUPLE_STATUS.DISCONNECTED_BY_PARTNER
+      coupleStatus === COUPLE_STATUS.DISCONNECTED_BY_PARTNER ||
+      coupleStatus === COUPLE_STATUS.DISCONNECTED_EXPIRED
     ) {
       handleOpen();
     } else {
