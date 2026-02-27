@@ -17,6 +17,17 @@ export const 지도_ME_조회_성공: MapMeResponse = {
   totalHistoryCount: 15,
   albums: [
     {
+      id: 100,
+      title: '전체사진',
+      photoCount: 15,
+      thumbnailUrls: [
+        'https://picsum.photos/id/1018/200/200',
+        'https://picsum.photos/id/1020/200/200',
+        'https://picsum.photos/id/1024/200/200',
+        'https://picsum.photos/id/1043/200/200',
+      ],
+    },
+    {
       id: 1,
       title: '한강 라이딩',
       photoCount: 5,

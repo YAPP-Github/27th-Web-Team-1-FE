@@ -2,8 +2,48 @@ import type { PhotoListResponse } from '@repo/api-client';
 
 const center = { latitude: 37.5665, longitude: 126.978 };
 
+const allPhotos = [
+  {
+    id: 101,
+    url: 'https://picsum.photos/id/1018/300/300',
+    takenAt: '2025-01-15T10:30:00.000Z',
+    location: { latitude: center.latitude + 0.003, longitude: center.longitude + 0.008 },
+  },
+  {
+    id: 102,
+    url: 'https://picsum.photos/id/1020/300/300',
+    takenAt: '2025-01-15T11:45:00.000Z',
+    location: { latitude: center.latitude + 0.006, longitude: center.longitude + 0.004 },
+  },
+  {
+    id: 103,
+    url: 'https://picsum.photos/id/1024/300/300',
+    takenAt: '2025-01-14T14:20:00.000Z',
+    location: { latitude: center.latitude - 0.004, longitude: center.longitude + 0.002 },
+  },
+  {
+    id: 201,
+    url: 'https://picsum.photos/id/1043/300/300',
+    takenAt: '2025-01-20T13:00:00.000Z',
+    location: { latitude: center.latitude + 0.012, longitude: center.longitude - 0.002 },
+  },
+  {
+    id: 301,
+    url: 'https://picsum.photos/id/1063/300/300',
+    takenAt: '2025-01-25T19:00:00.000Z',
+    location: { latitude: center.latitude - 0.008, longitude: center.longitude + 0.01 },
+  },
+];
+
 export const photoListMockData: PhotoListResponse = {
   albums: [
+    {
+      id: 100,
+      title: '전체사진',
+      photoCount: allPhotos.length,
+      thumbnailUrl: 'https://picsum.photos/id/1018/300/300',
+      photos: allPhotos,
+    },
     {
       id: 1,
       title: '한강 라이딩',
