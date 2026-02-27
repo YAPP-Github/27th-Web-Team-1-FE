@@ -1,5 +1,6 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
 import { COUPLE_STATUS_COOKIE } from '@/constants/cookie';
@@ -12,13 +13,22 @@ function getCookieValue(name: string): string | undefined {
   return match?.[1];
 }
 
+const subscribe = () => () => {};
+
 export default function ReconnectClient() {
   const router = useRouter();
 
-  const coupleStatus = getCookieValue(COUPLE_STATUS_COOKIE);
-  const isDisconnectedByPartner =
-    coupleStatus === COUPLE_STATUS.DISCONNECTED_BY_PARTNER ||
-    coupleStatus === COUPLE_STATUS.DISCONNECTED_EXPIRED;
+  const isDisconnectedByPartner = useSyncExternalStore(
+    subscribe,
+    () => {
+      const coupleStatus = getCookieValue(COUPLE_STATUS_COOKIE);
+      return (
+        coupleStatus === COUPLE_STATUS.DISCONNECTED_BY_PARTNER ||
+        coupleStatus === COUPLE_STATUS.DISCONNECTED_EXPIRED
+      );
+    },
+    () => false,
+  );
 
   if (!isDisconnectedByPartner) return null;
 
