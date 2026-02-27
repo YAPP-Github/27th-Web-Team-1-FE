@@ -34,6 +34,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  min-height: 100vh;
   min-height: 100dvh;
   padding: 0;
   background-color: ${({ theme }) => theme.colors.gray[1000]};
