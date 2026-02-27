@@ -28,4 +28,6 @@ export interface MyPageResponse {
   couplePhotoCount?: number;
   /** 기본앨범 ID */
   defaultAlbumId?: number;
+  /** 랜덤 배경 사진 */
+  backgroundImageUrl?: string;
 }

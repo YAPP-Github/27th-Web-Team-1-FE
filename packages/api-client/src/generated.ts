@@ -4165,6 +4165,10 @@ export const getGetMyPageResponseMock = (
     faker.number.int({ min: undefined, max: undefined }),
     undefined,
   ]),
+  backgroundImageUrl: faker.helpers.arrayElement([
+    faker.string.alpha({ length: { min: 10, max: 20 } }),
+    undefined,
+  ]),
   ...overrideResponse,
 });
 
