@@ -157,6 +157,7 @@ export default function VerifyPage() {
         <Button
           text="확인"
           variant="highlight"
+          size="large"
           onClick={() => handleCodeComplete(code)}
           disabled={code.length !== INVITE_CODE_LENGTH}
         />
