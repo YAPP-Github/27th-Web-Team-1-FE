@@ -97,6 +97,7 @@ export default function ProfilePage() {
         <Button
           text="확인"
           variant="highlight"
+          size="large"
           onClick={handleSubmit}
           disabled={!isValid || isLoading}
           style={{ width: '100%' }}
