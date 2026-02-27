@@ -36,6 +36,7 @@ interface UseMapRouteDataReturn {
   albumMapInfo: AlbumMapInfoResponse | undefined;
   mapPins: ReturnType<typeof useMapMe>['mapPins'];
   totalHistoryCount: number | undefined;
+  profileImageUrl: string | undefined;
   clusterLocationData: LocationInfoResponse | undefined;
   clusterPhotosData: ClusterPhotoResponse[] | undefined;
   clusterExpansionData: Map<string, ClusterPhotoResponse[]> | undefined;
@@ -69,12 +70,13 @@ export const useMapRouteData = ({
   });
 
   // 사진 핀 조회 (/map/me에서 photos/clusters 처리)
-  const { address, mapPins, totalHistoryCount, clusterExpansionData } = useMapMe({
-    longitude: viewState?.longitude,
-    latitude: viewState?.latitude,
-    zoom: viewState?.zoom ?? DEFAULT_ZOOM,
-    albumId: selectedAlbumId,
-  });
+  const { address, mapPins, totalHistoryCount, clusterExpansionData, profileImageUrl } =
+    useMapMe({
+      longitude: viewState?.longitude,
+      latitude: viewState?.latitude,
+      zoom: viewState?.zoom ?? DEFAULT_ZOOM,
+      albumId: selectedAlbumId,
+    });
 
   // 클러스터의 위치 정보 조회
   const clusterLatitude =
@@ -129,6 +131,7 @@ export const useMapRouteData = ({
     albumMapInfo,
     mapPins,
     totalHistoryCount,
+    profileImageUrl,
     clusterLocationData,
     clusterPhotosData,
     clusterExpansionData,

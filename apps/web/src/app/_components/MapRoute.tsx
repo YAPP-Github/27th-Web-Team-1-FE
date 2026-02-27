@@ -45,6 +45,7 @@ export default function MapRoute() {
     albumMapInfo,
     mapPins,
     totalHistoryCount,
+    profileImageUrl,
     clusterExpansionData,
   } = useMapRouteData({
     viewState,
@@ -196,6 +197,7 @@ export default function MapRoute() {
           sheetContext={sheetContext}
           selectedAlbumTitle={selectedAlbumTitle}
           address={address}
+          profileImageUrl={profileImageUrl}
           onCloseAlbumDetail={handleCloseAlbumDetail}
           onOpenAlbumRename={handleOpenAlbumRename}
           onOpenAlbumDelete={handleOpenAlbumDelete}

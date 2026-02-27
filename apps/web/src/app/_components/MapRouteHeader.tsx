@@ -12,6 +12,7 @@ interface MapRouteHeaderProps {
   sheetContext: SheetContext;
   selectedAlbumTitle: string | undefined;
   address: string | null;
+  profileImageUrl: string | undefined;
   onCloseAlbumDetail: () => void;
   onOpenAlbumRename: () => void;
   onOpenAlbumDelete: () => void;
@@ -27,6 +28,7 @@ export const MapRouteHeader = ({
   sheetContext,
   selectedAlbumTitle,
   address,
+  profileImageUrl,
   onCloseAlbumDetail,
   onOpenAlbumRename,
   onOpenAlbumDelete,
@@ -57,6 +59,7 @@ export const MapRouteHeader = ({
       title={address || '위치 정보 로딩 중'}
       onClickProfile={() => router.push(ROUTES.MYPAGE)}
       onClickExplore={() => router.push(ROUTES.EXPLORE)}
+      profileImageSrc={profileImageUrl}
     />
   );
 };

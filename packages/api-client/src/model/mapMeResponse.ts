@@ -29,4 +29,6 @@ export interface MapMeResponse {
   clusters?: ClusterResponse[];
   /** 개별 사진 목록 (줌 >= 15일 때) */
   photos?: MapPhotoResponse[];
+  /** 내 프로필 이미지 URL */
+  profileImageUrl?: string;
 }

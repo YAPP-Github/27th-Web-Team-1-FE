@@ -202,6 +202,7 @@ export const useMapMe = ({ longitude, latitude, zoom, albumId }: UseMapMeParams)
     address,
     mapPins,
     totalHistoryCount: response.data?.totalHistoryCount,
+    profileImageUrl: response.data?.profileImageUrl,
     clusters: response.data?.clusters ?? [],
     photos: response.data?.photos ?? [],
     clusterExpansionData,
