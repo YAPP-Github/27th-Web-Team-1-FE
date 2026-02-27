@@ -26,4 +26,6 @@ export interface MyPageResponse {
   coupledDay?: number;
   /** 커플 내 전체 사진 수 */
   couplePhotoCount?: number;
+  /** 기본앨범 ID */
+  defaultAlbumId?: number;
 }
