@@ -12,6 +12,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '한강 라이딩 시작!',
     latitude: 37.5219,
     longitude: 126.9245,
+    isEditable: true,
   },
   102: {
     id: 102,
@@ -23,6 +24,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '망원한강공원 도착',
     latitude: 37.5566,
     longitude: 126.9015,
+    isEditable: true,
   },
   103: {
     id: 103,
@@ -34,6 +36,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '잠시 휴식',
     latitude: 37.5665,
     longitude: 126.8312,
+    isEditable: false,
   },
   104: {
     id: 104,
@@ -45,6 +48,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '노을이 예뻤어요',
     latitude: 37.5262,
     longitude: 126.872,
+    isEditable: true,
   },
   105: {
     id: 105,
@@ -56,6 +60,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '라이딩 완료!',
     latitude: 37.5346,
     longitude: 126.9013,
+    isEditable: false,
   },
   // 앨범 2: 카페 투어 (ID 201-205)
   201: {
@@ -68,6 +73,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '첫 번째 카페',
     latitude: 37.516,
     longitude: 127.0208,
+    isEditable: true,
   },
   202: {
     id: 202,
@@ -79,6 +85,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '두 번째 카페에서',
     latitude: 37.5253,
     longitude: 127.0471,
+    isEditable: true,
   },
   203: {
     id: 203,
@@ -90,6 +97,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '디저트 맛집!',
     latitude: 37.5066,
     longitude: 127.0063,
+    isEditable: true,
   },
   204: {
     id: 204,
@@ -101,6 +109,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '분위기 좋은 곳',
     latitude: 37.5346,
     longitude: 126.9952,
+    isEditable: false,
   },
   205: {
     id: 205,
@@ -112,6 +121,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '마지막 카페',
     latitude: 37.5879,
     longitude: 126.9817,
+    isEditable: true,
   },
   // 앨범 3: 야경 산책 (ID 301-306)
   301: {
@@ -124,6 +134,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '남산타워 야경',
     latitude: 37.5511,
     longitude: 126.9882,
+    isEditable: true,
   },
   302: {
     id: 302,
@@ -135,6 +146,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '명동 거리',
     latitude: 37.5636,
     longitude: 126.9859,
+    isEditable: true,
   },
   303: {
     id: 303,
@@ -146,6 +158,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '을지로 골목',
     latitude: 37.5665,
     longitude: 126.9895,
+    isEditable: false,
   },
   304: {
     id: 304,
@@ -157,6 +170,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '광화문 야경',
     latitude: 37.576,
     longitude: 126.9769,
+    isEditable: true,
   },
   305: {
     id: 305,
@@ -168,6 +182,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '여의도 불꽃',
     latitude: 37.5219,
     longitude: 126.9245,
+    isEditable: true,
   },
   306: {
     id: 306,
@@ -179,6 +194,7 @@ export const 사진_상세_목록: Record<number, PhotoDetailResponse> = {
     description: '롯데타워 야경',
     latitude: 37.5145,
     longitude: 127.101,
+    isEditable: true,
   },
 };
 

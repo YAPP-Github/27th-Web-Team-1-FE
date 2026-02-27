@@ -211,9 +211,9 @@ export default function PhotoViewPage() {
               }
               onClickBack={handleBack}
               showLocation={!isPendingMode && !!resolvedDetail?.address}
-              showMenu={!isPendingMode}
+              showMenu={!isPendingMode && !!resolvedDetail?.isEditable}
             >
-              {!isPendingMode && (
+              {!isPendingMode && resolvedDetail?.isEditable && (
                 <MenuHeader.Menu>
                   <MenuHeader.Item onClick={() => openEditOverlay(displayPhotoId)}>
                     기록 수정하기
