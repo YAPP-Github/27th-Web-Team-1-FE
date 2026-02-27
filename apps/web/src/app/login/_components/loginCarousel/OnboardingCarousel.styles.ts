@@ -93,7 +93,7 @@ export const ButtonPrev = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.gray[0]};
+  color: ${({ theme }) => theme.colors.gray[600]};
   transition: opacity 0.2s ease;
   z-index: 10;
 
@@ -119,7 +119,7 @@ export const ButtonNext = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.colors.gray[0]};
+  color: ${({ theme }) => theme.colors.gray[600]};
   transition: opacity 0.2s ease;
   z-index: 10;
 
