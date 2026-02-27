@@ -230,7 +230,10 @@ export default function PhotoViewPage() {
             <S.ContainerA>
               {!isPendingMode && (
                 <S.UploaderInfo>
-                  <S.ProfileImage />
+                  <S.ProfileImage
+                    src={resolvedDetail?.uploaderProfileImageUrl}
+                    alt={resolvedDetail?.uploaderName || '프로필'}
+                  />
                   <S.UploaderName>
                     {resolvedDetail?.uploaderName || '알 수 없음'}
                   </S.UploaderName>

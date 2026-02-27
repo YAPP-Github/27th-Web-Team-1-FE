@@ -71,11 +71,12 @@ export const UploaderInfo = styled.div`
   gap: 8px;
 `;
 
-export const ProfileImage = styled.div`
+export const ProfileImage = styled.img`
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: ${({ theme }) => theme.colors.gray[600]};
+  object-fit: cover;
   flex-shrink: 0;
 `;
 
