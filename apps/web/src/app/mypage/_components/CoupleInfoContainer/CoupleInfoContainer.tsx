@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { cookies } from 'next/headers';
-import { COUPLE_STATUS, COUPLE_STATUS_COOKIE } from '@/constants/coupleStatus';
+import { COUPLE_STATUS_COOKIE } from '@/constants/cookie';
+import { COUPLE_STATUS } from '@/constants/coupleStatus';
 import ProfileContainer from './_components/ProfileContainer/ProfileContainer';
 import LoveIcon from './_components/LoveIcon/LoveIcon';
 import CoupleInfoFallback from './_components/CoupleInfoFallback/CoupleInfoFallback';

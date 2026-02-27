@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
-import { COUPLE_STATUS, COUPLE_STATUS_COOKIE } from '@/constants/coupleStatus';
+import { COUPLE_STATUS_COOKIE } from '@/constants/cookie';
+import { COUPLE_STATUS } from '@/constants/coupleStatus';
 import { ROUTES } from '@/constants/routes';
 import * as S from './ReconnectClient.styles';
 

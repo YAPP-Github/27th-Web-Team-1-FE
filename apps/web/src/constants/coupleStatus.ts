@@ -1,5 +1,3 @@
-export const COUPLE_STATUS_COOKIE = 'coupleStatus';
-
 export const COUPLE_STATUS = {
   COUPLED: 'COUPLED',
   NOT_COUPLED: 'NOT_COUPLED',
