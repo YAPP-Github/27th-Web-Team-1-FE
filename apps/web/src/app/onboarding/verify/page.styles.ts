@@ -194,6 +194,7 @@ export const ButtonGroup = styled.div`
 
   button {
     width: 100%;
+    height: 46px;
   }
 `;
 
