@@ -5,9 +5,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  flex: 1;
   overflow: hidden;
-  padding: 105px 0 0 0;
 `;
 
 export const DotContainer = styled.div`
@@ -49,7 +47,7 @@ export const Slide = styled.div`
   width: 100%;
   min-width: 100%;
   flex-shrink: 0;
-  gap: 44px;
+  gap: 32px;
 `;
 
 export const IconWrapper = styled.div`
