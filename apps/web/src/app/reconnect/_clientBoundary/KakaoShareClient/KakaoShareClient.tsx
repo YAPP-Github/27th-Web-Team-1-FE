@@ -17,7 +17,7 @@ export default function KakaoShareClient({ inviteCode }: KakaoShareClientProps) 
     const kakao = window.Kakao;
     if (kakao && inviteCode) {
       try {
-        const isDev = process.env.NODE_ENV === 'development';
+        const isDev = process.env.NEXT_PUBLIC_APP_ENV !== 'production';
         const templateId = isDev ? KAKAO_TEMPLATE_ID.DEV : KAKAO_TEMPLATE_ID.PROD;
 
         if (!templateId) {
