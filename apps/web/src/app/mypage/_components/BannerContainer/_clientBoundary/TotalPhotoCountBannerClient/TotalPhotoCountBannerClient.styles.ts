@@ -10,7 +10,7 @@ export const Wrapper = styled.div<{ $backgroundImage?: string }>`
   border: 1px solid rgba(226, 230, 255, 0.1);
   background: ${({ $backgroundImage }) =>
     $backgroundImage
-      ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url(${$backgroundImage}) center / cover no-repeat`
+      ? `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url("${$backgroundImage}") center / cover no-repeat`
       : 'rgba(226, 230, 255, 0.05)'};
   backdrop-filter: ${({ theme }) => theme.effects.backdropBlur[40]};
   cursor: pointer;
