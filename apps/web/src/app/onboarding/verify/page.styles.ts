@@ -106,6 +106,7 @@ export const Title = styled.h1`
   color: #ffffff;
   text-align: center;
   margin: 0;
+  white-space: pre-line;
 `;
 
 export const Description = styled.p`

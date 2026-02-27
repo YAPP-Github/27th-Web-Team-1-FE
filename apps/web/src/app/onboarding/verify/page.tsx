@@ -146,10 +146,7 @@ export default function VerifyPage() {
     <S.Container>
       <OnboardingHeader />
       <S.Content>
-        <S.Title>친구 코드 입력</S.Title>
-        <S.Description>
-          친구에게 받은 {INVITE_CODE_LENGTH}자리 코드를 입력하세요
-        </S.Description>
+        <S.Title>{`파트너에게 받은 코드를\n입력해주세요`}</S.Title>
         <CodeInput value={code} onChange={setCode} onComplete={handleCodeComplete} />
       </S.Content>
 
