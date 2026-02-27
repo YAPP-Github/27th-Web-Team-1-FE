@@ -43,12 +43,14 @@ export function middleware(request: NextRequest) {
     case COUPLE_STATUS.DISCONNECTED_BY_ME: {
       // 내가 끊음 → 온보딩 connect/verify, signout만 허용
       const allowed = [
+        ROUTES.ONBOARDING.START,
+        ROUTES.ONBOARDING.PROFILE,
         ROUTES.ONBOARDING.CONNECT,
         ROUTES.ONBOARDING.VERIFY,
         ROUTES.SIGNOUT,
       ];
       if (!allowed.some((p) => pathname.startsWith(p))) {
-        return NextResponse.redirect(new URL(ROUTES.ONBOARDING.CONNECT, request.url));
+        return NextResponse.redirect(new URL(ROUTES.ONBOARDING.START, request.url));
       }
       break;
     }
