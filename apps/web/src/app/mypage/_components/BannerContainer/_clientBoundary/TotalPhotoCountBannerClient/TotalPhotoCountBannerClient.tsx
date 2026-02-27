@@ -1,31 +1,53 @@
 'use client';
 
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGetMyPageSuspense } from '@repo/api-client';
-import { useQueryClient } from '@tanstack/react-query';
-import { type AlbumThumbnails } from '@repo/api-client';
+import {
+  useGetMyPageSuspense,
+  getMapMe,
+  getGetMapMeQueryKey,
+  type MapMeResponse,
+} from '@repo/api-client';
+import { useQuery } from '@tanstack/react-query';
 import { ROUTES } from '@/constants';
-import { DEFAULT_ALBUM_TITLE } from '@/constants/album';
-import { getMapMeAlbumsQueryKey } from '@/hooks/queries/useMapMeAlbums';
 import ChevronRightIcon from '@/assets/images/chevronRight.svg';
 import * as S from './TotalPhotoCountBannerClient.styles';
+
+const DEFAULT_MAP_PARAMS = { longitude: 126.978, latitude: 37.5665, zoom: 15 };
 
 export default function TotalPhotoCountBannerClient() {
   const { data } = useGetMyPageSuspense();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const totalPhotoCount = data.couplePhotoCount ?? 0;
+  const defaultAlbumId = data.defaultAlbumId;
+  const [randomSeed] = useState(() => Math.random());
+
+  const selectRandomThumbnail = useCallback(
+    (mapData: MapMeResponse) => {
+      const album = mapData.albums?.find((a) => a.id === defaultAlbumId);
+      const urls = album?.thumbnailUrls ?? [];
+      if (urls.length === 0) return undefined;
+      return urls[Math.floor(randomSeed * urls.length)];
+    },
+    [defaultAlbumId, randomSeed],
+  );
+
+  const { data: backgroundImage } = useQuery({
+    queryKey: getGetMapMeQueryKey(DEFAULT_MAP_PARAMS),
+    queryFn: ({ signal }) => getMapMe(DEFAULT_MAP_PARAMS, signal),
+    select: selectRandomThumbnail,
+  });
 
   const handleBannerClick = () => {
-    const albumList =
-      queryClient.getQueryData<AlbumThumbnails[]>(getMapMeAlbumsQueryKey()) ?? [];
-    const allPhotosAlbum = albumList.find((album) => album.title === DEFAULT_ALBUM_TITLE);
-    if (!allPhotosAlbum?.id) return;
-    router.push(`${ROUTES.ALBUM.DETAIL(allPhotosAlbum.id)}?expand=true`);
+    if (defaultAlbumId === null || defaultAlbumId === undefined) {
+      return;
+    }
+    router.push(`${ROUTES.ALBUM.DETAIL(defaultAlbumId)}?expand=true`);
   };
 
   return (
     <S.Wrapper
+      $backgroundImage={backgroundImage}
       role="button"
       tabIndex={0}
       onClick={handleBannerClick}

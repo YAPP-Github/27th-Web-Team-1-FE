@@ -25,7 +25,15 @@ export function useBottomSheetController(context: SheetContext) {
     return window.innerHeight - HEADER_HEIGHT - FLOATING_BUTTON_HEIGHT;
   };
 
-  const [height, setHeight] = useState(MIN_HEIGHT);
+  const [height, setHeight] = useState(() => {
+    if (
+      context.type === SHEET_CONTEXT_TYPE.ALBUM_DETAIL &&
+      searchParams.get('expand') === 'true'
+    ) {
+      return getMaxHeight();
+    }
+    return MIN_HEIGHT;
+  });
 
   // context 변경 시 높이 동기화 (렌더 중 상태 조정 패턴)
   const [prevContextType, setPrevContextType] = useState(context.type);
