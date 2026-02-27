@@ -16,7 +16,5 @@ export interface EmoticonSummaryResponse {
   count?: number;
   /** 현재 사용자가 반응했는지 여부 */
   reacted?: boolean;
-  editable?: boolean;
-  /** 조회자가 해당 이모티콘 반응을 제거할 수 있는지 여부 */
   isEditable?: boolean;
 }

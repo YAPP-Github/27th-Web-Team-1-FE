@@ -21,7 +21,5 @@ export interface PhotoResponse {
   description?: string;
   /** 사진의 촬영 일시 */
   takenAt?: string;
-  editable?: boolean;
-  /** 조회자가 해당 사진을 수정/삭제할 수 있는지 여부 */
   isEditable?: boolean;
 }

@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
 
   // 인증됨 → 로그인 접근 불가
   if (isLoginPage) {
-    return NextResponse.redirect(new URL(ROUTES.HOME, request.url));
+    return NextResponse.redirect(new URL(ROUTES.ONBOARDING.START, request.url));
   }
 
   const isOnboarding = pathname.startsWith(ROUTES.ONBOARDING.START);

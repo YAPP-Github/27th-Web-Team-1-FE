@@ -25,7 +25,5 @@ export interface CommentResponse {
   commentedAt?: string;
   /** 이모지 목록 */
   emoticons?: EmoticonSummaryResponse[];
-  editable?: boolean;
-  /** 조회자가 해당 댓글을 수정/삭제할 수 있는지 여부 */
   isEditable?: boolean;
 }
