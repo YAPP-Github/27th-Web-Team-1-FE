@@ -29,6 +29,7 @@ export async function serverFetcher<TResponse>(
 
       return customFetcher<TResponse>(config, {
         ...options,
+        cache: 'no-store',
         headers: {
           ...config.headers,
           ...options.headers,

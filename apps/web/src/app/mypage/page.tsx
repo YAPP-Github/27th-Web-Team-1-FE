@@ -18,6 +18,7 @@ export default async function MyPage() {
     .prefetchQuery({
       queryKey: getGetMyPageQueryKey(),
       queryFn: () => getMyPageServer(),
+      staleTime: 0,
     })
     .catch((error) => {
       console.error('[MyPage] prefetch failed:', error);
