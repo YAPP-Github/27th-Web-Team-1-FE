@@ -61,7 +61,10 @@ export function middleware(request: NextRequest) {
       break;
 
     default:
-      // coupleStatus 쿠키 없음 → 통과 (fallback)
+      // coupleStatus 쿠키 없음 → NOT_COUPLED으로 간주
+      if (!isOnboarding) {
+        return NextResponse.redirect(new URL(ROUTES.ONBOARDING.START, request.url));
+      }
       break;
   }
 
