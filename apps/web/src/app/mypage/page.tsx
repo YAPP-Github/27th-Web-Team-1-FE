@@ -1,8 +1,13 @@
 export const dynamic = 'force-dynamic';
 
 import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getGetMyPageQueryKey, getMyPageServer } from '@repo/api-client';
+import {
+  getGetMyPageQueryKey,
+  getMyPageServer,
+  getMyStatusServer,
+} from '@repo/api-client';
 import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
+import CoupleStatusSyncClient from './_clientBoundary/CoupleStatusSyncClient/CoupleStatusSyncClient';
 import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
 import BannerContainer from './_components/BannerContainer/BannerContainer';
 import Divider from '@/components/common/divider/Divider';
@@ -13,6 +18,10 @@ import styles from './page.module.css';
 
 export default async function MyPage() {
   const queryClient = new QueryClient();
+  const coupleStatus = await getMyStatusServer().catch((error) => {
+    console.error('[MyPage] status prefetch failed:', error);
+    return null;
+  });
 
   await queryClient
     .prefetchQuery({
@@ -27,9 +36,10 @@ export default async function MyPage() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <main className={styles.wrapper}>
         <h1 className={styles.srOnly}>{PAGE_TITLE}</h1>
+        <CoupleStatusSyncClient />
         <HeaderClient />
         <div className={styles.coupleInfo}>
-          <CoupleInfoContainer />
+          <CoupleInfoContainer isCoupled={coupleStatus?.isCoupled ?? false} />
         </div>
         <div className={styles.banner}>
           <BannerContainer />
