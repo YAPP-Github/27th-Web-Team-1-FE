@@ -11,7 +11,7 @@ Lokit은 사진을 앨범 단위로 관리하고,
 
 <table>
     <tr align="center">
-        <td colspan="2"><b>Frontend</b></td>
+        <td colspan="3"><b>Frontend</b></td>
     </tr>
     <tr align="center">
         <td>
@@ -23,6 +23,11 @@ Lokit은 사진을 앨범 단위로 관리하고,
             <img src="https://avatars.githubusercontent.com/u/106425326?v=4?size=100" width="100">
             <br>
             <a href="https://github.com/H0ngJu"><I>H0ngJu</I></a>
+        </td>
+        <td>
+            <img src="https://avatars.githubusercontent.com/u/89020004?v=4?size=100" width="100">
+            <br>
+            <a href="https://github.com/ohksj77"><I>ohksj77</I></a>
         </td>
     </tr>
 </table>
