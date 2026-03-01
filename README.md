@@ -11,7 +11,7 @@ Lokit은 사진을 앨범 단위로 관리하고,
 
 <table>
     <tr align="center">
-        <td colspan="2"><b>Frontend</b></td>
+        <td colspan="3"><b>Frontend</b></td>
     </tr>
     <tr align="center">
         <td>
