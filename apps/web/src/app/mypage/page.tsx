@@ -1,28 +1,26 @@
 export const dynamic = 'force-dynamic';
 
-import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import {
-  getGetMyPageQueryKey,
-  getMyPageServer,
-  getMyStatusServer,
-} from '@repo/api-client';
-import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
-import CoupleStatusSyncClient from './_clientBoundary/CoupleStatusSyncClient/CoupleStatusSyncClient';
-import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
-import BannerContainer from './_components/BannerContainer/BannerContainer';
 import Divider from '@/components/common/divider/Divider';
-import MenuContainer from './_components/MenuContainer/MenuContainer';
+import { COUPLE_STATUS_COOKIE } from '@/constants/cookie';
+import { COUPLE_STATUS } from '@/constants/coupleStatus';
+import { getGetMyPageQueryKey, getMyPageServer } from '@repo/api-client';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { cookies } from 'next/headers';
+import CoupleStatusSyncClient from './_clientBoundary/CoupleStatusSyncClient/CoupleStatusSyncClient';
+import HeaderClient from './_clientBoundary/HeaderClient/HeaderClient';
+import BannerContainer from './_components/BannerContainer/BannerContainer';
+import CoupleInfoContainer from './_components/CoupleInfoContainer/CoupleInfoContainer';
 import Footer from './_components/Footer/Footer';
+import MenuContainer from './_components/MenuContainer/MenuContainer';
 import { PAGE_TITLE } from './constants';
 import styles from './page.module.css';
 
 export default async function MyPage() {
-  const queryClient = new QueryClient();
-  const coupleStatus = await getMyStatusServer().catch((error) => {
-    console.error('[MyPage] status prefetch failed:', error);
-    return null;
-  });
+  const cookieStore = await cookies();
+  const isCoupled =
+    cookieStore.get(COUPLE_STATUS_COOKIE)?.value === COUPLE_STATUS.COUPLED;
 
+  const queryClient = new QueryClient();
   await queryClient
     .prefetchQuery({
       queryKey: getGetMyPageQueryKey(),
@@ -40,7 +38,7 @@ export default async function MyPage() {
         <CoupleStatusSyncClient />
         <HeaderClient />
         <div className={styles.coupleInfo}>
-          <CoupleInfoContainer isCoupled={coupleStatus?.isCoupled ?? false} />
+          <CoupleInfoContainer isCoupled={isCoupled} />
         </div>
         <div className={styles.banner}>
           <BannerContainer />
