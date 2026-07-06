@@ -1,13 +1,55 @@
-# 📍 Lokit (로킷)
+> 레포지토리가 https://github.com/Team-Lokit/lokit-fe 로 이전되었습니다.
 
-**사진과 장소를 함께 기록하는 지도 기반 앨범 서비스**
+# 🔐 Lokit (로킷)
 
-Lokit은 사진을 앨범 단위로 관리하고,  
-촬영 위치를 기반으로 지도 위에서 추억을 한눈에 돌아볼 수 있는 **모바일 중심 서비스**입니다.
+**둘만의 순간을 지도 위에 기록하는 커플 지도 서비스**
+
+Lokit(로킷)은 커플의 일상 속 크고 작은 모든 순간을  
+촬영 위치를 기반으로 지도 위에 아카이빙하고, 둘만의 추억으로 함께 쌓아가는 **모바일 중심 서비스**입니다.
+
+> 따로 찍고 따로 보던 어제의 우리를 하나의 지도로 연결해요.
 
 ---
 
-## 👥 팀원
+## ✨ 이런 커플에게 필요해요
+
+- **추억은 하나인데 사진첩은 각자**: 사진이 각자 폰에 흩어져 있어, 같이 보려 해도 흐름이 끊겨요.
+- **매번 사진 주고받기 번거로움**: 카톡으로 받으면 화질이 깨지고, 나중엔 찾기도 힘들어요.
+- **인스타 비공개 계정도 우리만의 공간은 아님**: 알고리즘, 광고, 추천 게시물이 끼어들죠.
+
+---
+
+## 🗺️ 주요 기능
+
+| 기능                    | 설명                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| **장소 기반 자동 정리** | 우리가 함께한 곳이 지도 위에 발자국으로 쌓여, 어디서 얼마나 함께했는지 한눈에 보여요. |
+| **프라이빗**            | 광고도 알고리즘 피드도 없어요. 초대코드로 연결된 둘만 들어올 수 있어요.               |
+| **부담감 제로**         | 키우기 미션이나 반복 질문 없이, 우리의 사진과 기록에만 담백하게 집중해요.             |
+| **맥락 축적**           | 사진이 아니라 이야기가 쌓여요. 하루의 기록이 모여 우리만의 지도가 완성돼요.           |
+
+---
+
+## 📲 다운로드
+
+<a href="https://apps.apple.com/us/app/%EB%A1%9C%ED%82%B7-lokit/id6767100896">
+  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store에서 다운로드" height="48">
+</a>
+
+- **iOS**: [App Store에서 다운로드](https://apps.apple.com/us/app/%EB%A1%9C%ED%82%B7-lokit/id6767100896)
+- **Android**: 출시 준비 중
+
+---
+
+## 🔗 공식 채널
+
+- **웹사이트**: [www.lokit.co.kr](https://www.lokit.co.kr/)
+- **소개 페이지**: [lokit.framer.website](https://lokit.framer.website/)
+- **Instagram**: [@lokit*official*](https://www.instagram.com/lokit_official_/)
+
+---
+
+## 👥 Maintainers
 
 <table>
     <tr align="center">
@@ -24,6 +66,18 @@ Lokit은 사진을 앨범 단위로 관리하고,
             <br>
             <a href="https://github.com/H0ngJu"><I>H0ngJu</I></a>
         </td>
+        <td>
+            <img src="https://avatars.githubusercontent.com/u/70315572?v=4?size=100" width="100">
+            <br>
+            <a href="https://github.com/Limgabi"><I>Limgabi</I></a>
+        </td>
+    </tr>
+</table>
+
+## 🙌 Contributors
+
+<table>
+    <tr align="center">
         <td>
             <img src="https://avatars.githubusercontent.com/u/89020004?v=4?size=100" width="100">
             <br>
@@ -52,6 +106,37 @@ Lokit은 사진을 앨범 단위로 관리하고,
 - 서비스의 핵심 화면 및 비즈니스 로직 담당
 - WebView 환경을 고려한 반응형 UI
 - 추후 Web 단독 서비스 확장 가능 구조
+
+---
+
+### 📦 모노레포 구조
+
+**pnpm workspaces + Turborepo** 기반 모노레포로 구성되어 있습니다.
+
+```
+lokit-fe
+├── apps
+│   ├── web      # Next.js 기반 핵심 UI (WebView 렌더링)
+│   └── mobile   # React Native 앱 셸 (Android / iOS)
+└── packages
+    ├── api-client      # Orval 자동 생성 API 클라이언트
+    ├── sentry          # 공용 에러 추적 설정
+    └── webview-bridge  # Web ↔ Native 통신 브릿지
+```
+
+---
+
+### 🧰 주요 명령어
+
+```bash
+pnpm dev            # 개발 서버 실행
+pnpm build          # 빌드
+pnpm lint           # 린트 검사
+pnpm test           # 테스트
+pnpm format:fix     # 포맷팅
+pnpm storybook      # 스토리북 실행
+pnpm generate:api   # Swagger 기반 API 클라이언트 생성
+```
 
 ---
 
@@ -86,13 +171,11 @@ Lokit은 사진을 앨범 단위로 관리하고,
 
 ### Analytics / Monitoring
 
-| 목적        | 도구      |
-| ----------- | --------- |
-| 트래픽 분석 | GA        |
-| 이벤트 분석 | Amplitude |
-| 퍼널 분석   | Mixpanel  |
-| UX 분석     | Clarity   |
-| 에러 추적   | Sentry    |
+| 목적               | 도구                          |
+| ------------------ | ----------------------------- |
+| 태그 관리 / 트래픽 | Google Tag Manager (GTM → GA) |
+| 이벤트 / 퍼널 분석 | Mixpanel                      |
+| 에러 추적          | Sentry                        |
 
 ---
 
